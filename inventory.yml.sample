@@ -74,20 +74,24 @@ all:
     # Local File Configuration #
     ############################
 
-    # Directory in which created/updated artefacts are placed
-    fetched_dest: ./fetched
+    repo_root_path: /home/redhat/crucible/ # path to repository root
+
+    # Directory in which created/updated artifacts are placed
+    fetched_dest: "{{ repo_root_path }}/fetched"
 
     # Configure possible paths for the pull secret
     # first one found will be used
+    # note: paths should be absolute
     pull_secret_lookup_paths:
       - "{{ fetched_dest }}/pull-secret.txt"
-      - ./pull-secret.txt
+      - "{{ repo_root_path }}/pull-secret.txt"
 
     # Configure possible paths for the ssh public key used for debugging
     # first one found will be used
+    # note: paths should be absolute
     ssh_public_key_lookup_paths:
       - "{{ fetched_dest }}/ssh_keys/{{ cluster_name }}.pub"
-      - ./ssh_public_key.pub
+      - "{{ repo_root_path }}/ssh_public_key.pub"
       - ~/.ssh/id_rsa.pub
 
     # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
@@ -108,7 +112,7 @@ all:
     ssh_public_key: "{{ lookup('file', local_ssh_public_key_path) }}"
 
     # provided mirror certificate logic, no need to change.
-    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(fetched_dest + '/domain.crt', './mirror_certificate.txt') }}"
+    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(fetched_dest + '/domain.crt',  repo_root_path + '/mirror_certificate.txt') }}"
     mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
 
     openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
