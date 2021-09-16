@@ -2,8 +2,9 @@
 - name: Mounting, Booting the Assisted Installer Discovery ISO
   hosts: masters, workers, day2_workers
   gather_facts: False
-  strategy: free
+  strategy: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary('free', omit) }}"
+  serial: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary(omit, 1) }}"
   roles:
     - boot_iso
   vars:
-    - debug: False
+    - boot_iso_url: "{{ discovery_iso_server }}/{{ discovery_iso_name }}"
