@@ -3,4 +3,6 @@
   hosts: localhost
   gather_facts: False
   roles:
-    - validate_inventory
+    - name: validate_inventory
+      vars:
+        validation_host: localhost
