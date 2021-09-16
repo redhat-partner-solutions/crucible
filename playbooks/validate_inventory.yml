@@ -1,0 +1,6 @@
+---
+- name: Validate Inventory
+  hosts: localhost
+  gather_facts: False
+  roles:
+    - validate_inventory

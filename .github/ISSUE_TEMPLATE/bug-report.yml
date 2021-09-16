@@ -1,0 +1,67 @@
+name: Bug report
+description: File a bug report
+labels: [bug]
+body:
+  - type: textarea
+    id: bug_description
+    attributes:
+      label: Bug description
+      description: Please provide as much information as possible to describe the bug, your environment, steps to reproduce, the actual and the expected behaviour.
+    validations:
+      required: true
+  - type: dropdown
+    id: openshift_version
+    attributes:
+      label: OpenShift version
+      description: What version of OpenShift was chosen to be deployed by the automation suite?
+      options:
+        - "4.6"
+        - "4.7"
+        - "4.8"
+        - "other (provide in the description)"
+    validations:
+      required: true
+  - type: dropdown
+    id: assisted_installer_version
+    attributes:
+      label: Assisted Installer version
+      description: What version of Assisted Installer was chosen to be installed by the automation suite?
+      options:
+        - "v1.0.18.3"
+        - "v1.0.19.3"
+        - "v1.0.20.3"
+        - "v1.0.21.3"
+        - "v1.0.22.3"
+        - "v1.0.23.2"
+        - "v1.0.24.2"
+        - "other (provide in the description)"
+    validations:
+      required: true
+  - type: textarea
+    id: logs_output
+    attributes:
+      label: Relevant log output
+      description: |
+        Please copy and paste any relevant log output produced by the automation suite. Remember to **remove all sensitive details** from the pasted logs.
+        This field will be automatically formatted into code.
+      render: shell
+  - type: textarea
+    id: inventory_file
+    attributes:
+      label: Inventory file
+      description: |
+        Please copy and paste the inventory file used with the automation suite. Remember to **remove all sensitive details** from the pasted inventory file.
+        This field will be automatically formatted as yaml.
+      render: yaml
+  - type: checkboxes
+    id: terms_limited_support
+    attributes:
+      label: Required statements
+      description: Before submitting this issue, you must agree to the following statements.
+      options:
+        - label: I have removed all sensitive details from the attached logs and inventory files.
+          required: true
+        - label: I acknowledge that Red Hat does not provide commercial support for the content of this repository.
+          required: true
+        - label: I acknowledge that any assistance is offered purely on a best-effort basis, as resource permits.
+          required: true

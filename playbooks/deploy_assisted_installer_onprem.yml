@@ -1,0 +1,29 @@
+---
+- name: Play to populate image_hashes for relevant images
+  hosts: localhost
+  vars:
+    destination_hosts:
+      - assisted_installer
+  roles:
+    - get_image_hash
+
+
+- name: Deploy OpenShift Assisted Installer On Prem
+  hosts: assisted_installer
+  roles:
+    - setup_assisted_installer
+  vars:
+    PULL_SECRET: "{{ pull_secret }}"
+    SETUP_ASSISTED_INSTALLER: "{{ setup_assisted_installer | default(True) }}"
+  post_tasks:
+    - name: Wait for up to 10 minutes for the assisted installer to come online
+      uri:
+        url: "http://{{ ansible_host }}:8090/api/assisted-install/v1/clusters"
+        method: GET
+        status_code: [200, 201]
+      register: result
+      until: result is succeeded
+      retries: 20
+      delay: 30
+      delegate_to: bastion
+      when: SETUP_ASSISTED_INSTALLER == True

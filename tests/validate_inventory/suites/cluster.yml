@@ -1,0 +1,59 @@
+tags: validate_cluster
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: valid_no_kvm
+    expected: 0
+
+  - test_name: valid_with_kvm
+    expected: 0
+    template:
+      vendor: KVM
+      include_vm_host: true
+
+  - test_name: valid_no_workers
+    expected: 0
+    template:
+      num_workers: 0
+
+  - test_name: valid_bmc_address_as_domain
+    expected: 0
+    template:
+      bmc_address: host.name.lab:10
+
+  - test_name: valid_dhcp_ranges_defined
+    expected: 0
+    template:
+      use_dhcp: true
+      dhcp_range_first: "192.168.100.101"
+      dhcp_range_last: "192.168.100.201"
+
+  - test_name: invalid_missing_vm_host
+    expected: 2
+    template:
+      vendor: KVM
+      include_vm_host: false
+
+  - test_name: invalid_single_worker
+    expected: 2
+    template:
+      num_workers: 1
+
+  - test_name: invalid_mac_address
+    expected: 2
+    template:
+      mac: FF:FF:FF:FF:FF:XX
+
+  - test_name: invalid_bmc_user_type
+    expected: 2
+    template:
+      bmc_user: 88
+
+  - test_name: invalid_missing_var
+    from_template: invalid_missing_var.yml
+    expected: 2
+
+  - test_name: invalid_empty_var
+    from_template: invalid_empty_var.yml
+    expected: 2

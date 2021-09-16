@@ -1,0 +1,58 @@
+all:
+  vars:
+    {% if item.template.day2_discovery_iso_name is defined %}
+    day2_discovery_iso_name: {{ item.template.day2_discovery_iso_name }}
+    {% endif %}
+  children:
+    bastions:
+      hosts:
+        bastion:
+          ansible_host: localhost
+    services:
+      vars:
+        ansible_host: localhost
+      hosts:
+        assisted_installer:
+        dns_host:
+          use_dhcp: {{ item.template.use_dhcp | default(false) }}
+          {% if item.template.dhcp_range_first is defined %}
+          dhcp_range_first: {{ item.template.dhcp_range_first }}
+          {% endif %}
+          {% if item.template.dhcp_range_last is defined %}
+          dhcp_range_last: {{ item.template.dhcp_range_last }}
+          {% endif %}
+        {% if item.template.include_vm_host | default(false) %}
+        vm_host:
+        {% endif %}
+    nodes:
+      vars:
+        bmc_address: {{ item.template.bmc_address | default("localhost") }}
+        bmc_password: {{ item.template.bmc_password | default("password") }}
+        bmc_user: {{ item.template.bmc_user | default("exists") }}
+        vendor: {{ item.template.vendor | default("Dell") }}
+        ansible_host: {{ item.template.ansible_host | default("localhost") }}
+        mac: {{ item.template.mac | default("FF:FF:FF:FF:FF:FF") }}
+      children:
+        masters:
+          vars:
+            role: master
+          hosts:
+          {% for n in range(item.template.num_masters | default(3)) %}
+            master{{ n }}:
+          {% endfor %}
+        workers:
+          vars:
+            role: worker
+          hosts:
+          {% for n in range(item.template.num_workers | default(2)) %}
+            worker{{ n }}:
+          {% endfor %}
+        {% if item.template.num_day2_workers is defined %}
+        day2_workers:
+          vars:
+            role: worker
+          hosts:
+            {% for n in range(item.template.num_day2_workers) %}
+              day2_worker{{ n }}:
+            {% endfor %}
+        {% endif %}

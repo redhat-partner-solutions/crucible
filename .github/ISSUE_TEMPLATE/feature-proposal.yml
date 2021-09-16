@@ -1,0 +1,23 @@
+name: Feature proposal
+description: Submit a feature proposal
+labels: [enhancement]
+body:
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature description
+      description: |
+        Please describe the proposed feature in as much detail as possible.
+        In addition, provide justification as to why the feature should be implemented.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms_limited_support
+    attributes:
+      label: Required statements
+      description: Before submitting this issue, you must agree to the following statements.
+      options:
+        - label: I acknowledge that Red Hat does not provide commercial support for the content of this repository.
+          required: true
+        - label: I acknowledge that any assistance is offered purely on a best-effort basis, as resource permits.
+          required: true

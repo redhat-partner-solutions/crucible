@@ -1,0 +1,45 @@
+---
+- name: Get kubeconfig
+  hosts: bastion
+  vars:
+    secure: false
+    ASSISTED_INSTALLER_BASE_URL: "{{ secure | ternary('https', 'http') }}://{{ hostvars['assisted_installer']['host'] }}:{{ hostvars['assisted_installer']['port'] }}/api/assisted-install/v1"
+    URL_ASSISTED_INSTALLER_CLUSTER: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ cluster_id }}"
+    kube_filename: "{{ kubeconfig_dest_filename | default('kubeconfig') }}"
+    dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
+    kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
+  tasks:
+    - name: Download kubeconfig
+      get_url:
+        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/downloads/kubeconfig"
+        dest: "{{ kubeconfig_path }}"
+        mode: 0664
+
+    - name: Check kubectl
+      shell:
+        cmd: "kubectl --kubeconfig {{ kubeconfig_path }} explain pods"
+
+    - name: Check cluster
+      block:
+        - name: Wait up to 10 mins for cluster to become functional
+          shell:
+            cmd: oc --kubeconfig {{ kubeconfig_path }} wait clusteroperators --all --for=condition=Available --timeout=10m
+      rescue:
+        - name: Get better info for failure message
+          shell: oc --kubeconfig {{ kubeconfig_path }} get co
+          register: co_result
+
+        - fail:
+            msg: |
+              Cluster has not come up correctly:
+                {{ co_result.stdout }}
+
+    - name: Get credentials
+      uri:
+        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/credentials"
+        return_content: yes
+      register: credentials
+
+    - name: Login to add token to kubeconfig
+      shell:
+        cmd: "oc --kubeconfig {{ kubeconfig_path }} login -u {{ credentials.json.username }} -p '{{ credentials.json.password }}'"

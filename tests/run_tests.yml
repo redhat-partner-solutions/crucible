@@ -1,0 +1,2 @@
+---
+- import_playbook: validate_inventory/tests.yml

@@ -1,0 +1,25 @@
+---
+- name: Test Inventory Validation
+  hosts: localhost
+  gather_facts: false
+  vars:
+    test_suites:
+      - cluster.yml
+      - secrets.yml
+      - prereqs.yml
+      - network.yml
+      - day2.yml
+  tasks:
+    - name: Run Inventory Validation test suites
+      include_role:
+        name: run_suite
+      ignore_errors: true
+      loop: "{{ test_suites | list }}"
+      loop_control:
+        loop_var: test_suite_file
+
+    - name: Record failures
+      fail:
+        msg: "Test failed!: {{ item }}"
+      when: (test_failures | default([])) | length > 0
+      loop: "{{ test_failures }}"

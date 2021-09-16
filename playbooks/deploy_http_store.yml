@@ -1,0 +1,6 @@
+---
+- name: Install and http_store service
+  hosts: http_store
+  roles:
+    - setup_http_store
+    - validate_http_store

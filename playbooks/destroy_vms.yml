@@ -1,0 +1,5 @@
+---
+- name: Destroy VMs
+  hosts: vm_host
+  roles:
+    - destroy_vms

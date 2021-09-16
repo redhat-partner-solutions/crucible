@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  strategy: free
+  become: false
+  gather_facts: false
+  roles:
+    - prereq_facts_check
+  vars:
+    ssh_public_check: "{{ not (generate_ssh_keys | default(False)) }}"
+    mirror_certificate_check: "{{ ((use_local_mirror_registry | default(False)) == True) and ((setup_registry_service | default(True)) == False) }}"

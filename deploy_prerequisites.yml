@@ -1,0 +1,92 @@
+---
+- name: Check facts
+  hosts: localhost
+  roles:
+    - prereq_facts_check
+  vars:
+    # This will be made later in the play so no need to check it here.
+    # This check is there to support playbooks which do not create
+    # the cert as part of there execution
+    ssh_public_check: "{{ not (generate_ssh_keys | default(False)) }}"
+    mirror_certificate_check: "{{ ((use_local_mirror_registry | default(False)) == True) and ((setup_registry_service | default(True)) == False) }}"
+
+- name: Play to populate image_hashes for relevant images
+  hosts: localhost
+  roles:
+    - get_image_hash
+
+- name: Setup NTP
+  hosts: ntp_host
+  vars:
+    SETUP_NTP_SERVICE: "{{setup_ntp_service | default(True)}}"
+  roles:
+    - role: setup_ntp
+      when: SETUP_NTP_SERVICE == True
+
+- name: Play to install and setup mirror registry
+  hosts: registry_host
+  vars:
+    downloads_path: /tmp/wip
+    config_file_path: /tmp/wip/config
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+  roles:
+    - role: setup_selfsigned_cert
+      when: SETUP_REGISTRY_SERVICE == True
+    - role: setup_mirror_registry
+      when: SETUP_REGISTRY_SERVICE == True
+    - role: populate_mirror_registry
+      when: SETUP_REGISTRY_SERVICE == True
+  collections:
+    - containers.podman
+    - community.crypto
+    - community.general
+    - ansible.posix
+
+- name: Setup HTTP Store
+  hosts: http_store
+  vars:
+    SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(True) }}"
+  roles:
+    - role: setup_http_store
+      when: SETUP_HTTP_STORE_SERVICE == True
+    - role: validate_http_store
+
+- name: Setup DNS Records
+  hosts: dns_host
+  vars:
+    SETUP_DNS_SERVICE: "{{ setup_dns_service | default(True) }}"
+  roles:
+    - role: insert_dns_records
+      when: SETUP_DNS_SERVICE == True
+    - role: validate_dns_records
+
+- name: Deploy OpenShift Assisted Installer On Prem
+  hosts: assisted_installer
+  roles:
+    - role: setup_assisted_installer
+      when: SETUP_ASSISTED_INSTALLER == True
+  vars:
+    PULL_SECRET: "{{ pull_secret }}"
+    SETUP_ASSISTED_INSTALLER: "{{ setup_assisted_installer | default(True) }}"
+  post_tasks:
+    - name: Wait for up to 60 minutes for the assisted installer to come online
+      uri:
+        url: "http://{{ ansible_host }}:8090/api/assisted-install/v1/clusters"
+        method: GET
+        status_code: [200, 201]
+      register: result
+      until: result is succeeded
+      retries: 120
+      delay: 30
+      delegate_to: bastion
+      when: SETUP_ASSISTED_INSTALLER == True
+
+- import_playbook: playbooks/create_vms.yml
+  vars:
+    SETUP_VMS: "{{ setup_vms | default(true) }}"
+  when: SETUP_VMS == True
+
+- import_playbook: playbooks/deploy_sushy_tools.yml
+  vars:
+    SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(True)) }}"
+  when: SETUP_SUSHY_TOOLS == True

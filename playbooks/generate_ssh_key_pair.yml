@@ -1,0 +1,5 @@
+---
+- name: Generate ssh keys used for debug
+  hosts: bastion
+  roles:
+    - generate_ssh_key_pair

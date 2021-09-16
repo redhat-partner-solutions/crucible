@@ -1,0 +1,21 @@
+---
+- name: Soft reset Dell iDrac9
+  hosts: masters,workers
+  gather_facts: false
+  vars:
+    ansible_host: "{{ bmc_address }}"
+    ansible_user: "{{ bmc_user }}"
+    ansible_password: "{{ bmc_password }}"
+  vars_prompt:
+    - name: reset_confirmation
+      prompt: You are about to preform a SOFT RESET of a Dell Drac. ARE YOU SURE [yes|no]?
+      private: no
+  tasks:
+    - name: RESETING THE DRAC AND CMC
+      raw: racadm racreset
+      when: reset_confirmation | bool
+      register: result
+      failed_when: "'RAC reset operation initiated successfully' not in result['stdout']"
+    - pause:
+        prompt: "Pausing 2 mins to allow the iDRAC and CMC to return to a usable state."
+        minutes: 3

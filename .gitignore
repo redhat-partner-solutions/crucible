@@ -1,0 +1,17 @@
+.DS_Store
+*.txt
+*.pub
+!requirements.txt
+__stuff/**
+.history/
+.vscode
+te?mp
+logs?
+*.swp
+*.pyc
+inventory.yml
+*.vault.yml
+*.vault.yaml
+fetched/
+
+tests/validate_inventory/failed

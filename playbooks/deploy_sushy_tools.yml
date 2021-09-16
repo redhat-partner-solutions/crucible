@@ -1,0 +1,4 @@
+- name: Deploy sushy tools
+  hosts: vm_host
+  roles:
+    - setup_sushy_tools

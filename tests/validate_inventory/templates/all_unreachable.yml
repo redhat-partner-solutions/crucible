@@ -1,0 +1,40 @@
+all:
+  vars:
+    setup_ntp_service: false
+    ntp_server: 240.0.0.0
+
+  children:
+    bastions:
+      hosts:
+        bastion:
+          ansible_host: 240.0.0.0
+
+    services:
+      vars:
+        ansible_host: 240.0.0.0
+      hosts:
+        assisted_installer:
+        registry_host:
+        dns_host:
+        http_store:
+        ntp_host:
+        vm_host:
+    nodes:
+      vars:
+        ansible_host: 240.0.0.0
+        bmc_address: 240.0.0.0
+        vendor: KVM
+      children:
+        masters:
+          vars:
+            role: master
+          hosts:
+            super1:
+            super2:
+            super3:
+        workers:
+          vars:
+            role: worker
+          hosts:
+            worker1:
+            worker2:

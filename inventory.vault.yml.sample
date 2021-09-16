@@ -1,0 +1,28 @@
+---
+#######################################
+# Prerequisite services configuration #
+#######################################
+
+# HTTP Secret for the Container Registry.
+# More information on the vars used to configure the Registry can be found here:
+# https://docs.docker.com/registry/configuration/#http
+VAULT_REGISTRY_HOST_REGISTRY_HTTP_SECRET: SECRET
+
+# Credentials for the Disconnected Registry (if relevant)
+VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_USER: USER
+VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_PASSWORD: PASSWORD
+
+#######################
+# Nodes configuration #
+#######################
+
+# Default credentials for the BMCs
+VAULT_NODES_BMC_USER: USER
+VAULT_NODES_BMC_PASSWORD: PASSWORD
+
+# # Set custom BMC credentials for super1 and worker1 nodes.
+# # These vault variables then have to be referenced in the inventory file.
+# VAULT_NODES_SUPER1_BMC_USER: USER
+# VAULT_NODES_SUPER1_BMC_PASSWORD: PASSWORD
+# VAULT_NODES_WORKER1_BMC_USER: USER
+# VAULT_NODES_WORKER1_BMC_PASSWORD: PASSWORD

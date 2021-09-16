@@ -1,0 +1,40 @@
+---
+- name: "Load suite {{ test_suite_file }}"
+  include_vars:
+    file: "suites/{{ test_suite_file }}"
+    name: suite_data
+
+- name: Create temporary directory for rendered templates
+  tempfile:
+    state: directory
+  register: temp_dir
+
+- name: Render inventories and run tests
+  block:
+
+    - name: "Render test inventories for {{ test_suite_file }}"
+      template:
+        src: "{{ item.from_template | default(suite_data.template_file) }}"
+        dest: "{{ temp_dir.path }}/{{ item.test_name }}.yml"
+        trim_blocks: true
+        lstrip_blocks: true
+      loop: "{{ suite_data.tests }}"
+
+    - name: "Run Inventory Validation tests from {{ test_suite_file }}"
+      include_tasks: run_test.yml
+      loop: "{{ suite_data.tests }}"
+
+  rescue:
+    - name: Persist the tested inventory files on failure
+      copy:
+        src: "{{ temp_dir.path }}"
+        dest: "{{ playbook_dir }}/failed/"
+        backup: true
+      failed_when: true # Keep non-zero exit code
+
+  always:
+    - name: Remove the temporary directory
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent
+      when: temp_dir.path is defined

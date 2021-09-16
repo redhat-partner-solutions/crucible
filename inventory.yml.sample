@@ -1,0 +1,284 @@
+all:
+  vars:
+    ##################################
+    # Assisted Install Configuration #
+    ##################################
+    # These options configure Assisted Installer and the resulting cluster
+    # https://generator.swagger.io/?url=https://raw.githubusercontent.com/openshift/assisted-service/58a6abd5c99d4e41d939be89cd0962433849a861/swagger.yaml
+    # See section: cluster-create-params
+
+    # Cluster name and dns domain combine to give the cluster namespace that will contain OpenShift endpoints
+    # e.g. api.clustername.example.lab, worker1.clustername.example.lab
+    cluster_name: clustername
+    base_dns_domain: example.lab
+
+    # OpenShift version
+    openshift_full_version: 4.6.16
+
+    # Virtual IP addresses used to access the resulting OpenShift cluster
+    api_vip: 10.60.0.96 # the IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab
+    ingress_vip: 10.60.0.97 # the IP address to be used for *.apps.clustername.example.lab
+
+    ## Allocate virtual IPs via DHCP server. Equivalent to the vip_dhcp_allocation configuration option of Assisted Installer
+    vip_dhcp_allocation: false
+
+    # The subnet on which all nodes are (or will be) accessible.
+    machine_network_cidr: 10.60.0.0/24
+
+    # The IP address pool to use for service IP addresses
+    service_network_cidr: 172.30.0.0/16
+
+    # Cluster network settings. You are unlikely to need to change these
+    cluster_network_cidr: 10.128.0.0/14 # The subnet, internal to the cluster, on which pods will be assigned IPs
+    cluster_network_host_prefix: 23 # The subnet prefix length to assign to each individual node.
+
+    # # Cluster network provider. Cannot be changed after cluster is created.
+    # # The default is OpenShift SDN unless otherwise specified.
+    # network_type: OVNKubernetes
+    # network_type: OpenShiftSDN
+
+    ######################################
+    # Prerequisite Service Configuration #
+    ######################################
+
+    # Flags to enable/disable prerequisite service setup
+    # You will need to ensure alternatives are available for anything that will not be automatically set up
+    setup_ntp_service: false
+    setup_dns_service: false
+    setup_registry_service: false # Only required for a Restricted Network installation
+    setup_http_store_service: true
+
+
+    # NTP Service
+    # ntp_server is the address at which the NTP service is (or will be) available
+    ntp_server: ntp.example.lab
+    # ntp_server_allow is the range of IPs the NTP service will respond to
+    # ntp_server_allow: 10.40.0.0/24 # not required if setup_ntp_service is false
+
+
+    # Mirror Registry Service parameters for a Restricted Network installation
+
+    # use_local_mirror_registry controls if the install process uses a local container registry (mirror_registry) or not.
+    # Set this to true to use the mirror registry service set up when `setup_registry_service` is true.
+    use_local_mirror_registry: false
+
+    # HTTP Store Configuration
+    # ISO name must include the `discovery` directory if you have a SuperMicro machine
+    discovery_iso_name: "discovery/discovery-image.iso"
+
+    # discovery_iso_server must be discoverable from all BMCs in order for them to mount the ISO hosted there.
+    # It is usually necessary to specify different values for KVM nodes and/or physical BMCs if they are on different subnets.
+    discovery_iso_server: "http://{{ hostvars['http_store']['ansible_host'] }}"
+
+    ############################
+    # Local File Configuration #
+    ############################
+
+    # Directory in which created/updated artefacts are placed
+    fetched_dest: ./fetched
+
+    # Configure possible paths for the pull secret
+    # first one found will be used
+    pull_secret_lookup_paths:
+      - "{{ fetched_dest }}/pull-secret.txt"
+      - ./pull-secret.txt
+
+    # Configure possible paths for the ssh public key used for debugging
+    # first one found will be used
+    ssh_public_key_lookup_paths:
+      - "{{ fetched_dest }}/ssh_keys/{{ cluster_name }}.pub"
+      - ./ssh_public_key.pub
+      - ~/.ssh/id_rsa.pub
+
+    # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
+    kubeconfig_dest_dir: /home/redhat/
+    kubeconfig_dest_filename: "{{ cluster_name }}-kubeconfig"
+
+    ############################
+    #    LOGIC: DO NOT TOUCH   #
+    # vvvvvvvvvvvvvvvvvvvvvvvv #
+    ############################
+
+    # pull secret logic, no need to change. Configure above
+    local_pull_secret_path: "{{ lookup('first_found', pull_secret_lookup_paths) }}"
+    pull_secret: "{{ lookup('file', local_pull_secret_path) }}"
+
+    # ssh key logic, no need to change. Configure above
+    local_ssh_public_key_path: "{{ lookup('first_found', ssh_public_key_lookup_paths) }}"
+    ssh_public_key: "{{ lookup('file', local_ssh_public_key_path) }}"
+
+    # provided mirror certificate logic, no need to change.
+    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(fetched_dest + '/domain.crt', './mirror_certificate.txt') }}"
+    mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
+
+    openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
+
+    ############################
+    # ^^^^^^^^^^^^^^^^^^^^^^^^ #
+    #    LOGIC: DO NOT TOUCH   #
+    ############################
+
+
+  children:
+    bastions: # n.b. Currently only a single bastion is supported
+      hosts:
+        bastion:
+          ansible_host: 172.28.11.51 # Must be reachable from the Ansible control node
+
+    # Configuration and access information for the pre-requisite services
+    # TODO: document differences needed for already-deployed and auto-deployed
+    services:
+      hosts:
+        assisted_installer:
+          ansible_host: service_host.example.lab
+          host: service_host.example.lab
+          port: 8090 # Do not change
+
+        registry_host:
+          ansible_host: registry.example.lab
+          registry_port: 5000
+          registry_fqdn: registry.example.lab # use in case of different FQDN for the cert
+          cert_common_name: "{{ registry_fqdn }}"
+          cert_country: US
+          cert_locality: Raleigh
+          cert_organization: Red Hat, Inc.
+          cert_organizational_unit: Lab
+          cert_state: NC
+
+          # Configure the following secret values in the inventory.vault.yml file
+          REGISTRY_HTTP_SECRET: "{{ VAULT_REGISTRY_HOST_REGISTRY_HTTP_SECRET | mandatory }}"
+          disconnected_registry_user: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_USER | mandatory }}"
+          disconnected_registry_password: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_PASSWORD | mandatory }}"
+
+          # # registry_container_image defaults to docker.io/library/registry:2
+          # # Note that docker.io may rate-limit heavy users. Use this to provide your own image.
+          # registry_container_image: quay.io/example/registry:latest
+
+        dns_host:
+          ansible_host: 10.40.0.100
+          # write_dnsmasq_config: true # Set to false if there is already dns setup
+
+        http_store:
+          ansible_host: 10.40.0.100
+
+        ntp_host:
+          ansible_host: 10.40.0.100
+
+        vm_host: # Required for using "KVM" nodes, ignored if not.
+          ansible_user: root
+          ansible_host: vm_host.clustername.example.lab
+          host_ip_keyword: ansible_host # the varname in the KVM node hostvars which contains the *IP* of the VM
+          images_dir: /home/redhat/libvirt/images # directory where qcow images will be placed.
+          vm_bridge_ip: 10.60.0.190 # IP for the bridge between VMs and machine network
+          vm_bridge_interface: ens7f1 # Interface to be connected to the bridge. DO NOT use your primary interface.
+          dns: 10.40.0.100 # DNS used by the bridge
+
+    # Describe the desired cluster members
+    nodes:
+      # A minimum of three master nodes are required. More are supported.
+      # Worker nodes are not required, but if present there must be two or more.
+
+      # Node Required Vars:
+      # - role
+      #     - Must be either "master" or "worker", and must match the group
+
+      # - mac
+      #     - The MAC address of the node, used as a hardware identifier by Assisted Installer.
+      #     - The value set here will be used when creating VMs and must be unique within the network.
+
+      # - vendor
+      #     - One of "Dell", "Lenovo", "SuperMicro", "KVM" as the supported BMC APIs.
+      #     - "KVM" identifies a node as a VM to be created. If a "KVM" node is present,
+      #       then a "vm_host" must be defined in the "services" group.
+
+      # - bmc_address
+      # - bmc_user
+      # - bmc_password
+      #     - details for the BMC that controls the node.
+      #     - Must be set to the vm_host for "KVM" nodes.
+
+      # Static IP Vars:
+      # - ip
+      #     - defaults to "dhcp"
+      #     - Either the static IP to be set for the node, or "dhcp"
+      #     - If a static IP is set then "mask", "gateway", "dns" MUST also be set for the node
+
+      # - dns
+      #     - IP of the DNS server to be configured for static IP
+
+      # - gateway
+      #     - IP of the gateway to be configured for static IP
+
+      # - mask
+      #     - Length of subnet mask (e.g. 24) to be configured for static IP
+
+      # - vm_spec
+      #     - Specifications for the node:
+      #          - cpu_cores
+      #          - ram_mib
+      #          - disk_size_gb
+
+      # Optional Vars:
+      # - installation_disk_path
+      #     - The value set here will be used by Assisted Installer as the installation disk device
+      #       for a given host.
+      #     - The value must be a path to the disk device, e.g. /dev/sda
+      #     - If not specified, Assisted Installer will pick the first enumerated disk device for a
+      #       given host.
+      vars:
+        # Set the login information for any BMCs. Note that these will be SET on the vm_host virtual BMC.
+        bmc_user: "{{ VAULT_NODES_BMC_USER | mandatory }}"
+        bmc_password: "{{ VAULT_NODES_BMC_PASSWORD | mandatory }}"
+      children:
+        masters:
+          vars:
+            role: master
+            vendor: KVM # this example is a virtual control plane
+            bmc_address: "vm_host.clustername.example.lab:8082" # port can be changed using sushy_tools_port on the vm_host
+            vm_spec:
+              cpu_cores: 4
+              ram_mib: 6144
+              disk_size_gb: 20
+          hosts:
+            super1:
+              ansible_host: 10.60.0.101
+              mac: "DE:AD:BE:EF:C0:2C"
+
+              # # Uncomment to set custom BMC credentials for the node
+              # # These variables must be set in the inventory.vault.yml file
+              # bmc_user: "{{ VAULT_NODES_SUPER1_BMC_USER | mandatory }}"
+              # bmc_password: "{{ VAULT_NODES_SUPER1_BMC_PASSWORD | mandatory }}"
+
+            super2:
+              ansible_host: 10.60.0.102
+              mac: "DE:AD:BE:EF:C0:2D"
+
+            super3:
+              ansible_host: 10.60.0.103
+              mac: "DE:AD:BE:EF:C0:2E"
+
+        workers:
+          vars:
+            role: worker
+            vendor: Dell # This example uses baremetal worker nodes
+          hosts:
+            worker1:
+              ansible_host: 10.60.0.104
+              bmc_address: 172.28.11.25
+              mac: 3C:FD:FE:78:AB:03
+
+              # # Uncomment to set custom BMC credentials for the node
+              # # These variables must be set in the inventory.vault.yml file
+              # bmc_user: "{{ VAULT_NODES_WORKER1_BMC_USER | mandatory }}"
+              # bmc_password: "{{ VAULT_NODES_WORKER1_BMC_PASSWORD | mandatory }}"
+
+              # # Uncomment to set an alternate installation disk device for the node
+              # installation_disk_path: /dev/sdb
+
+            worker2:
+              ansible_host: 10.60.0.105
+              bmc_address: 172.28.11.26
+              mac: 3C:FD:FE:78:AB:04
+
+              # # Uncomment to set an alternate installation disk device for the node
+              # installation_disk_path: /dev/sdb

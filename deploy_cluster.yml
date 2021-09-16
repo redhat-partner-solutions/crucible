@@ -1,0 +1,86 @@
+---
+- name: Generate ssh keys used for debug
+  hosts: bastion
+  vars:
+    GENERATE_SSH_KEYS: "{{ generate_ssh_keys | default(True) }}"
+  roles:
+    - role: generate_ssh_key_pair
+      when: GENERATE_SSH_KEYS == True
+
+- name: Create cluster and generate Assisted Installer Discovery ISO
+  hosts: bastion
+  gather_facts: False
+  roles:
+    - create_cluster
+    - generate_discovery_iso
+  vars:
+    - generate: True
+    - download: True
+    - disconnected: "{{ use_local_mirror_registry | default(setup_registry_service | default(true)) }}"
+    - CLUSTER_NAME: "{{ cluster_name }}"
+    - CLUSTER_ID: "{{ cluster_id }}"
+    - BASE_DNS_DOMAIN: "{{ base_dns_domain }}"
+    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
+    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
+    - SSH_PUBLIC_KEY: "{{ ssh_public_key }}"
+    - PULL_SECRET: "{{ hostvars['registry_host']['pull_secret'] | default(pull_secret) }}"
+    - CLUSTER_NETWORK_CIDR: "{{ cluster_network_cidr }}"
+    - CLUSTER_NETWORK_HOST_PREFIX: "{{ cluster_network_host_prefix }}"
+    - SERVICE_NETWORK_CIDR: "{{ service_network_cidr }}"
+    - OPENSHIFT_VERSION: "{{ openshift_version }}"
+    - VIP_DHCP_ALLOCATION: "{{ vip_dhcp_allocation }}"
+    - INGRESS_VIP: "{{ ingress_vip }}"
+    - API_VIP: "{{ api_vip }}"
+    - MACHINE_NETWORK_CIDR: "{{ machine_network_cidr }}"
+    - DOWNLOAD_DEST_FILE: "{{ discovery_iso_name }}"
+    - DOWNLOAD_DEST_PATH: "{{ iso_download_dest_path | default('/opt/http_store/data') }}"
+    - NTP_SERVER: "{{ ntp_server }}"
+
+- name: Mounting, Booting the Assisted Installer Discovery ISO
+  hosts: masters, workers
+  gather_facts: False
+  strategy: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary('free', omit) }}"
+  serial: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary(omit, 1) }}"
+  roles:
+    - boot_iso
+  vars:
+    - debug: False
+    - boot_iso_url: "{{ discovery_iso_server }}/{{ discovery_iso_name }}"
+
+- name: Installing the cluster
+  hosts: bastion
+  gather_facts: False
+  roles:
+    - install_cluster
+  vars:
+    - install: True
+    - debug: False
+    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
+    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
+    - CLUSTER_ID: "{{ cluster_id }}"
+    - INGRESS_VIP: "{{ ingress_vip }}"
+    - API_VIP: "{{ api_vip }}"
+    - VIP_DHCP_ALLOCATION: "{{ vip_dhcp_allocation }}"
+
+- name: Monitoring hosts installation
+  hosts: masters, workers
+  gather_facts: False
+  strategy: free
+  roles:
+    - monitor_host
+  vars:
+    - debug: False
+    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
+    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
+    - CLUSTER_ID: "{{ hostvars['bastion']['cluster_id'] }}"
+
+- name: Monitoring cluster installation
+  hosts: bastion
+  gather_facts: False
+  roles:
+    - monitor_cluster
+  vars:
+    - debug: False
+    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
+    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
+    - CLUSTER_ID: "{{ cluster_id }}"

@@ -1,0 +1,9 @@
+---
+- name: Mounting, Booting the Assisted Installer Discovery ISO
+  hosts: masters, workers, day2_workers
+  gather_facts: False
+  strategy: free
+  roles:
+    - boot_iso
+  vars:
+    - debug: False

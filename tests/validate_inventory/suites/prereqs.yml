@@ -1,0 +1,35 @@
+tags: validate_prereqs
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: invalid_dhcp_first_last_missing
+    expected: 2
+    template:
+      use_dhcp: true
+
+  - test_name: invalid_dhcp_first_missing
+    expected: 2
+    template:
+      use_dhcp: true
+      dhcp_range_last: "192.168.100.201"
+
+  - test_name: invalid_dhcp_last_missing
+    expected: 2
+    template:
+      use_dhcp: true
+      dhcp_range_first: "192.168.100.101"
+
+  - test_name: invalid_dhcp_first_invalid
+    expected: 2
+    template:
+      use_dhcp: true
+      dhcp_range_first: "invalid"
+      dhcp_range_last: "192.168.100.201"
+
+  - test_name: invalid_dhcp_last_invalid
+    expected: 2
+    template:
+      use_dhcp: true
+      dhcp_range_first: "192.168.100.101"
+      dhcp_range_last: "invalid"

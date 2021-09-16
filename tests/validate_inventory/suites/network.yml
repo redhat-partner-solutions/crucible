@@ -1,0 +1,14 @@
+tags: validate_network
+
+tests:
+  - test_name: all_reachable
+    from_template: all_reachable.yml
+    expected: 0
+
+  - test_name: all_unreachable
+    from_template: all_unreachable.yml
+    expected: 2
+
+  - test_name: ntp_unreachable
+    from_template: ntp_unreachable.yml
+    expected: 2

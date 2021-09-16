@@ -1,0 +1,23 @@
+---
+- name: Play to populate image_hashes for relevant images
+  hosts: localhost
+  vars:
+    destination_hosts:
+      - registry_host
+  roles:
+    - get_image_hash
+
+- name: Play to install and setup mirror registry
+  hosts: registry_host
+  vars:
+    downloads_path: /tmp/wip
+    config_file_path: /tmp/wip/config
+  roles:
+    - setup_selfsigned_cert
+    - setup_mirror_registry
+    - populate_mirror_registry
+  collections:
+    - containers.podman
+    - community.crypto
+    - community.general
+    - ansible.posix

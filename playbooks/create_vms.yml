@@ -1,0 +1,22 @@
+---
+- name: Provision VMS
+  hosts: vm_host
+  vars:
+    N_KVM: "{{
+      hostvars | dict2items |
+      selectattr('value.vendor', 'defined') |
+      selectattr('value.vendor', 'equalto', 'KVM') |
+      list | length
+    }}"
+    SETUP_VMS: "{{ setup_vms | default(N_KVM | int >= 1) }}"
+  roles:
+    - role: destroy_vms
+      when: SETUP_VMS == true
+      tags:
+        - destroy_vms
+        - setup_vms
+
+    - role: create_vms
+      when: SETUP_VMS == true
+      tags:
+        - setup_vms

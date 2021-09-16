@@ -1,0 +1,14 @@
+name: Merge requirements
+
+on: [pull_request]
+
+jobs:
+  no-fixup-commits-check:
+    name: All fixup commits are squashed
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test if all fixup commits are squashed
+        uses: 13rac1/block-fixup-merge-action@v2.0.0

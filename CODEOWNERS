@@ -1,0 +1,9 @@
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners
+
+# This file lists active Maintainers of Crucible. See CONTRIBUTING.md for
+# more information on receiving Code Reviews from Maintainers.
+
+# These owners will be the default owners for everything in the repository.
+# Unless a later match takes precedence, they will be requested for review
+# when someone opens a Pull Request.
+*   @redhat-partner-solutions/red-hat-crucible

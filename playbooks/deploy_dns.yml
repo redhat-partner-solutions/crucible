@@ -1,0 +1,8 @@
+- name: Setup DNS Records
+  hosts: dns_host
+  vars:
+    SETUP_DNS_SERVICE: "{{ setup_dns_service | default(True) }}"
+  roles:
+    - role: insert_dns_records
+      when: SETUP_DNS_SERVICE == True
+    - role: validate_dns_records

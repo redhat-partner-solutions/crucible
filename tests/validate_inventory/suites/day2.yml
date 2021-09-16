@@ -1,0 +1,15 @@
+tags: validate_day2
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: valid_day2_nodes
+    expected: 0
+    template:
+      day2_discovery_iso_name: "day2.iso"
+      num_day2_workers: 1
+
+  - test_name: invalid_day2_nodes
+    expected: 2
+    template:
+      num_day2_workers: 1

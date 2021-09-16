@@ -1,0 +1,25 @@
+all:
+  children:
+    nodes:
+      vars:
+        bmc_address: 172.28.10.20
+        bmc_password: password
+        bmc_user: exists
+        vendor: Dell
+        ansible_host: 192.168.1.100
+        mac: FF:40:40:40:40:AA
+      children:
+        masters:
+          vars:
+            role: master
+          hosts:
+            master1:
+            master2:
+            master3:
+        workers:
+          vars:
+            role: worker
+          hosts:
+            worker1:
+              bmc_user: ""
+            worker2:
