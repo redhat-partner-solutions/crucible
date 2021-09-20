@@ -230,7 +230,7 @@ That diagram gives the following excerpt from the inventory for the `bastion` an
           # ...
 ```
 
-## VM Host in Detail
+### VM Host in Detail
 
 The virtual `master` nodes in their simplest case are defined in the inventory as an address they will be accessible on, and the MAC Address that will be set when creating the VM and later used by Assisted Installer to identify the machines:
 
@@ -242,13 +242,13 @@ The virtual `master` nodes in their simplest case are defined in the inventory a
             bmc_address: 192.168.10.6:8082 # virtual BMC is setup on VM Host port 8082
           hosts:
             super1:
-              ansible_host: 192.168.10.10
+              ansible_host: 192.168.10.11
               mac: "DE:AD:BE:EF:C0:2C"
             super2:
-              ansible_host: 192.168.10.11
+              ansible_host: 192.168.10.12
               mac: "DE:AD:BE:EF:C0:2D"
             super3:
-              ansible_host: 192.168.10.12
+              ansible_host: 192.168.10.13
               mac: "DE:AD:BE:EF:C0:2E"
 ```
 
@@ -267,7 +267,7 @@ The `vm_host` entry in the inventory becomes:
 
 ![](images/vm_host_interfaces.png)
 
-## Resulting Cluster
+### Resulting Cluster
 
 Combining those pieces, along with other configuration like versions, certificates and keys, will allow Crucible to deploy a cluster like this:
 
