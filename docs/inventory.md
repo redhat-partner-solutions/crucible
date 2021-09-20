@@ -272,3 +272,72 @@ The `vm_host` entry in the inventory becomes:
 Combining those pieces, along with other configuration like versions, certificates and keys, will allow Crucible to deploy a cluster like this:
 
 ![](images/simple_kvm.png)
+
+## Bare Metal Deployment
+
+At the other extreme to the previous example, services and nodes can be spread across multiple different machines, and a cluster with worker nodes can be deployed:
+
+![](images/many_machines.png)
+
+The basic network configuration of the inventory for the fully bare metal deployment environment might look like this:
+
+```yaml
+# ...
+  children:
+    bastions:
+      hosts:
+        bastion:
+          ansible_host: 192.168.10.5
+    services:
+      hosts:
+        assisted_installer:
+          ansible_host: 192.168.10.200
+          # ...
+        registry_host:
+          ansible_host: 192.168.10.201
+          # ...
+        dns_host:
+          ansible_host: 192.168.10.202
+          # ...
+        http_store:
+          ansible_host: 192.168.10.204
+          # ...
+        ntp_host:
+          ansible_host: 192.168.10.203
+          # ...
+        # no vm_host.
+    masters:
+      vars:
+        role: master
+        vendor: SuperMicro
+      hosts:
+        super1:
+          ansible_host: 192.168.10.11
+          bmc_address: 172.30.10.1
+          # ...
+        super2:
+          ansible_host: 192.168.10.12
+          bmc_address: 172.30.10.2
+          # ...
+        super3:
+          ansible_host: 192.168.10.13
+          bmc_address: 172.30.10.3
+          # ...
+    workers:
+      vars:
+        role: worker
+        vendor: Dell
+      hosts:
+        worker1:
+          ansible_host: 192.168.10.16
+          bmc_address: 172.30.10.6
+          # ...
+        worker2:
+          ansible_host: 192.168.10.17
+          bmc_address: 172.30.10.7
+          # ...
+```
+
+Note that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
+
+These two examples are not the only type of clusters that can be deployed using Crucible. A hybrid cluster can be created by mixing virtual and bare metal nodes.
