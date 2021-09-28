@@ -1,10 +1,20 @@
+exclude_paths:
+  - docs/
+  - requirements.yml
+  - .cache/
+  - .github/
+
+enable_list:
+  - no-log-password
+  - no-same-owner
+
 skip_list:
-  - '106'
-  - '204'
-  - '207'
-  - '208'
-  - '301'
-  - '306'
-  - '601'
-  - '602'
-  - '701'
+  - literal-compare # Allow explicit comparison to True or False
+  - meta-no-info # Allow omitting galaxy info.
+  - ignore-errors # Allow ignore-errors: Linter is stupid and permits `failed_when: false` but disallows `ignore-errors`.
+
+# These rules would be in the `warn_list` except that ansible-lint doesn't handle warnings sensibly.
+# warn_list:
+  - var-naming # There's a LOT of uppercase vars, Consider enabling this rule later later
+  - command-instead-of-shell # allow using `shell` as several required behaviours are not in modules.
+  - empty-string-compare # empty string compare is OK when done correctly
