@@ -16,6 +16,7 @@
       template:
         src: "{{ item.from_template | default(suite_data.template_file) }}"
         dest: "{{ temp_dir.path }}/{{ item.test_name }}.yml"
+        mode: 0644
         trim_blocks: true
         lstrip_blocks: true
       loop: "{{ suite_data.tests }}"
@@ -29,6 +30,7 @@
       copy:
         src: "{{ temp_dir.path }}"
         dest: "{{ playbook_dir }}/failed/"
+        mode: copy
         backup: true
       failed_when: true # Keep non-zero exit code
 
