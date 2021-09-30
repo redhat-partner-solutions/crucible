@@ -1,14 +1,8 @@
 ---
-- hosts: bastion
-  roles:
-    - role: create_day2_cluster
-      when: groups['day2_workers'] | default([]) | length > 0
+- import_playbook: playbooks/create_day2_cluster.yml
 
-- hosts: bastion
-  pre_tasks:
-  roles:
-    - role: generate_discovery_iso
-      when: groups['day2_workers'] | default([]) | length > 0
+- import_playbook: playbooks/generate_discovery_iso.yml
+  when: groups['day2_workers'] | default([]) | length > 0
   vars:
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
     URL_ASSISTED_INSTALLER_CLUSTERS_DOWNLOAD_IMAGE: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ add_host_cluster_id }}/downloads/image"
@@ -19,14 +13,6 @@
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
     boot_iso_url: "{{ discovery_iso_server }}/{{ day2_discovery_iso_name }}"
 
-- hosts: day2_workers
-  gather_facts: false
-  strategy: free
-  roles:
-    - add_day2_node
+- import_playbook: playbooks/add_day2_nodes.yml
 
-- hosts: bastion
-  gather_facts: false
-  roles:
-    - role: approve_csrs
-      when: groups['day2_workers'] | default([]) | length > 0
+- import_playbook: playbooks/approve_csrs.yml
