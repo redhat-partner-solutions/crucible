@@ -1,0 +1,7 @@
+- name: Setup NTP
+  hosts: ntp_host
+  vars:
+    SETUP_NTP_SERVICE: "{{setup_ntp_service | default(True)}}"
+  roles:
+    - role: setup_ntp
+      when: SETUP_NTP_SERVICE == True

@@ -1,12 +1,10 @@
----
-# file: monitor_cluster.yml
-- name: Monitoring cluster installation
-  hosts: bastion
+- name: Monitoring hosts installation
+  hosts: masters, workers
   gather_facts: False
+  strategy: free
   roles:
-    - monitor_cluster
+    - monitor_host
   vars:
-    - debug: True
     - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
     - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
-    - CLUSTER_ID: "{{ cluster_id }}"
+    - CLUSTER_ID: "{{ cluster_id | default(hostvars['bastion']['cluster_id']) }}"
