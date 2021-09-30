@@ -16,6 +16,7 @@
       when: reset_confirmation | bool
       register: result
       failed_when: "'RAC reset operation initiated successfully' not in result['stdout']"
-    - pause:
-        prompt: "Pausing 2 mins to allow the iDRAC and CMC to return to a usable state."
+    - name: Wait for reset
+      pause:
+        prompt: "Pausing 3 mins to allow the iDRAC and CMC to return to a usable state."
         minutes: 3
