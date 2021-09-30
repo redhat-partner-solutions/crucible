@@ -1,4 +1,5 @@
 - hosts: bastion
   gather_facts: false
   roles:
-    - approve_csrs
+    - role: approve_csrs
+      when: groups['day2_workers'] | default([]) | length > 0
