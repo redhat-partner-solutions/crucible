@@ -1,12 +1,11 @@
 ---
 # file: install_cluster.yml
-- hosts: bastion
+- name: Installing the cluster
+  hosts: bastion
   gather_facts: False
   roles:
     - install_cluster
   vars:
-    - install: True
-    - debug: True
     - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
     - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
     - CLUSTER_ID: "{{ cluster_id }}"

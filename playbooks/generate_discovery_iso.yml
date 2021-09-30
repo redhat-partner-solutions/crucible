@@ -4,13 +4,11 @@
   roles:
     - generate_discovery_iso
   vars:
-    - download: False
-    - secure: False
-    - generate: True
-    - debug: True
-    - CLUSTER_ID: "{{ cluster_id }}"
     - CLUSTER_NAME: "{{ cluster_name }}"
+    - CLUSTER_ID: "{{ cluster_id }}"
     - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
     - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
+    - SSH_PUBLIC_KEY: "{{ ssh_public_key }}"
+    - PULL_SECRET: "{{ hostvars['registry_host']['pull_secret'] | default(pull_secret) }}"
     - DOWNLOAD_DEST_FILE: "{{ discovery_iso_name }}"
-    - DOWNLOAD_DEST_PATH: "/opt/http_store/data"
+    - DOWNLOAD_DEST_PATH: "{{ iso_download_dest_path | default('/opt/http_store/data') }}"

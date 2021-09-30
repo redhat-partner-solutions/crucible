@@ -1,0 +1,6 @@
+- hosts: day2_workers
+  gather_facts: false
+  strategy: free
+  roles:
+    - name: add_day2_node
+      when: groups['day2_workers'] | default([]) | length > 0

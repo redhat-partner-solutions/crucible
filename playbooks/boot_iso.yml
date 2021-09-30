@@ -1,6 +1,6 @@
 ---
 - name: Mounting, Booting the Assisted Installer Discovery ISO
-  hosts: "{{ boot_iso_hosts | default('masters,workers') }}"
+  hosts: "{{ boot_iso_hosts | default('nodes') }}"
   gather_facts: False
   strategy: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary('free', omit) }}"
   serial: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary(omit, 1) }}"

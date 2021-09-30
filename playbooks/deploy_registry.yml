@@ -4,18 +4,26 @@
   vars:
     destination_hosts:
       - registry_host
+  pre_tasks:
+    - set_fact:
+        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
-    - get_image_hash
+    - role: get_image_hash
+      when: run_get_hash
 
 - name: Play to install and setup mirror registry
   hosts: registry_host
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
   roles:
-    - setup_selfsigned_cert
-    - setup_mirror_registry
-    - populate_mirror_registry
+    - role: setup_selfsigned_cert
+      when: SETUP_REGISTRY_SERVICE == True
+    - role: setup_mirror_registry
+      when: SETUP_REGISTRY_SERVICE == True
+    - role: populate_mirror_registry
+      when: SETUP_REGISTRY_SERVICE == True
   collections:
     - containers.podman
     - community.crypto

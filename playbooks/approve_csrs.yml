@@ -1,0 +1,4 @@
+- hosts: bastion
+  gather_facts: false
+  roles:
+    - approve_csrs
