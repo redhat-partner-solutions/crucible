@@ -47,7 +47,6 @@
             - OVN Kubernetes
         - API discovery ISO customizations:
             - Static IPs:
-                - __NOTE:__ Currently we support static IP’s on v1.0.17.3 of the Assisted Installer.
         - Download the Discovery ISO:
             - Copy to the HTTP Store.
 3. Discovery:
