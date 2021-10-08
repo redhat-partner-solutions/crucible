@@ -108,10 +108,21 @@ There are a few main playbooks provided in this repository:
 - `post_install.yml`: fetches the `kubeconfig` for the deployed cluster and places it on the bastion host.
 - `site.yml` simply runs all three in order.
 
-Each of the playbooks requires only an inventory, and can be run like this:
+Each of the playbooks requires an inventory and an inventory vault file, and can be run like this:
 
 ```bash
 ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pass
+```
+
+When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
+
+In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.  
+If this option is enabled, the generation of a deployment plan is omitted, and the deployment process starts immediately after the command is run.
+
+```bash
+# Careful: this command will start the deployment right away, and will not ask for manual confirmation.
+ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pass \
+  -e skip_interactive_prompts=true
 ```
 
 ## Prerequisite Services

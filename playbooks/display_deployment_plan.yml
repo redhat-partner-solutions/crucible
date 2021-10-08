@@ -1,0 +1,7 @@
+---
+- name: Display deployment plan
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - display_deployment_plan
