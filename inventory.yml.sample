@@ -191,7 +191,7 @@ all:
       #     - The value set here will be used when creating VMs and must be unique within the network.
 
       # - vendor
-      #     - One of "Dell", "Lenovo", "SuperMicro", "KVM" as the supported BMC APIs.
+      #     - One of "Dell", "HPE", "Lenovo", "SuperMicro", "KVM" as the supported BMC APIs.
       #     - "KVM" identifies a node as a VM to be created. If a "KVM" node is present,
       #       then a "vm_host" must be defined in the "services" group.
 
