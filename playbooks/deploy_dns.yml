@@ -1,3 +1,9 @@
+- name: Validate DNS Records on the bastion
+  hosts: 127.0.0.1
+  connection: local
+  roles:
+    - role: validate_dns_records
+
 - name: Setup DNS Records
   hosts: dns_host
   vars:

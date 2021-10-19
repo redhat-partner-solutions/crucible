@@ -14,8 +14,7 @@
   changed_when: False
   loop: "{{ groups['services'] }}"
 
-- name: Ensure NTP server is available if not being set up
+- name: Ensure NTP server is reachable
   shell: # noqa 305
     cmd: "ping -c 1 -W 2 {{ ntp_server }}"
   changed_when: False
-  when: (setup_ntp_service | default(True)) != True

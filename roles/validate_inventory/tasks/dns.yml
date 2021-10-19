@@ -5,7 +5,9 @@
       - hostvars['dns_host'][item] is defined
       - hostvars['dns_host'][item] | ipaddr('bool') == True
     quiet: true
-  when: hostvars['dns_host']['use_dhcp'] | default(false)
+  when:
+    - hostvars['dns_host'] is defined
+    - hostvars['dns_host']['use_dhcp'] | default(false)
   loop:
     - dhcp_range_first
     - dhcp_range_last
@@ -15,7 +17,9 @@
     that:
       - hostvars['dns_host']['ntp_server'] is defined
       - hostvars['dns_host']['ntp_server'] | ipaddr('bool') == True
-  when: hostvars['dns_host']['setup_dns_service'] | default(false) and hostvars['dns_host']['use_dhcp'] | default(false)
+  when:
+    - hostvars['dns_host'] is defined
+    - hostvars['dns_host']['setup_dns_service'] | default(false) and hostvars['dns_host']['use_dhcp'] | default(false)
 
 # All other DNS config is excluded for brevity at this time.
 # It is taken from the cluster and/or AI configuration and is not DNS-specific so much is checked elsewhere.
