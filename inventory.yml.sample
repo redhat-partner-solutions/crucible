@@ -94,6 +94,9 @@ all:
       - "{{ repo_root_path }}/ssh_public_key.pub"
       - ~/.ssh/id_rsa.pub
 
+    # Set the base directory to store ssh keys
+    ssh_key_dest_base_dir: /home/redhat
+
     # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
     kubeconfig_dest_dir: /home/redhat/
     kubeconfig_dest_filename: "{{ cluster_name }}-kubeconfig"
