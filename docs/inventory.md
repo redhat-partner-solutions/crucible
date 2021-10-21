@@ -104,7 +104,9 @@ network_config:
         ipv4:
           - ip: "{{ ansible_host}}"
             prefix: "{{ mask }}"
-  dns_server_ip: "{{dns}}" # optional
+  dns_server_ips: 
+    - "{{ dns }}" 
+    - "{{ dns2 }}"
   routes: # optional
     - destination: 0.0.0.0/0
       address: "{{ gateway }}"
@@ -114,7 +116,7 @@ network_config:
 where the variables are as follows:
 
 - `ip`: The static IP is set
-- `dns`: IP of the DNS server
+- `dns` & `dns2`: IPs of the DNS servers
 - `gateway`: IP of the gateway
 - `mask`: Length of subnet mask (e.g. 24)
 - `interface`: The name of the interface you wish to configure
