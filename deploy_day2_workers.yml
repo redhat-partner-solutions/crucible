@@ -12,6 +12,7 @@
   vars:
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
     boot_iso_url: "{{ discovery_iso_server }}/{{ day2_discovery_iso_name }}"
+    boot_iso_hosts: day2_workers
 
 - import_playbook: playbooks/add_day2_nodes.yml
 
