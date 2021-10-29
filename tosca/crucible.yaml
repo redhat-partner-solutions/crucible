@@ -7,15 +7,30 @@ metadata:
 
 namespace: crucible
 
+data_types:
+
+  IP:
+    derived_from: string
+
+  Subnet:
+    derived_from: string
+
+  MAC:
+    derived_from: string
+
 capability_types:
+
+  Cluster: {}
+
+  Bastion: {}
 
   BMC:
     properties:
       mac:
-        type: string
+        type: MAC
         required: false
       ip:
-        type: string
+        type: IP
         required: false
 
   # Services
@@ -24,12 +39,15 @@ capability_types:
     properties:
       install:
         type: boolean
-        default: true
+        default: false
 
   DNS:
     derived_from: Service
 
-  NTP:
+  NTP: {}
+
+  ChronyNTP:
+    derived_from: NTP
     properties:
       allow:
         type: string
@@ -52,32 +70,10 @@ capability_types:
       use-local-mirror-registry:
         type: boolean
         default: false
-      pull-secret-lookup-paths:
-        type: list
-        entry_schema: string
-        default:
-        - "{{ fetched_dest }}/pull-secret.txt"
-        - "{{ repo_root_path }}/pull-secret.txt"
-      ssh-public-key-lookup-paths:
-        type: list
-        entry_schema: string
-        default:
-        - "{{ fetched_dest }}/ssh_keys/{{ cluster_name }}.pub"
-        - "{{ repo_root_path }}/ssh_public_key.pub"
-        - ~/.ssh/id_rsa.pub
-      ssh-key-dest-base-dir:
-        type: string
-        default: /home/redhat
-      kubeconfig-dest-dir:
-        type: string
-        default: /home/redhat
-      kubeconfig-dest-filename:
-        type: string
-        default: "{{ cluster_name }}-kubeconfig"
-
-  # REMODEL: The currently used registry is the Docker registry, as setting up Quay is quayte involved.
 
   Quay:
+    description: >-
+      Currently unsupported
     derived_from: Registry
 
   AssistedInstaller:
@@ -92,6 +88,9 @@ capability_types:
       fetched-dest:
         type: string
         default: "{{ repo_root_path }}/fetched"
+      vip-dhcp-allocation:
+        type: boolean
+        default: false
 
   Hypervisor:
     derived_from: Service
@@ -103,7 +102,7 @@ capability_types:
         type: string
         default: /home/redhat/libvirt/images
       bridge-ip:
-        type: string
+        type: IP
       bridge-interface:
         type: string
 
@@ -117,14 +116,18 @@ relationship_types:
 
 node_types:
 
+  Node:
+    properties:
+      ip:
+        type: IP
+
   Machine:
+    derived_from: Node
     properties:
       mac:
+        type: MAC
+      vendor:
         type: string
-        required: false
-      ip:
-        type: string
-        required: false
     capabilities:
       bmc: BMC
 
@@ -134,6 +137,9 @@ node_types:
   VM:
     derived_from: Machine
     properties:
+      vendor:
+        type: string
+        default: KVM
       cpu-cores:
         type: integer
       ram:
@@ -145,14 +151,48 @@ node_types:
 
   Cluster:
     properties:
+      name:
+        type: string
       version:
         type: string
       sno:
         type: boolean
         default: false
-      name:
-        type: string
+      api-vip:
+        description: >-
+          The IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab
+        type: IP
+        default: 10.60.0.96
+      ingress-vip:
+        description: >-
+          The IP address to be used for *.apps.clustername.example.lab
+        type: IP
+        default: 10.60.0.97
+      machine-network:
+        description: >-
+          The subnet on which all nodes are (or will be) accessible.
+        type: Subnet
+        default: 10.60.0.0/24
+      service-network:
+        description: >-
+          The IP address pool to use for service IP addresses.
+        type: Subnet
+        default: 172.30.0.0/16
+      cluster-network:
+        description: >-
+          The subnet, internal to the cluster, on which pods will be assigned IPs.
+        type: Subnet
+        default: 10.128.0.0/14
+      cluster-network-host-prefix:
+        description: >-
+          The subnet prefix length to assign to each individual node.
+        type: integer
+        default: 23
+    capabilities:
+      cluster: Cluster
     requirements:
+    - bastion:
+        capability: Bastion
     # Services
     - dns:
         capability: DNS
@@ -168,44 +208,124 @@ node_types:
     - master:
         capability: BMC
         relationship: Installed
-    - super:
-        capability: BMC
-        relationship: Installed
     - worker:
         capability: BMC
         relationship: Installed
 
-  # Useful common types
+  Bastion:
+    description: >-
+      A node that has Ansible to run the Crucible playbooks as well as
+      local space to optionally store secrets and images
+    derived_from: Node
+    properties:
+      ip:
+        type: IP
+      # Pull secrets (for what??)
+      pull-secret-lookup-paths:
+        type: list
+        entry_schema: string
+        default:
+        - "{{ fetched_dest }}/pull-secret.txt"
+        - "{{ repo_root_path }}/pull-secret.txt"
+      # Outputs
+      ssh-keypair-dest-base-dir:
+        description: >-
+          Bastion stores key-pairs here to connect to all cluster hosts
+        type: string
+        default: /home/redhat
+      kubeconfig-dest-dir:
+        type: string
+        default: /home/redhat
+    capabilities:
+      type: Bastion
 
-  KVMHost:
+  # Useful common node types
+
+  NTP:
+    derived_from: Node
+    capabilities:
+      ntp: NTP
+
+  Store:
+    derived_from: Node
+    capabilities:
+      store: Store
+
+  Registry:
+    derived_from: Node
+    capabilities:
+      registry: Registry
+
+  AssistedInstaller:
+    derived_from: Node
+    capabilities:
+      dns: AssistedInstaller
+
+  KVM:
     derived_from: Baremetal
     capabilities:
       hypervisor: KVM
     requirements:
-    - dns:
-        capability: DNS
+    - dns: DNS
 
-  Bastion:
+  AllServices:
     description: >-
-      Baremetal machine that contains all the required capabilities with simple implementations.
-      Users can create their own set of types that distribute these capabilities differently.
-    derived_from: Baremetal
+      A node that will have all the required and optional capabilities installed by default with
+      the simplest implementations. Users can create their own set of types that distribute these and
+      other capabilities differently.
+    derived_from: Node
     capabilities:
-      dns: DNS
-      ntp: NTP
-      store: HTTPStore
-      registry: SimpleRegistry
-      ai: AssistedInstaller
+      dns:
+        type: DNS
+        properties:
+          install:
+            type: boolean
+            default: true
+      ntp:
+        type: ChronyNTP
+        properties:
+          install:
+            type: boolean
+            default: true
+      store:
+        type: HTTPStore
+        properties:
+          install:
+            type: boolean
+            default: true
+      registry:
+        type: SimpleRegistry
+        properties:
+          install:
+            type: boolean
+            default: true
+      ai:
+        type: AssistedInstaller
+        properties:
+          install:
+            type: boolean
+            default: true
+      hypervisor:
+        type: KVM
+        properties:
+          install:
+            type: boolean
+            default: true
 
 policy_types:
 
   BMC:
+    targets:
+    - Machine
+
+  Redfish:
+    derived_from: BMC
     properties:
-      protocol:
-        type: string
       user:
         type: string
       password:
         type: string
-    targets:
-    - Machine
+
+artifact_types:
+
+  Key: {}

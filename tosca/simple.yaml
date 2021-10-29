@@ -5,34 +5,35 @@ metadata:
   template_name: Simple Cluster
   template_author: Crucible
 
+description: >-
+  This example installs a single cluster with 3 master nodes provisioned as VMs and 2 working nodes
+  that are baremetal. It additionally uses two nodes:
+
+  * Bastion: where Crucible runs and finally stores results.
+  * Services: runs all our required services (DNS, NTP, Registry, Assisted Installer) and VMs.
+
 imports:
 
 - file: crucible.yaml
-  namespace_prefix: c
+  namespace_prefix: crucible
 
 topology_template:
 
   node_templates:
 
-    # Here you define cluster
+    # Our cluster
 
     cluster:
-      type: c:Cluster
+      type: crucible:Cluster
       properties:
-        version: 4.6.16
         name: clustername
+        version: 4.6.16
       requirements:
-      # Services
-      #- dns: bastion
-      #- ntp: bastion
-      #- store: bastion
-      #- registry: bastion
-      #- ai: bastion
+      - ntp: ntp
       # Nodes
-      - master: master # REMODEL: This node seems to be redundant. See the comment below.
-      - super: super1
-      - super: super2
-      - super: super3
+      - master: master1
+      - master: master2
+      - master: master3
       - worker:
           node: worker1
           relationship:
@@ -43,12 +44,16 @@ topology_template:
           relationship:
             properties:
               installation-disk: /dev/sdb
+      artifacts:
+        public-key:
+          type: crucible:Key
+          file: artifacts/public.key
 
-    # REMODEL: This node seems to be redundant. The `masters` groups is defined in the inventory
-    # to provide common variables to super{1,2,3}, but it's not a separate node.
-    master:
-      type: c:VM
+    master1:
+      type: crucible:VM
       properties:
+        mac: DE:AD:BE:EF:C0:2C
+        ip: 10.60.0.101
         cpu-cores: 4
         ram: 6144 mib
         disk: 20 gb
@@ -56,79 +61,95 @@ topology_template:
         bmc:
           properties:
             ip: vm_host.clustername.example.lab:8082
-      #requirements:
-      #- hypervisor: vm-host
 
-    super1:
-      type: c:Baremetal
-      properties:
-        mac: DE:AD:BE:EF:C0:2C
-
-    super2:
-      type: c:Baremetal
+    master2:
+      type: crucible:VM
       properties:
         mac: DE:AD:BE:EF:C0:2D
+        ip: 10.60.0.102
+        cpu-cores: 4
+        ram: 6144 mib
+        disk: 20 gb
+      capabilities:
+        bmc:
+          properties:
+            ip: vm_host.clustername.example.lab:8082
 
-    super3:
-      type: c:Baremetal
+    master3:
+      type: crucible:VM
       properties:
         mac: DE:AD:BE:EF:C0:2E
+        ip: 10.60.0.103
+        cpu-cores: 4
+        ram: 6144 mib
+        disk: 20 gb
+      capabilities:
+        bmc:
+          properties:
+            ip: vm_host.clustername.example.lab:8082
 
-    # REMODEL: `vendor` is missing from each node. To load the discovery ISO, Crucible performs
-    # different steps depending on the vendor name (Dell, Lenovo, HPE, etc)
     worker1:
-      type: c:Baremetal
+      type: crucible:Baremetal
       properties:
         mac: 3C:FD:FE:78:AB:03
+        ip: 10.60.0.104
+        vendor: Dell
       capabilities:
         bmc:
           properties:
             ip: 172.28.11.25
 
     worker2:
-      type: c:Baremetal
+      type: crucible:Baremetal
       properties:
         mac: 3C:FD:FE:78:AB:04
+        ip: 10.60.0.105
+        vendor: Dell
       capabilities:
         bmc:
           properties:
             ip: 172.28.11.26
 
-    vm-host:
-      type: c:KVMHost
+    # Crucible requirements
+
+    bastion:
+      type: crucible:Bastion
       properties:
-        ip: vm_host.clustername.example.lab
+        ip: 172.28.11.51
+
+    services:
+      description: >-
+        All required services as well as the master node VMs are here
+      type: crucible:AllServices
+      properties:
+        ip: 10.40.0.100
       capabilities:
+        ntp:
+          properties:
+            allow: 10.40.0.0/24
         hypervisor:
           properties:
             bridge-ip: 10.60.0.190
             bridge-interface: ens7f1
-      #requirements:
-      #- dns: bastion
 
-    bastion:
-      type: c:Bastion
+    ntp:
+      description: >-
+        Preexisting NTP server in lab
+      type: crucible:NTP
       properties:
-        ip: 10.40.0.100
-      capabilities:
-        # REMODEL: The NTP Service should probably be tied to the cluster definition, not the bastion node
-        ntp:
-          properties:
-            allow: 10.40.0.0/24
+        ip: ntp.example.lab
 
   policies:
 
   - bmc:
-      type: c:BMC
+      type: crucible:Redfish
       properties:
-        protocol: redfish
         user: { get_input: bmc-user }
         password: { get_input: bmc-password }
       targets:
-      - master
-      - super1
-      - super2
-      - super3
+      - master1
+      - master2
+      - master3
       - worker1
       - worker2
 
