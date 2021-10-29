@@ -1,0 +1,138 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+metadata:
+
+  template_name: Simple Cluster
+  template_author: Crucible
+
+imports:
+
+- file: crucible.yaml
+  namespace_prefix: c
+
+topology_template:
+
+  node_templates:
+
+    # Here you define cluster
+
+    cluster:
+      type: c:Cluster
+      properties:
+        version: 4.6.16
+        name: clustername
+      requirements:
+      # Services
+      #- dns: bastion
+      #- ntp: bastion
+      #- store: bastion
+      #- registry: bastion
+      #- ai: bastion
+      # Nodes
+      - master: master
+      - super: super1
+      - super: super2
+      - super: super3
+      - worker:
+          node: worker1
+          relationship:
+            properties:
+              installation-disk: /dev/sdb
+      - worker:
+          node: worker2
+          relationship:
+            properties:
+              installation-disk: /dev/sdb
+
+    master:
+      type: c:VM
+      properties:
+        cpu-cores: 4
+        ram: 6144 mib
+        disk: 20 gb
+      capabilities:
+        bmc:
+          properties:
+            ip: vm_host.clustername.example.lab:8082
+      #requirements:
+      #- hypervisor: vm-host
+
+    super1:
+      type: c:Baremetal
+      properties:
+        mac: DE:AD:BE:EF:C0:2C
+
+    super2:
+      type: c:Baremetal
+      properties:
+        mac: DE:AD:BE:EF:C0:2D
+
+    super3:
+      type: c:Baremetal
+      properties:
+        mac: DE:AD:BE:EF:C0:2E
+
+    worker1:
+      type: c:Baremetal
+      properties:
+        mac: 3C:FD:FE:78:AB:03
+      capabilities:
+        bmc:
+          properties:
+            ip: 172.28.11.25
+
+    worker2:
+      type: c:Baremetal
+      properties:
+        mac: 3C:FD:FE:78:AB:04
+      capabilities:
+        bmc:
+          properties:
+            ip: 172.28.11.26
+
+    vm-host:
+      type: c:KVMHost
+      properties:
+        ip: vm_host.clustername.example.lab
+      capabilities:
+        hypervisor:
+          properties:
+            bridge-ip: 10.60.0.190
+            bridge-interface: ens7f1
+      #requirements:
+      #- dns: bastion
+
+    bastion:
+      type: c:Bastion
+      properties:
+        ip: 10.40.0.100
+      capabilities:
+        ntp:
+          properties:
+            allow: 10.40.0.0/24
+
+  policies:
+
+  - bmc:
+      type: c:BMC
+      properties:
+        protocol: redfish
+        user: { get_input: bmc-user }
+        password: { get_input: bmc-password }
+      targets:
+      - master
+      - super1
+      - super2
+      - super3
+      - worker1
+      - worker2
+
+  inputs:
+
+    bmc-user:
+      type: string
+      value: user
+
+    bmc-password:
+      type: string
+      value: password

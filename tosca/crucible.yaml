@@ -1,0 +1,207 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+metadata:
+
+  template_name: Crucible Profile
+  template_author: Crucible
+
+namespace: crucible
+
+capability_types:
+
+  BMC:
+    properties:
+      mac:
+        type: string
+        required: false
+      ip:
+        type: string
+        required: false
+
+  # Services
+
+  Service:
+    properties:
+      install:
+        type: boolean
+        default: true
+
+  DNS:
+    derived_from: Service
+
+  NTP:
+    properties:
+      allow:
+        type: string
+        required: false
+
+  Store:
+    derived_from: Service
+
+  HTTPStore:
+    derived_from: Store
+
+  Registry:
+    derived_from: Service
+
+  SimpleRegistry:
+    derived_from: Registry
+    properties:
+      use-local-mirror-registry:
+        type: boolean
+        default: false
+      pull-secret-lookup-paths:
+        type: list
+        entry_schema: string
+        default:
+        - "{{ fetched_dest }}/pull-secret.txt"
+        - "{{ repo_root_path }}/pull-secret.txt"
+      ssh-public-key-lookup-paths:
+        type: list
+        entry_schema: string
+        default:
+        - "{{ fetched_dest }}/ssh_keys/{{ cluster_name }}.pub"
+        - "{{ repo_root_path }}/ssh_public_key.pub"
+        - ~/.ssh/id_rsa.pub
+      ssh-key-dest-base-dir:
+        type: string
+        default: /home/redhat
+      kubeconfig-dest-dir:
+        type: string
+        default: /home/redhat
+      kubeconfig-dest-filename:
+        type: string
+        default: "{{ cluster_name }}-kubeconfig"
+
+  Quay:
+    derived_from: Registry
+
+  AssistedInstaller:
+    derived_from: Service
+    properties:
+      discovery-iso-name:
+        type: string
+        default: discovery/discovery-image.iso
+      repo-root-path:
+        type: string
+        default: /home/redhat/crucible/
+      fetched-dest:
+        type: string
+        default: "{{ repo_root_path }}/fetched"
+
+  Hypervisor:
+    derived_from: Service
+
+  KVM:
+    derived_from: Hypervisor
+    properties:
+      images-dir:
+        type: string
+        default: /home/redhat/libvirt/images
+      bridge-ip:
+        type: string
+      bridge-interface:
+        type: string
+
+relationship_types:
+
+  Installed:
+    properties:
+      installation-disk:
+        type: string
+        required: false
+
+node_types:
+
+  Machine:
+    properties:
+      mac:
+        type: string
+        required: false
+      ip:
+        type: string
+        required: false
+    capabilities:
+      bmc: BMC
+
+  Baremetal:
+    derived_from: Machine
+
+  VM:
+    derived_from: Machine
+    properties:
+      cpu-cores:
+        type: integer
+      ram:
+        type: scalar-unit.size
+      disk:
+        type: scalar-unit.size
+    requirements:
+    - hypervisor: Hypervisor
+
+  Cluster:
+    properties:
+      version:
+        type: string
+      sno:
+        type: boolean
+        default: false
+      name:
+        type: string
+    requirements:
+    # Services
+    - dns:
+        capability: DNS
+    - ntp:
+        capability: NTP
+    - store:
+        capability: Store
+    - registry:
+        capability: Registry
+    - ai:
+        capability: AssistedInstaller
+    # Nodes
+    - master:
+        capability: BMC
+        relationship: Installed
+    - super:
+        capability: BMC
+        relationship: Installed
+    - worker:
+        capability: BMC
+        relationship: Installed
+
+  # Useful common types
+
+  KVMHost:
+    derived_from: Baremetal
+    capabilities:
+      hypervisor: KVM
+    requirements:
+    - dns:
+        capability: DNS
+
+  Bastion:
+    description: >-
+      Baremetal machine that contains all the required capabilities with simple implementations.
+      Users can create their own set of types that distribute these capabilities differently.
+    derived_from: Baremetal
+    capabilities:
+      dns: DNS
+      ntp: NTP
+      store: HTTPStore
+      registry: SimpleRegistry
+      ai: AssistedInstaller
+
+policy_types:
+
+  BMC:
+    properties:
+      protocol:
+        type: string
+      user:
+        type: string
+      password:
+        type: string
+    targets:
+    - Machine
