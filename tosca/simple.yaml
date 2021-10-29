@@ -29,7 +29,7 @@ topology_template:
       #- registry: bastion
       #- ai: bastion
       # Nodes
-      - master: master
+      - master: master # REMODEL: This node seems to be redundant. See the comment below.
       - super: super1
       - super: super2
       - super: super3
@@ -44,6 +44,8 @@ topology_template:
             properties:
               installation-disk: /dev/sdb
 
+    # REMODEL: This node seems to be redundant. The `masters` groups is defined in the inventory
+    # to provide common variables to super{1,2,3}, but it's not a separate node.
     master:
       type: c:VM
       properties:
@@ -72,6 +74,8 @@ topology_template:
       properties:
         mac: DE:AD:BE:EF:C0:2E
 
+    # REMODEL: `vendor` is missing from each node. To load the discovery ISO, Crucible performs
+    # different steps depending on the vendor name (Dell, Lenovo, HPE, etc)
     worker1:
       type: c:Baremetal
       properties:
@@ -107,6 +111,7 @@ topology_template:
       properties:
         ip: 10.40.0.100
       capabilities:
+        # REMODEL: The NTP Service should probably be tied to the cluster definition, not the bastion node
         ntp:
           properties:
             allow: 10.40.0.0/24

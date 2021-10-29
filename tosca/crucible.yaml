@@ -47,6 +47,8 @@ capability_types:
   SimpleRegistry:
     derived_from: Registry
     properties:
+      # REMODEL: The local mirror registry is only needed for Restricted Network installations.
+      # Suggestion: let's add a boolean property for RNI to the cluster definition instead.
       use-local-mirror-registry:
         type: boolean
         default: false
@@ -72,6 +74,8 @@ capability_types:
       kubeconfig-dest-filename:
         type: string
         default: "{{ cluster_name }}-kubeconfig"
+
+  # REMODEL: The currently used registry is the Docker registry, as setting up Quay is quayte involved.
 
   Quay:
     derived_from: Registry
