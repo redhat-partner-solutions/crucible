@@ -12,6 +12,9 @@ data_types:
   IP:
     derived_from: string
 
+  IPAndPort:
+    derived_from: string
+
   Subnet:
     derived_from: string
 
@@ -30,7 +33,7 @@ capability_types:
         type: MAC
         required: false
       ip:
-        type: IP
+        type: IPAndPort
         required: false
 
   # Services
