@@ -47,13 +47,14 @@ capability_types:
   DNS:
     derived_from: Service
 
-  NTP: {}
+  NTP:
+    derived_from: Service
 
   ChronyNTP:
     derived_from: NTP
     properties:
       allow:
-        type: string
+        type: Subnet
         required: false
 
   Store:
@@ -99,8 +100,14 @@ capability_types:
     derived_from: Service
 
   KVM:
+    description: >-
+      Though any node can have this capability, we mandate that the node has
+      a requirement called "kvm-dns" for a DNS capability type.
     derived_from: Hypervisor
     properties:
+      ansible-user:
+        type: string
+        default: root
       images-dir:
         type: string
         default: /home/redhat/libvirt/images
@@ -158,7 +165,7 @@ node_types:
         type: string
       version:
         type: string
-      sno:
+      sno: # currently unsupported
         type: boolean
         default: false
       api-vip:
@@ -196,24 +203,40 @@ node_types:
     requirements:
     - bastion:
         capability: Bastion
+        node: Node
+        occurrences: [ 1, 1 ]
     # Services
     - dns:
         capability: DNS
+        node: Node
+        occurrences: [ 1, 1 ]
     - ntp:
         capability: NTP
+        node: Node
+        occurrences: [ 1, 1 ]
     - store:
         capability: Store
+        node: Node
+        occurrences: [ 1, 1 ]
     - registry:
         capability: Registry
+        node: Node
+        occurrences: [ 1, 1 ]
     - ai:
         capability: AssistedInstaller
-    # Nodes
+        node: Node
+        occurrences: [ 1, 1 ]
+    # Machines
     - master:
         capability: BMC
+        node: Machine
         relationship: Installed
+        occurrences: [ 1, UNBOUNDED ]
     - worker:
         capability: BMC
+        node: Machine
         relationship: Installed
+        occurrences: [ 1, UNBOUNDED ]
 
   Bastion:
     description: >-
@@ -269,12 +292,15 @@ node_types:
     capabilities:
       hypervisor: KVM
     requirements:
-    - dns: DNS
+    - kvm-dns: # The KVM capability mandates this requirement
+        capability: DNS
+        node: Node
+        occurrences: [ 1, 1 ]
 
-  AllServices:
+  ServiceMachine:
     description: >-
-      A node that will have all the required and optional capabilities installed by default with
-      the simplest implementations. Users can create their own set of types that distribute these and
+      "All-in-one": a node that will have all the required and optional capabilities installed by default
+      with the simplest implementations. Users can create their own set of types that distribute these and
       other capabilities differently.
     derived_from: Node
     capabilities:
@@ -314,6 +340,11 @@ node_types:
           install:
             type: boolean
             default: true
+    requirements:
+    - kvm-dns: # The KVM capability mandates this requirement
+        capability: DNS
+        node: Node
+        occurrences: [ 1, 1 ]
 
 policy_types:
 

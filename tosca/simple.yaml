@@ -29,8 +29,14 @@ topology_template:
         name: clustername
         version: 4.6.16
       requirements:
-      - ntp: ntp
-      # Nodes
+      - bastion: bastion
+      # Services
+      - dns: services
+      - ntp: services # ntp
+      - store: services
+      - registry: services
+      - ai: services
+      # Machines
       - master: master1
       - master: master2
       - master: master3
@@ -110,7 +116,7 @@ topology_template:
           properties:
             ip: 172.28.11.26
 
-    # Crucible requirements
+    # Crucible services
 
     bastion:
       type: crucible:Bastion
@@ -120,7 +126,7 @@ topology_template:
     services:
       description: >-
         All required services as well as the master node VMs are here
-      type: crucible:AllServices
+      type: crucible:ServiceMachine
       properties:
         ip: 10.40.0.100
       capabilities:
@@ -131,6 +137,8 @@ topology_template:
           properties:
             bridge-ip: 10.60.0.190
             bridge-interface: ens7f1
+      requirements:
+      - kvm-dns: services
 
     ntp:
       description: >-

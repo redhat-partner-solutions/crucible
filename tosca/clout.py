@@ -57,6 +57,9 @@ class Edge:
         vertexes = self.vertex.clout.vertexes
         target_id = self.data['targetID']
         self.target = Vertex(vertexes[target_id], target_id, self.vertex.clout)
+        if 'capability' in self.data['properties']:
+            capability_name = self.data['properties']['capability']
+            self.target_capability = self.target.capabilities[capability_name]
         if 'properties' in self.data['properties']:
             self.properties = self.data['properties']['properties']
 
@@ -71,4 +74,4 @@ class Capability:
         self.properties = self.data['properties']
 
     def is_type(self, type_):
-        return type_ in self.data['properties']['types']
+        return type_ in self.data['types']
