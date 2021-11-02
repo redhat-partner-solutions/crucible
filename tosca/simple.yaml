@@ -29,13 +29,13 @@ topology_template:
         name: clustername
         version: 4.6.16
       requirements:
-      - bastion: bastion
+      - bastion: { capability: crucible:Bastion }
       # Services
-      - dns: services
+      - dns: { capability: crucible:DNS }
       - ntp: services # ntp
-      - store: services
-      - registry: services
-      - ai: services
+      - store: { capability: crucible:Store }
+      - registry: { capability: crucible:Registry }
+      - ai: { capability: crucible:AssistedInstaller }
       # Machines
       - master: master1
       - master: master2
@@ -147,6 +147,17 @@ topology_template:
       properties:
         ip: ntp.example.lab
 
+  groups:
+
+    nodes:
+      type: crucible:Nodes
+      members:
+      - master1
+      - master2
+      - master3
+      - worker1
+      - worker2
+
   policies:
 
   - bmc:
@@ -155,11 +166,7 @@ topology_template:
         user: { get_input: bmc-user }
         password: { get_input: bmc-password }
       targets:
-      - master1
-      - master2
-      - master3
-      - worker1
-      - worker2
+      - nodes
 
   inputs:
 

@@ -9,11 +9,11 @@ class Clout:
         self.data = data
         self.vertexes = self.data['vertexes']
 
-    def get_vertexes(self, kind, type_):
+    def get_vertexes(self, kind, type_=None):
         vertexes = {}
         for id, vertex in self.vertexes.items():
             if vertex['metadata']['puccini']['kind'] == kind:
-                if type_ in vertex['properties']['types']:
+                if (type_ is None) or (type_ in vertex['properties']['types']):
                     vertexes[id] = Vertex(vertex, id, self)
         return vertexes
 
@@ -41,12 +41,25 @@ class Vertex:
                     edges.append(Edge(edge, self))
         return edges
 
-    def get_policies(self, type_):
+    def get_groups(self):
+        groups = []
+        for group in self.clout.get_vertexes('Group').values():
+            for edge in group.get_edges('Member'):
+                if edge.target.id == self.id:
+                    groups.append(group)
+        return groups
+
+    def get_policies(self, type_=None):
         policies = []
+        groups = self.get_groups()
         for policy in self.clout.get_vertexes('Policy', type_).values():
             for edge in policy.get_edges('NodeTemplateTarget'):
                 if edge.target.id == self.id:
                     policies.append(policy)
+            for edge in policy.get_edges('GroupTarget'):
+                for group in groups:
+                    if edge.target.id == group.id:
+                        policies.append(policy)
         return policies
 
 

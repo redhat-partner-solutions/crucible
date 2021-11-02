@@ -139,7 +139,9 @@ node_types:
       vendor:
         type: string
     capabilities:
-      bmc: BMC
+      bmc:
+        type: BMC
+        occurrences: [ 0, 1 ]
 
   Baremetal:
     derived_from: Machine
@@ -165,9 +167,6 @@ node_types:
         type: string
       version:
         type: string
-      sno: # currently unsupported
-        type: boolean
-        default: false
       api-vip:
         description: >-
           The IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab
@@ -231,12 +230,18 @@ node_types:
         capability: BMC
         node: Machine
         relationship: Installed
-        occurrences: [ 1, UNBOUNDED ]
+        occurrences: [ 0, UNBOUNDED ]
     - worker:
         capability: BMC
         node: Machine
         relationship: Installed
-        occurrences: [ 1, UNBOUNDED ]
+        occurrences: [ 0, UNBOUNDED ]
+    # TODO: is this the best way to handle SNO?
+    - sno:
+        capability: BMC
+        node: Machine
+        relationship: Installed
+        occurrences: [ 0, 1 ]
 
   Bastion:
     description: >-
@@ -346,11 +351,18 @@ node_types:
         node: Node
         occurrences: [ 1, 1 ]
 
+group_types:
+
+  Nodes:
+    members:
+    - Node
+
 policy_types:
 
   BMC:
     targets:
     - Machine
+    - Nodes
 
   Redfish:
     derived_from: BMC
