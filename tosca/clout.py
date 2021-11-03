@@ -1,6 +1,11 @@
 
 import puccini.tosca
 
+# TODO: this should move into the puccini.tosca package
+
+
+__all__ = ('Clout', 'Vertex', 'NodeTemplate', 'Capability', 'Group', 'Policy', 'Edge', 'Relationship')
+
 
 class Clout:
     def __init__(self, url):
@@ -16,6 +21,9 @@ class Clout:
                 if (type_ is None) or (type_ in vertex['properties']['types']):
                     vertexes[id_] = Vertex.new(vertex, id_, self)
         return vertexes
+
+    def get_node_templates(self, type_=None):
+        return self.get_vertexes('NodeTemplate', type_)
 
 
 class Vertex:
@@ -63,6 +71,12 @@ class NodeTemplate(Vertex):
     def is_type(self, type_):
         return type_ in self.data['properties']['types']
 
+    def get_relationships(self, name=None):
+        return self.get_edges('Relationship', name)
+
+    def get_relationship_targets(self, name=None):
+        return self.get_edge_targets('Relationship', name)
+
     def get_groups(self, type_=None):
         '''
         All groups to which this node belongs
@@ -84,6 +98,16 @@ class NodeTemplate(Vertex):
                 if node_template.id == self.id:
                     policies.append(policy)
         return policies
+
+
+class Capability:
+    def __init__(self, data, vertex):
+        self.data = data
+        self.vertex = vertex
+        self.properties = self.data['properties']
+
+    def is_type(self, type_):
+        return type_ in self.data['types']
 
 
 class Group(Vertex):
@@ -144,15 +168,8 @@ class Relationship(Edge):
         self.target_capability = self.target.capabilities[self.target_capability_name]
         self.properties = self.data['properties']['properties']
 
-
-class Capability:
-    def __init__(self, data, vertex):
-        self.data = data
-        self.vertex = vertex
-        self.properties = self.data['properties']
-
     def is_type(self, type_):
-        return type_ in self.data['types']
+        return type_ in self.data['properties']['types']
 
 
 def get_kind(data):
