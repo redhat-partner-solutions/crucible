@@ -98,6 +98,9 @@ capability_types:
 
   Hypervisor:
     derived_from: Service
+    properties:
+      virtual-bmc-port:
+        type: integer
 
   KVM:
     description: >-

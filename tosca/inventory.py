@@ -121,6 +121,10 @@ class Inventory:
                 #    raise Exception('only one VM host is supported')
                 vm_host = to_host(hypervisor.target)
 
+                host['bmc_address'] = '{ip}:{port}'.format(
+                    ip=hypervisor.target.properties['ip'],
+                    port=hypervisor.target_capability.properties['virtual-bmc-port'])
+
                 if hypervisor.target_capability.is_type('crucible::KVM'):
                     vm_host['ansible_user'] = hypervisor.target_capability.properties['ansible-user']
                     vm_host['images_dir'] = hypervisor.target_capability.properties['images-dir']
@@ -142,7 +146,7 @@ class Inventory:
 
                 break # there should be only one
 
-        if 'bmc' in machine.capabilities:
+        if ('bmc' in machine.capabilities) and ('ip' in machine.capabilities['bmc'].properties):
             host['bmc_address'] = machine.capabilities['bmc'].properties['ip']
 
         for bmc in machine.get_policies('crucible::BMC'):

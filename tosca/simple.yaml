@@ -63,10 +63,6 @@ topology_template:
         cpu-cores: 4
         ram: 6144 mib
         disk: 20 gb
-      capabilities:
-        bmc:
-          properties:
-            ip: vm_host.clustername.example.lab:8082
 
     master2:
       type: crucible:VM
@@ -76,10 +72,6 @@ topology_template:
         cpu-cores: 4
         ram: 6144 mib
         disk: 20 gb
-      capabilities:
-        bmc:
-          properties:
-            ip: vm_host.clustername.example.lab:8082
 
     master3:
       type: crucible:VM
@@ -89,10 +81,6 @@ topology_template:
         cpu-cores: 4
         ram: 6144 mib
         disk: 20 gb
-      capabilities:
-        bmc:
-          properties:
-            ip: vm_host.clustername.example.lab:8082
 
     worker1:
       type: crucible:Baremetal
@@ -135,6 +123,7 @@ topology_template:
             allow: 10.40.0.0/24
         hypervisor:
           properties:
+            virtual-bmc-port: 8082
             bridge-ip: 10.60.0.190
             bridge-interface: ens7f1
       requirements:
