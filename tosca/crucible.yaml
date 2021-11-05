@@ -39,16 +39,19 @@ data_types:
 
   IPHost:
     description: >-
-      Host:port
+      Host (IP address or name)
     derived_from: string
 
   IPHostAndPort:
     description: >-
-      Host:port
+      Host:port, or just the host (which will assume a default port number)
     derived_from: string
 
   MAC:
     derived_from: string
+    constraints:
+    # See: https://regex101.com/library/oR6fA2
+    - pattern: ^(?:[a-zA-Z0-9]{2}[:-]){5}[a-zA-Z0-9]{2}$
 
 capability_types:
 
