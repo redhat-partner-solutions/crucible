@@ -115,7 +115,10 @@ all:
     ssh_public_key: "{{ lookup('file', local_ssh_public_key_path) }}"
 
     # provided mirror certificate logic, no need to change.
-    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(fetched_dest + '/domain.crt',  repo_root_path + '/mirror_certificate.txt') }}"
+    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(
+      fetched_dest + '/' + (hostvars['registry_host']['cert_file_prefix'] | default('registry')) + '.crt',
+      repo_root_path + '/mirror_certificate.txt')
+    }}"
     mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
 
     openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
