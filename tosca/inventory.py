@@ -45,8 +45,13 @@ class Inventory:
         else:
             raise Exception('no clusters declared')
 
-    def write(self, out):
+    def as_dict(self):
+        """Returns the inventory as a Python dict"""
         inventory = {'all': self.all}
+        return inventory
+
+    def write(self, out):
+        inventory = self.as_dict()
         ard.write(inventory, out)
 
     def add_cluster(self, cluster):
