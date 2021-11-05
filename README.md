@@ -177,7 +177,7 @@ The following are defaults for a full setup:
 As well as deploying prerequisites and a cluster, the playbooks create or update various local artifacts in the repository root and the `fetched/` directory (configured with `fetched_dest` var in the inventory).
 
 - An updated `pull-secret.txt` containing an additional secret to authenticate with the deployed registry.
-- The self-signed certificate created for the registry host as `domain.crt`.
+- The self-signed certificate created for the registry host as `registry.crt`.
 - The SSH public and private keys generated for access to the nodes, if any, at `/home/redhat/ssh_keys` (temporarily stored in `/tmp/ssh_key_pair`)
 - Any created CoreOS ignition files.
 
