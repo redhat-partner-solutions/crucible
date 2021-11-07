@@ -32,23 +32,37 @@ topology_template:
       - bastion: { capability: crucible:Bastion }
       # Services
       - dns: { capability: crucible:DNS }
-      - ntp: services # ntp
+      - ntp: service # alternative we can specify "ntp" node template
       - store: { capability: crucible:Store }
       - registry: { capability: crucible:Registry }
       - ai: { capability: crucible:AssistedInstaller }
       # Machines
-      - master: master1
-      - master: master2
-      - master: master3
-      - worker:
+      - machine:
+          node: master1
+          relationship:
+            properties:
+              role: master
+      - machine:
+          node: master2
+          relationship:
+            properties:
+              role: master
+      - machine:
+          node: master3
+          relationship:
+            properties:
+              role: master
+      - machine:
           node: worker1
           relationship:
             properties:
+              role: worker
               installation-disk: /dev/sdb
-      - worker:
+      - machine:
           node: worker2
           relationship:
             properties:
+              role: worker
               installation-disk: /dev/sdb
       artifacts:
         public-key:
@@ -111,23 +125,23 @@ topology_template:
       properties:
         ip: 172.28.11.51
 
-    services:
+    service:
       description: >-
         All required services as well as the master node VMs are here
       type: crucible:ServiceMachine
       properties:
         ip: 10.40.0.100
       capabilities:
-        ntp:
+        ntp: # ChronyNTP
           properties:
             allow: 10.40.0.0/24
-        hypervisor:
+        hypervisor: # KVM
           properties:
             virtual-bmc-port: 8082
             bridge-ip: 10.60.0.190
             bridge-interface: ens7f1
       requirements:
-      - kvm-dns: services
+      - kvm-dns: service
 
     ntp:
       description: >-
@@ -138,7 +152,7 @@ topology_template:
 
   groups:
 
-    nodes:
+    all-nodes:
       type: crucible:Nodes
       members:
       - master1
@@ -155,7 +169,7 @@ topology_template:
         user: { get_input: bmc-user }
         password: { get_input: bmc-password }
       targets:
-      - nodes
+      - all-nodes
 
   inputs:
 

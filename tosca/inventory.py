@@ -63,8 +63,9 @@ class Inventory:
         self.all['vars']['cluster_network_cidr'] = cluster.properties['cluster-network']
         self.all['vars']['cluster_network_host_prefix'] = cluster.properties['cluster-network-host-prefix']
 
-        self.add_machines(cluster, 'master')
-        self.add_machines(cluster, 'worker')
+        for node in cluster.get_relationships('machine'):
+            if node.target.is_type('crucible::Machine'):
+                self.add_node(node)
 
         for bastion in cluster.get_relationship_targets('bastion'):
             self.bastions['bastion'] = to_host(bastion)
@@ -100,19 +101,17 @@ class Inventory:
             self.all['vars']['fetched_dest'] = ai.target_capability.properties['fetched-dest']
             self.all['vars']['vip_dhcp_allocation'] = ai.target_capability.properties['vip-dhcp-allocation']
 
-    def add_machines(self, cluster, role):
-        for installed in cluster.get_relationships(role):
-            if installed.target.is_type('crucible::Machine'):
-                self.add_machine(installed.target, installed, role)
-
-    def add_machine(self, machine, installed, role):
+    def add_node(self, node):
+        machine = node.target
+        role = node.properties['role']
+        
         host = to_host(machine)
         host['role'] = role
         host['vendor'] = machine.properties['vendor']
         host['mac'] = machine.properties['mac']
 
-        if 'installation-disk' in installed.properties:
-            host['installation_disk_path'] = installed.properties['installation-disk']
+        if 'installation-disk' in node.properties:
+            host['installation_disk_path'] = node.properties['installation-disk']
 
         if machine.is_type('crucible::VM'):
             host['vm_spec'] = {

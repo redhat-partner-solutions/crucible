@@ -153,8 +153,14 @@ capability_types:
 
 relationship_types:
 
-  Installed:
+  Node:
+    description: >-
+      OpenShift node
     properties:
+      role:
+        type: string
+        constraints:
+        - valid_values: [ master, worker, sno ]
       installation-disk:
         type: string
         required: false
@@ -174,9 +180,7 @@ node_types:
       vendor:
         type: string
     capabilities:
-      bmc:
-        type: BMC
-        occurrences: [ 0, 1 ]
+      bmc: BMC
 
   Baremetal:
     derived_from: Machine
@@ -261,22 +265,11 @@ node_types:
         node: Node
         occurrences: [ 1, 1 ]
     # Machines
-    - master:
+    - machine:
         capability: BMC
         node: Machine
-        relationship: Installed
+        relationship: Node
         occurrences: [ 0, UNBOUNDED ]
-    - worker:
-        capability: BMC
-        node: Machine
-        relationship: Installed
-        occurrences: [ 0, UNBOUNDED ]
-    # TODO: is this the best way to handle SNO?
-    - sno:
-        capability: BMC
-        node: Machine
-        relationship: Installed
-        occurrences: [ 0, 1 ]
 
   Bastion:
     description: >-
