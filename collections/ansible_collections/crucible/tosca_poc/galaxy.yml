@@ -1,0 +1,21 @@
+# https://docs.ansible.com/ansible/latest/dev_guide/collections_galaxy_meta.html#collections-galaxy-meta
+namespace: crucible
+name: tosca_poc
+version: 0.0.1
+readme: README.md
+authors:
+  - Tal Liron
+  - Marek Kochanowski
+
+license:
+  - Apache-2.0
+homepage: https://github.com/redhat-partner-solutions/crucible
+repository: https://github.com/redhat-partner-solutions/crucible
+issues: https://github.com/redhat-partner-solutions/crucible/issues
+
+description: >-
+  Extends Crucible with support for TOSCA as an alternative user
+  interface for configuring cluster details for deployment.
+tags:
+  - crucible
+  - tosca
