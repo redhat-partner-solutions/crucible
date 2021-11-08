@@ -12,13 +12,14 @@ DOCUMENTATION = '''
         default: ['.yaml', '.yml']
 '''
 
+import puccini
+import copy
+
 from ansible.errors import AnsibleParserError
-from ansible.module_utils.common._collections_compat import MutableMapping
-from ansible.module_utils._text import to_native
 from ansible.plugins.inventory.yaml import InventoryModule as YAMLInventoryModule
 
-from crucible_tosca_poc.inventory import Inventory as CloutToYAMLInventory
-from crucible_tosca_poc.clout import Clout
+from ansible_collections.crucible.tosca_poc.plugins.module_utils.inventory import Inventory as CloutToYAMLInventory
+from ansible_collections.crucible.tosca_poc.plugins.module_utils.clout import Clout
 
 
 class InventoryModule(YAMLInventoryModule):
@@ -29,31 +30,36 @@ class InventoryModule(YAMLInventoryModule):
         super(InventoryModule, self).__init__()
 
     def parse(self, inventory, loader, path, cache=True):
-        # This method is based on the parse() method from the YAML Inventory plugin
-        # https://github.com/ansible/ansible/blob/devel/lib/ansible/plugins/inventory/yaml.py
+        # Monkey patch the loader in order to trick the parser into reading a
+        # TOSCA file, instead of expecting a generic Ansible YAML Inventory file.
+        # The patched loader returns a Python object compatible with the Ansible
+        # YAML Inventory schema. The returned object is generated on the fly
+        # based on the results of compiling provided TOSCA source files.
 
-        data = self._get_inventory_as_python_dict(path)
+        patched_loader = copy.deepcopy(loader)
+        patched_loader.load_from_file = self._load_yaml_inventory_compiled_from_tosca_file
 
-        if not data:
-            raise AnsibleParserError('The provided inventory is empty.')
-        elif not isinstance(data, MutableMapping):
-            raise AnsibleParserError('YAML inventory has invalid structure. It should be a dictionary, got: %s' % type(data))
+        # Use the built-in Ansible YAML Inventory Plugin to parse the Inventory
+        # dynamically generated on an invocation of the patched loader function.
+        super(InventoryModule, self).parse(inventory, patched_loader, path, cache)
 
-        # We expect top level keys to correspond to groups, iterate over them
-        # to get host, vars and subgroups (which we iterate over recursivelly)
-        if isinstance(data, MutableMapping):
-            for group_name in data:
-                self._parse_group(group_name, data[group_name])
-        else:
-            raise AnsibleParserError("Invalid data from file, expected dictionary and got:\n\n%s" % to_native(data))
+        # To ensure all subsequent uses of the loader maintain the expected base
+        # behavior, reassign the loader back to the original one.
+        self.loader = loader
 
-    def _get_inventory_as_python_dict(path):
-        """Reads the TOSCA file, compiles it to Clout, and then returns the inventory as a Python dict."""
+    def _load_yaml_inventory_compiled_from_tosca_file(self, path, cache=False):
+        yaml_inventory = self._get_inventory_as_python_dict(path)
+
+        return yaml_inventory
+
+    def _get_inventory_as_python_dict(self, path):
+        """Reads a TOSCA file, compiles it to Clout, and then returns the
+            generated inventory as a Python dict."""
         try:
             clout_obj_from_tosca_source = Clout(path)
             inventory = CloutToYAMLInventory(clout_obj_from_tosca_source)
             data = inventory.as_dict()
         except puccini.tosca.Problems as e:
-            raise AnsibleParserError(e)
+            raise AnsibleParserError(e.problems)
 
         return data
