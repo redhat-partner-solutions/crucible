@@ -5,7 +5,8 @@
     destination_hosts:
       - registry_host
   pre_tasks:
-    - set_fact:
+    - name: pre-compute need to get hashes
+      set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
     - role: get_image_hash
