@@ -1,7 +1,9 @@
 .DS_Store
 *.txt
-*.pub
 !requirements.txt
+!test-requirements.txt
+!bindep.txt
+*.pub
 __stuff/**
 .history/
 .vscode
@@ -15,3 +17,5 @@ inventory.yml
 fetched/
 
 tests/validate_inventory/failed
+
+docs/build

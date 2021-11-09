@@ -17,7 +17,7 @@ This repository contains playbooks for automating the creation of an OpenShift C
 
 These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of RHEL 8.4, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
 
-See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and understand [what steps the playbooks take](docs/pipeline_into_the_details.md).
+See [how the playbooks are intended to be run](connecting_to_hosts.md) and understand [what steps the playbooks take](pipeline_into_the_details.md).
 
 
 ## Software Versions Supported
@@ -59,6 +59,12 @@ Requires the following to be installed on the deployment host:
 dnf install ansible python3-netaddr skopeo podman
 ```
 
+You can also just use the output from bindep
+
+```bash
+dnf install $(bindep -b bindep.txt)
+```
+
 There's also some required Ansible modules that can be installed with the following command:
 
 ```bash
@@ -69,8 +75,8 @@ ansible-galaxy collection install -r requirements.yml
 ## Before Running The Playbook
 
 - Configure NTP time sync on the BMCs and confirm the system clock among the master nodes is synchronized within a second. The installation fails when system time does not match among nodes because etcd database will not be able to converge.
-- Modify the provided inventory file `inventory.yml.sample`. Fill in the appropriate values that suit your environment and deployment requirements. See the sample file and [docs/inventory.md](docs/inventory.md) for more details.
-- Modify the provided inventory vault file `inventory.vault.yml.sample`. Fill in the corresponding secret values according to the configuration of the inventory file. See the sample file and [docs/inventory.md#required-secrets](docs/inventory.md#required-secrets) for more details.
+- Modify the provided inventory file `inventory.yml.sample`. Fill in the appropriate values that suit your environment and deployment requirements. See the sample file and [docs/source/inventory.md](inventory.md) for more details.
+- Modify the provided inventory vault file `inventory.vault.yml.sample`. Fill in the corresponding secret values according to the configuration of the inventory file. See the sample file and [docs/source/inventory.md#required-secrets](inventory.md#required-secrets) for more details.
 - Place the following prerequisites in this directory:
   - OpenShift pull secret stored as `pull-secret.txt` (can be downloaded from [here](https://console.redhat.com/openshift/install/metal/installer-provisioned))
   - SSH Public Key stored as `ssh_public_key.pub`
@@ -79,15 +85,15 @@ ansible-galaxy collection install -r requirements.yml
 
 ### Inventory Vault File Management
 
-The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information. 
+The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information.
 
 To encrypt a vault file named `inventory.vault.yml`, issue the following command.
 
 ```bash
-ansible-vault encrypt inventory.vault.yml 
+ansible-vault encrypt inventory.vault.yml
 ```
 
-An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.  
+An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.
 To that end, provide the option `-e "@{PATH_TO_THE_VAULT_FILE}"`.
 
 To allow Ansible to read values from an encrypted vault file, a password for decrypting the vault must be provided. Provide the `--ask-vault-pass` flag to force Ansible to ask for a password to the vault before the selected playbook is executed.
@@ -133,7 +139,7 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
 
 When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
 
-In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.  
+In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.
 If this option is enabled, the generation of a deployment plan is omitted, and the deployment process starts immediately after the command is run.
 
 ```bash
@@ -214,22 +220,34 @@ Existing tests can be run from `tests` directory using
 ansible-playbook run_tests.yml
 ```
 
+You can rely on the existing tox environment, which would collect and install
+the dependencies, create a virtualenvironment and  run the test just by using
+
+```bash
+tox -etests
+```
+
+You can also trigger a set of linters in a different tox environment
+
+```bash
+tox -elinters
+```
 
 ## Related Documentation
 
 
 ### General
 
-- [How the playbooks are intended to be run](docs/connecting_to_hosts.md)
-- [How to configure the inventory file](docs/inventory.md)
-- [Steps the playbooks take when executed](docs/pipeline_into_the_details.md)
+- [How the playbooks are intended to be run](connecting_to_hosts.md)
+- [How to configure the inventory file](inventory.md)
+- [Steps the playbooks take when executed](pipeline_into_the_details.md)
 
 
 ### Troubleshooting
 
-Some useful help for troubleshooting if you find any issues can be found in [docs/troubleshooting](docs/troubleshooting)
+Some useful help for troubleshooting if you find any issues can be found in `docs/source/troubleshooting`
 
-- [Discovery ISO not booting](docs/troubleshooting/discovery_iso_not_booting.md)
+- [Discovery ISO not booting](troubleshooting/discovery_iso_not_booting.md)
 
 
 ## References

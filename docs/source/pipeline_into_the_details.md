@@ -1,9 +1,8 @@
 ## Pipeline into the details
 ### ‘Prerequisite’ / ‘Deployment’ / ‘Configuration’ - Management cluster
 #### _Using Assisted Installer_
----
+
 #### --- PRIVATE AND CONFIDENTIAL, DO NOT DISTRIBUTE ---
----
 
 1. Prerequisite Stage:
     1. Manual Steps:
