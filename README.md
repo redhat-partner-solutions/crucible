@@ -46,6 +46,12 @@ Requires the following to be installed on the deployment host:
 dnf install ansible python3-netaddr skopeo
 ```
 
+You can also just use the output from bindep
+
+```bash
+dnf install $(bindep -b bindep.txt)
+```
+
 There's also some required Ansible modules that can be installed with the following command:
 
 ```bash
@@ -64,15 +70,15 @@ ansible-galaxy collection install -r requirements.yml
 
 ### Inventory Vault File Management
 
-The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information. 
+The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information.
 
 To encrypt a vault file named `inventory.vault.yml`, issue the following command.
 
 ```bash
-ansible-vault encrypt inventory.vault.yml 
+ansible-vault encrypt inventory.vault.yml
 ```
 
-An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.  
+An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.
 To that end, provide the option `-e "@{PATH_TO_THE_VAULT_FILE}"`.
 
 To allow Ansible to read values from an encrypted vault file, a password for decrypting the vault must be provided. Provide the `--ask-vault-pass` flag to force Ansible to ask for a password to the vault before the selected playbook is executed.
@@ -116,7 +122,7 @@ ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pas
 
 When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
 
-In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.  
+In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.
 If this option is enabled, the generation of a deployment plan is omitted, and the deployment process starts immediately after the command is run.
 
 ```bash
@@ -189,6 +195,19 @@ Existing tests can be run using
 
 ```bash
 ansible-playbook tests/run_tests.yml
+```
+
+You can rely on the existing tox environment, which would collect and install
+the dependencies, create a virtualenvironment and  run the test just by using
+
+```bash
+tox -etests
+```
+
+You can also trigger a set of linters in a different tox environment
+
+```bash
+tox -elinters
 ```
 
 ## Related Documentation

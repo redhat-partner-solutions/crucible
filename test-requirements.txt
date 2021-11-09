@@ -1,0 +1,2 @@
+ansible-lint==5.0.10 # MIT
+bindep>=2.10.1 # Apache-2.0
