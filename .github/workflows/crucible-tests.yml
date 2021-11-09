@@ -10,6 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}
+
       - name: Install required dependencies
         run: |
           pip install ansible
