@@ -13,11 +13,12 @@
         conn_name: "{{ bridge_name }}"
         type: bridge
         ifname: "{{ bridge_name }}"
-        autoconnect: yes
-        never_default4: yes
         stp: no
         ip4: "{{ vm_bridge_ip + '/' + vm_bridge_prefix }}"
         dns4: "{{ hostvars[inventory_hostname]['dns'] }}"
+        autoconnect: yes
+        never_default4: yes
+        method6: disabled
         state: present
 
     - name: Create bridge slave
