@@ -1,28 +1,38 @@
 # Crucible: OpenShift 4 Management Cluster Seed Playbooks
 
-> ❗ _Red Hat does not provide commercial support for the content of this repo. Any assistance is purely on a best-effort basis, as resource permits._
+> ❗ _Red Hat does not provide commercial support for the content of this repo.
+Any assistance is purely on a best-effort basis, as resource permits._
 
 ```bash
-##############################################################################
-DISCLAIMER: THE CONTENT OF THIS REPO IS EXPERIMENTAL AND PROVIDED "AS-IS"
+#############################################################################
+DISCLAIMER: THE CONTENT OF THIS REPO IS EXPERIMENTAL AND PROVIDED **"AS-IS"**
 
 THE CONTENT IS PROVIDED AS REFERENCE WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-##############################################################################
+#############################################################################
 ```
 
 This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
 
-These playbooks are intended to be run from a `bastion` host, running a subscribed installation of RHEL 8.4, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
+These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of RHEL 8.4, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
 
 See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and understand [what steps the playbooks take](docs/pipeline_into_the_details.md).
+
+
+## Software Versions Supported
+Crucible targets versions of Python and Ansible that ship with the current version of RHEL. At the moment the supported version numbers are:
+
+- Python 3.6.8
+- ansible 2.9.27
+
 
 ## OpenShift Versions Tested
 
 - 4.6
 - 4.7
 - 4.8
+
 
 ## Assisted Installer versions Tested
 
@@ -33,6 +43,7 @@ See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and 
 - v1.0.22.3
 - v1.0.23.2
 - v1.0.24.2
+
 
 ### Dependencies
 
@@ -52,6 +63,7 @@ There's also some required Ansible modules that can be installed with the follow
 ansible-galaxy collection install -r requirements.yml
 ```
 
+
 ## Before Running The Playbook
 
 - Configure NTP time sync on the BMCs and confirm the system clock among the master nodes is synchronized within a second. The installation fails when system time does not match among nodes because etcd database will not be able to converge.
@@ -61,6 +73,7 @@ ansible-galaxy collection install -r requirements.yml
   - OpenShift pull secret stored as `pull-secret.txt` (can be downloaded from [here](https://console.redhat.com/openshift/install/metal/installer-provisioned))
   - SSH Public Key stored as `ssh_public_key.pub`
   - If `deploy_prerequisites.yml` is NOT being used; SSL self-signed certificate stored as `mirror_certificate.txt`
+
 
 ### Inventory Vault File Management
 
@@ -90,6 +103,7 @@ ansible-vault decrypt inventory.vault.yml
 
 For more information on working with vault files, see the [Ansible Vault documentation](https://docs.ansible.com/ansible/latest/user_guide/vault.html#encrypting-content-with-ansible-vault).
 
+
 ### Pre-Deployment Validation
 
 Some utility playbooks are provided to perform some validation before attempting a deployment:
@@ -98,6 +112,7 @@ Some utility playbooks are provided to perform some validation before attempting
 ansible-playbook -i inventory prereq_facts_check.yml -e "@inventory.vault.yml" --ask-vault-pass
 ansible-playbook -i inventory playbooks/validate_inventory.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
+
 
 ## Running The Playbooks
 
@@ -125,6 +140,7 @@ ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pas
   -e skip_interactive_prompts=true
 ```
 
+
 ## Prerequisite Services
 
 Crucible can automatically set up the services required to deploy and run a cluster. Some are required for the Assisted Installer tool to run, and some are needed for the resulting cluster.
@@ -137,9 +153,11 @@ Crucible can automatically set up the services required to deploy and run a clus
 
 While setup of each of these can be disabled if you wish to manually configure them, but it's highly recommended to use the automatic setup of all prerequisites.
 
+
 ## Outputs
 
 Note that the exact changes made depend on which playbooks or roles are run, and the specific configuration.
+
 
 ### Cluster
 
@@ -147,6 +165,7 @@ The obvious output from these playbooks is a clean OCP cluster with minimal extr
 
 - CoreOS installed and configured
 - The configured SSH public key as an authorised key for `root` to allow debugging
+
 
 ### Prerequisite Services
 
@@ -172,6 +191,7 @@ The following are defaults for a full setup:
   - A running pod containing the `httpd` service
   - The discovery image from Assisted Installer will be placed in and served from `/opt/http_store/data`
 
+
 ### Bastion
 
 As well as deploying prerequisites and a cluster, the playbooks create or update various local artifacts in the repository root and the `fetched/` directory (configured with `fetched_dest` var in the inventory).
@@ -183,6 +203,7 @@ As well as deploying prerequisites and a cluster, the playbooks create or update
 
 When doing multiple runs ensure you retain any authentication artefacts you need between deploys.
 
+
 ## Testing
 
 Existing tests can be run using
@@ -191,7 +212,9 @@ Existing tests can be run using
 ansible-playbook tests/run_tests.yml
 ```
 
+
 ## Related Documentation
+
 
 ### General
 
@@ -199,11 +222,13 @@ ansible-playbook tests/run_tests.yml
 - [How to configure the inventory file](docs/inventory.md)
 - [Steps the playbooks take when executed](docs/pipeline_into_the_details.md)
 
+
 ### Troubleshooting
 
 Some useful help for troubleshooting if you find any issues can be found in [docs/troubleshooting](docs/troubleshooting)
 
 - [Discovery ISO not booting](docs/troubleshooting/discovery_iso_not_booting.md)
+
 
 ## References
 
