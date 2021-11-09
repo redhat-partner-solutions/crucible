@@ -160,20 +160,20 @@ relationship_types:
       role:
         type: string
         constraints:
-        - valid_values: [ master, worker, sno ]
+        - valid_values: [ master, worker, sno, rwn ]
       installation-disk:
         type: string
         required: false
 
 node_types:
 
-  Node:
+  Host:
     properties:
       ip:
         type: IPHost
 
   Machine:
-    derived_from: Node
+    derived_from: Host
     properties:
       mac:
         type: MAC
@@ -193,6 +193,8 @@ node_types:
         default: KVM
       cpu-cores:
         type: integer
+        constraints:
+        - greater_than: 0
       ram:
         type: scalar-unit.size
       disk:
@@ -239,33 +241,33 @@ node_types:
     capabilities:
       cluster: Cluster
     requirements:
+    # Services
     - bastion:
         capability: Bastion
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
-    # Services
     - dns:
         capability: DNS
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
     - ntp:
         capability: NTP
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
     - store:
         capability: Store
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
     - registry:
         capability: Registry
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
     - ai:
         capability: AssistedInstaller
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
-    # Machines
-    - machine:
+    # Nodes
+    - node:
         capability: BMC
         node: Machine
         relationship: Node
@@ -273,9 +275,9 @@ node_types:
 
   Bastion:
     description: >-
-      A node that has Ansible to run the Crucible playbooks as well as
+      A host that has Ansible to run the Crucible playbooks as well as
       local space to optionally store secrets and images
-    derived_from: Node
+    derived_from: Host
     properties:
       # Pull secrets (for what??)
       pull-secret-lookup-paths:
@@ -299,22 +301,22 @@ node_types:
   # Useful common node types
 
   NTP:
-    derived_from: Node
+    derived_from: Host
     capabilities:
       ntp: NTP
 
   Store:
-    derived_from: Node
+    derived_from: Host
     capabilities:
       store: Store
 
   Registry:
-    derived_from: Node
+    derived_from: Host
     capabilities:
       registry: Registry
 
   AssistedInstaller:
-    derived_from: Node
+    derived_from: Host
     capabilities:
       dns: AssistedInstaller
 
@@ -325,15 +327,15 @@ node_types:
     requirements:
     - kvm-dns: # The KVM capability mandates this requirement
         capability: DNS
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
 
   ServiceMachine:
     description: >-
-      "All-in-one": a node that will have all the required and optional capabilities installed by default
+      "All-in-one": a host that will have all the required and optional capabilities installed by default
       with the simplest implementations. Users can create their own set of types that distribute these and
       other capabilities differently.
-    derived_from: Node
+    derived_from: Host
     capabilities:
       dns:
         type: DNS
@@ -374,21 +376,20 @@ node_types:
     requirements:
     - kvm-dns: # The KVM capability mandates this requirement
         capability: DNS
-        node: Node
+        node: Host
         occurrences: [ 1, 1 ]
 
 group_types:
 
-  Nodes:
+  Machines:
     members:
-    - Node
+    - Machine
 
 policy_types:
 
   BMC:
     targets:
-    - Machine
-    - Nodes
+    - Host
 
   Redfish:
     derived_from: BMC

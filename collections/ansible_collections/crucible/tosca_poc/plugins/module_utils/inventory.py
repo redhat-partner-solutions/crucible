@@ -63,9 +63,12 @@ class Inventory:
         self.all['vars']['cluster_network_cidr'] = cluster.properties['cluster-network']
         self.all['vars']['cluster_network_host_prefix'] = cluster.properties['cluster-network-host-prefix']
 
-        for node in cluster.get_relationships('machine'):
+        for node in cluster.get_relationships('node'):
             if node.target.is_type('crucible::Machine'):
                 self.add_node(node)
+            else:
+                # This actually can't happen
+                raise Exception('required "node" is not a Machine')
 
         for bastion in cluster.get_relationship_targets('bastion'):
             self.bastions['bastion'] = to_host(bastion)
@@ -138,10 +141,10 @@ class Inventory:
                     dnses = hypervisor.target.get_relationship_targets('kvm-dns')
                     if dnses:
                         for dns in dnses:
-                            if dns.is_type('crucible::Node'):
+                            if dns.is_type('crucible::Host'):
                                 vm_host['dns'] = dns.properties['ip']
                             else:
-                                raise Exception('machine with KVM capability has a "kvm-dns" requirement but it does not target a Node')
+                                raise Exception('machine with KVM capability has a "kvm-dns" requirement but it does not target a Host')
                             break # there should be only one
                     else:
                         raise Exception('machine with KVM capability does not have a "kvm-dns" requirement')
