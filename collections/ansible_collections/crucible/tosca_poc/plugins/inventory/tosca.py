@@ -12,14 +12,14 @@ DOCUMENTATION = '''
         default: ['.yaml', '.yml']
 '''
 
-import puccini
+import puccini.tosca
 import copy
 
 from ansible.errors import AnsibleParserError
 from ansible.plugins.inventory.yaml import InventoryModule as YAMLInventoryModule
 
-from ansible_collections.crucible.tosca_poc.plugins.module_utils.inventory import Inventory as CloutToYAMLInventory
-from ansible_collections.crucible.tosca_poc.plugins.module_utils.clout import Clout
+from ..module_utils.inventory import Inventory as CloutToYAMLInventory
+from ..module_utils.clout import Clout
 
 
 class InventoryModule(YAMLInventoryModule):
@@ -45,6 +45,7 @@ class InventoryModule(YAMLInventoryModule):
 
         # To ensure all subsequent uses of the loader maintain the expected base
         # behavior, reassign the loader back to the original one.
+        # TODO: have we changed the loader anywhere?
         self.loader = loader
 
     def _load_yaml_inventory_compiled_from_tosca_file(self, path, cache=False):

@@ -13,5 +13,6 @@ inventory.yml
 *.vault.yml
 *.vault.yaml
 fetched/
+env/
 
 tests/validate_inventory/failed
