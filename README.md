@@ -53,9 +53,10 @@ Requires the following to be installed on the deployment host:
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-specific-operating-systems)
 - [netaddr](https://github.com/netaddr/netaddr)
 - [skopeo](https://github.com/containers/skopeo)
+- [podman](https://github.com/containers/podman/)
 
 ```bash
-dnf install ansible python3-netaddr skopeo
+dnf install ansible python3-netaddr skopeo podman
 ```
 
 There's also some required Ansible modules that can be installed with the following command:
