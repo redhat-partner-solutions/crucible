@@ -1,12 +1,18 @@
 
 import ard
 
+try:
+    import clout
+except:
+    # When used from inventory plugin
+    from . import clout
+
 
 __all__ = ('Inventory',)
 
 
 class Inventory:
-    def __init__(self, clout):
+    def __init__(self, clout_):
         self.all = {
             'vars': {},
             'children': {
@@ -36,7 +42,7 @@ class Inventory:
         self.bastions = self.all['children']['bastions']['hosts']
         self.services = self.all['children']['services']['hosts']
 
-        clusters = clout.get_node_templates('crucible::Cluster')
+        clusters = clout_.get_node_templates('crucible::Cluster')
         if clusters:
             if len(clusters) > 1:
                 raise Exception('only one cluster is currently supported')
@@ -44,6 +50,10 @@ class Inventory:
                 self.add_cluster(cluster)
         else:
             raise Exception('no clusters declared')
+
+    @staticmethod
+    def new_from_url(url):
+        return Inventory(clout.Clout.new_from_url(url))
 
     def as_dict(self):
         """Returns the inventory as a Python dict"""

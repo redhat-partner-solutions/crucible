@@ -1,18 +1,21 @@
 
 import puccini.tosca
 
-# TODO: this should move into the puccini.tosca package
+# TODO: this should move into the puccini.clout package
 
 
 __all__ = ('Clout', 'Vertex', 'NodeTemplate', 'Capability', 'Group', 'Policy', 'Edge', 'Relationship')
 
 
 class Clout:
-    def __init__(self, url):
-        data = puccini.tosca.compile(url)
-        #ard.write(clout, sys.stdout)
+    def __init__(self, data):
+        #ard.write(data, sys.stdout)
         self.data = data
         self.vertexes = self.data['vertexes']
+
+    @staticmethod
+    def new_from_url(url):
+        return Clout(puccini.tosca.compile(url))
 
     def get_vertexes(self, kind, type_=None):
         vertexes = {}
@@ -24,6 +27,12 @@ class Clout:
 
     def get_node_templates(self, type_=None):
         return self.get_vertexes('NodeTemplate', type_)
+
+    def get_groups(self, type_=None):
+        return self.get_vertexes('Group', type_)
+
+    def get_policies(self, type_=None):
+        return self.get_vertexes('Policy', type_)
 
 
 class Vertex:

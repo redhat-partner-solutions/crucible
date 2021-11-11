@@ -12,13 +12,12 @@ DOCUMENTATION = '''
         default: ['.yaml', '.yml']
 '''
 
-import puccini.tosca
-import copy
+import puccini.tosca, copy
 
 from ansible.errors import AnsibleParserError
 from ansible.plugins.inventory.yaml import InventoryModule as YAMLInventoryModule
 
-from ..module_utils.inventory import Inventory as CloutToYAMLInventory
+from ..module_utils.inventory import Inventory
 from ..module_utils.clout import Clout
 
 
@@ -37,7 +36,7 @@ class InventoryModule(YAMLInventoryModule):
         # based on the results of compiling provided TOSCA source files.
 
         patched_loader = copy.deepcopy(loader)
-        patched_loader.load_from_file = self._load_yaml_inventory_compiled_from_tosca_file
+        patched_loader.load_from_file = self._load_from_tosca_file
 
         # Use the built-in Ansible YAML Inventory Plugin to parse the Inventory
         # dynamically generated on an invocation of the patched loader function.
@@ -48,19 +47,13 @@ class InventoryModule(YAMLInventoryModule):
         # TODO: have we changed the loader anywhere?
         self.loader = loader
 
-    def _load_yaml_inventory_compiled_from_tosca_file(self, path, cache=False):
-        yaml_inventory = self._get_inventory_as_python_dict(path)
+    def _load_from_tosca_file(self, path, cache=False):
+        return self._new_inventory_from_url_as_dict(path)
 
-        return yaml_inventory
-
-    def _get_inventory_as_python_dict(self, path):
+    def _new_inventory_from_url_as_dict(self, url):
         """Reads a TOSCA file, compiles it to Clout, and then returns the
             generated inventory as a Python dict."""
         try:
-            clout_obj_from_tosca_source = Clout(path)
-            inventory = CloutToYAMLInventory(clout_obj_from_tosca_source)
-            data = inventory.as_dict()
+            return Inventory.new_from_url(url).as_dict()
         except puccini.tosca.Problems as e:
             raise AnsibleParserError(e.problems)
-
-        return data

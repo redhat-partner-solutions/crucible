@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import clout, puccini.tosca, inventory, ard, sys
+import puccini.tosca, ard, sys
+from inventory import Inventory
 
 
 def main():
@@ -11,9 +12,8 @@ def main():
     url = sys.argv[1]
 
     try:
-        clout_ = clout.Clout(url)
-        inventory_ = inventory.Inventory(clout_)
-        inventory_.write(sys.stdout)
+        inventory = Inventory.new_from_url(url)
+        inventory.write(sys.stdout)
     except puccini.tosca.Problems as e:
         print('Problems:', file=sys.stderr)
         for problem in e.problems:
