@@ -1,14 +1,14 @@
 ---
+
+- name: Process KVM nodes
+  hosts: bastion
+  roles:
+    - process_kvm_nodes
+
 - name: Provision VMS
-  hosts: vm_host
+  hosts: vm_hosts
   vars:
-    N_KVM: "{{
-      hostvars | dict2items |
-      selectattr('value.vendor', 'defined') |
-      selectattr('value.vendor', 'equalto', 'KVM') |
-      list | length
-    }}"
-    SETUP_VMS: "{{ setup_vms | default(N_KVM | int >= 1) }}"
+    SETUP_VMS: "{{ setup_vms | default(kvm_nodes | length | int >= 1) }}"
   roles:
     - role: destroy_vms
       when: SETUP_VMS == true
