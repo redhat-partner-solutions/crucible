@@ -1,5 +1,5 @@
 - name: Deploy sushy tools
-  hosts: vm_host
+  hosts: vm_hosts
   vars:
     SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(True)) }}"
   roles:

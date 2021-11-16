@@ -6,12 +6,6 @@ tests:
   - test_name: valid_no_kvm
     expected: 0
 
-  - test_name: valid_with_kvm
-    expected: 0
-    template:
-      vendor: KVM
-      include_vm_host: true
-
   - test_name: valid_no_workers
     expected: 0
     template:
@@ -28,12 +22,6 @@ tests:
       use_dhcp: true
       dhcp_range_first: "192.168.100.101"
       dhcp_range_last: "192.168.100.201"
-
-  - test_name: invalid_missing_vm_host
-    expected: 2
-    template:
-      vendor: KVM
-      include_vm_host: false
 
   - test_name: invalid_single_worker
     expected: 2

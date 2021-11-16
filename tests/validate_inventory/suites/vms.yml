@@ -1,0 +1,16 @@
+tags: validate_vms
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: valid_with_kvm
+    expected: 0
+    template:
+      vendor: KVM
+      include_vm_host: true
+
+  - test_name: invalid_missing_vm_host
+    expected: 2
+    template:
+      vendor: KVM
+      include_vm_host: false

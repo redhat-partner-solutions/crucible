@@ -1,5 +1,10 @@
 ---
+- name: Process KVM nodes
+  hosts: bastion
+  roles:
+    - process_kvm_nodes
+
 - name: Destroy VMs
-  hosts: vm_host
+  hosts: vm_hosts
   roles:
     - destroy_vms
