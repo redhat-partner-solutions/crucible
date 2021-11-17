@@ -52,7 +52,8 @@ Note that checks on DNS, registry, and HTTP Store are completed later in the pla
 
 ### VM spec config
 
-The specs of VMs created by the playbooks are configured for every node group.
+The specs of VMs created by the playbooks are configured for every node group. The parameters of the VMs can be specified by adding `vm_spec` to the node definition in the inventory.
+A basic example is as follows:
 
 ```yaml
 vm_spec:
@@ -60,6 +61,20 @@ vm_spec:
   ram_mib: 6144
   disk_size_gb: 20
 ```
+
+If you wish to configure extra disks then you can add the `extra_disks` keyword:
+
+```yaml
+vm_spec:
+  cpu_cores: 4
+  ram_mib: 6144
+  disk_size_gb: 20
+  extra_disks:
+    my_extra_disk: 100
+    my_other_extra_disk: 150
+```
+
+Here we specify 2 extra disks of size `100` and `150GB` respectively.
 
 ### Required secrets
 
