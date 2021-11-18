@@ -76,13 +76,13 @@ For Restricted Network installations, additional credentials for the registry ne
 
 #### Nodes
 
-All nodes must have credentials set for the BMCs. 
+All nodes must have credentials set for the BMCs.
 
 - `bmc_user`
 - `bmc_password`
 
-It is possible to specify different credentials for individual nodes.  
-See the sample inventory file (`inventory.yml.sample`) and the sample inventory vault file (`inventory.vault.yml.sample`) for more information. 
+It is possible to specify different credentials for individual nodes.
+See the sample inventory file (`inventory.yml.sample`) and the sample inventory vault file (`inventory.vault.yml.sample`) for more information.
 
 ## Configurations
 
@@ -104,8 +104,8 @@ network_config:
         ipv4:
           - ip: "{{ ansible_host}}"
             prefix: "{{ mask }}"
-  dns_server_ips: 
-    - "{{ dns }}" 
+  dns_server_ips:
+    - "{{ dns }}"
     - "{{ dns2 }}"
   routes: # optional
     - destination: 0.0.0.0/0
@@ -183,7 +183,7 @@ Note that if one or more of these services is pre-existing in your environment t
 
 When using one or more virtual nodes, they are identified as such by having `vendor` set to `KVM`. They still require the BMC configuration and MAC+IP addresses common to all nodes, but with a few variations:
 
-- The BMC address of the virtual nodes must point to the `vm_host`; `sushy-tools` will be set up on the `vm_host` to allow the VMs to be controlled identically to the baremetal hosts.
+- The BMC address of the virtual nodes must point to the `vm_host` defined on the node; `sushy-tools` will be set up on the `vm_host` to allow the VMs to be controlled identically to the baremetal hosts.
   - The BMC user and password will be set in `sushy-tools` and must therefore be the same for all virtual nodes.
 - The specified MAC address will be set on the VM interface.
 
@@ -227,6 +227,8 @@ That diagram gives the following excerpt from the inventory for the `bastion` an
         ntp_host:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
           # ...
+    vm_hosts:
+      hosts:
         vm_host:
           ansible_host: 192.168.10.6
           # ...

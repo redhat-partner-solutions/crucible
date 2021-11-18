@@ -47,6 +47,7 @@ all:
     setup_dns_service: false
     setup_registry_service: false # Only required for a Restricted Network installation
     setup_http_store_service: true
+    setup_assisted_installer: true # default is true you may wish to turn it off if multiple users are using the same instance.
 
 
     # NTP Service
@@ -116,9 +117,9 @@ all:
 
     # provided mirror certificate logic, no need to change.
     local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(
-      fetched_dest + '/' + (hostvars['registry_host']['cert_file_prefix'] | default('registry')) + '.crt',
-      repo_root_path + '/mirror_certificate.txt')
-    }}"
+        fetched_dest + '/' + (hostvars['registry_host']['cert_file_prefix'] | default('registry')) + '.crt',
+        repo_root_path + '/mirror_certificate.txt')
+      }}"
     mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
 
     openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
@@ -166,7 +167,12 @@ all:
 
         dns_host:
           ansible_host: 10.40.0.100
-          # write_dnsmasq_config: true # Set to false if there is already dns setup
+          # The following are required for DHCP setup
+          # use_dhcp: true
+          # dhcp_range_first: 10.60.0.101
+          # dhcp_range_last:  10.60.0.105
+          # prefix: 24
+          # gateway: 10.60.0.1
 
         http_store:
           ansible_host: 10.40.0.100
@@ -174,6 +180,8 @@ all:
         ntp_host:
           ansible_host: 10.40.0.100
 
+    vm_hosts:
+      hosts:
         vm_host: # Required for using "KVM" nodes, ignored if not.
           ansible_user: root
           ansible_host: vm_host.clustername.example.lab
@@ -187,48 +195,37 @@ all:
     nodes:
       # A minimum of three master nodes are required. More are supported.
       # Worker nodes are not required, but if present there must be two or more.
-
+      #
       # Node Required Vars:
       # - role
       #     - Must be either "master" or "worker", and must match the group
-
+      #
       # - mac
       #     - The MAC address of the node, used as a hardware identifier by Assisted Installer.
       #     - The value set here will be used when creating VMs and must be unique within the network.
-
+      #
       # - vendor
       #     - One of "Dell", "HPE", "Lenovo", "SuperMicro", "KVM" as the supported BMC APIs.
       #     - "KVM" identifies a node as a VM to be created. If a "KVM" node is present,
-      #       then a "vm_host" must be defined in the "services" group.
-
+      #       then a "vm_host" must be defined in the node and a host with that name must exist
+      #       inside the "vm_hosts" group.
+      #
       # - bmc_address
       # - bmc_user
       # - bmc_password
       #     - details for the BMC that controls the node.
       #     - Must be set to the vm_host for "KVM" nodes.
-
+      #
       # Static IP Vars:
-      # - ip
-      #     - defaults to "dhcp"
-      #     - Either the static IP to be set for the node, or "dhcp"
-      #     - If a static IP is set then "mask", "gateway", "dns" MUST also be set for the node
-
-      # - dns
-      #     - IP of the DNS server to be configured for static IP
-
-      # - gateway
-      #     - IP of the gateway to be configured for static IP
-
-      # - mask
-      #     - Length of subnet mask (e.g. 24) to be configured for static IP
-
+      #   See docs/inventory.md: Network configuration section
+      #
+      # Optional Vars:
       # - vm_spec
       #     - Specifications for the node:
       #          - cpu_cores
       #          - ram_mib
       #          - disk_size_gb
-
-      # Optional Vars:
+      #
       # - installation_disk_path
       #     - The value set here will be used by Assisted Installer as the installation disk device
       #       for a given host.
