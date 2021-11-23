@@ -26,4 +26,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run all tests using Ansible
-        run: ansible-playbook tests/run_tests.yml
+        run: ansible-playbook run_tests.yml
+        working-directory: ./tests
+

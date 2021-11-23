@@ -208,10 +208,10 @@ When doing multiple runs ensure you retain any authentication artefacts you need
 
 ## Testing
 
-Existing tests can be run using
+Existing tests can be run from `tests` directory using
 
 ```bash
-ansible-playbook tests/run_tests.yml
+ansible-playbook run_tests.yml
 ```
 
 
