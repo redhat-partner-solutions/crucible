@@ -21,9 +21,11 @@ all:
           {% if item.template.dhcp_range_last is defined %}
           dhcp_range_last: {{ item.template.dhcp_range_last }}
           {% endif %}
-        {% if item.template.include_vm_host | default(false) %}
+    {% if item.template.include_vm_host | default(false) %}
+    vm_hosts:
+      hosts:
         vm_host:
-        {% endif %}
+    {% endif %}
     nodes:
       vars:
         bmc_address: {{ item.template.bmc_address | default("localhost") }}
@@ -32,6 +34,7 @@ all:
         vendor: {{ item.template.vendor | default("Dell") }}
         ansible_host: {{ item.template.ansible_host | default("localhost") }}
         mac: {{ item.template.mac | default("FF:FF:FF:FF:FF:FF") }}
+        vm_host: vm_host
       children:
         masters:
           vars:
