@@ -1,0 +1,28 @@
+tags: validate_ntp
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: valid_with_ip
+    expected: 0
+    template:
+      ntp_server: 10.40.0.100
+      setup_ntp_service:
+
+  - test_name: valid_with_domain
+    expected: 0
+    template:
+      ntp_server: ntp.my.lab
+      setup_ntp_service:
+
+  - test_name: valid_with_ip_with_service
+    expected: 0
+    template:
+      ntp_server: 10.40.0.100
+      setup_ntp_service: true
+
+  - test_name: invalid_with_domain_with_service
+    expected: 2
+    template:
+      ntp_server: ntp.my.lab
+      setup_ntp_service: true
