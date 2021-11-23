@@ -94,7 +94,7 @@ To allow Ansible to read values from an encrypted vault file, a password for dec
 
 A complete command to execute a playbook that takes advantage of both options can look like this:
 ```bash
-ansible-playbook -i inventory ${SELECTED_PLAYBOOK} -e "@inventory.vault.yml" --ask-vault-pass
+ansible-playbook -i inventory.yml ${SELECTED_PLAYBOOK} -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
 If a need arises to decrypt an encrypted vault file, issue the following command.
@@ -111,8 +111,8 @@ For more information on working with vault files, see the [Ansible Vault documen
 Some utility playbooks are provided to perform some validation before attempting a deployment:
 
 ```bash
-ansible-playbook -i inventory prereq_facts_check.yml -e "@inventory.vault.yml" --ask-vault-pass
-ansible-playbook -i inventory playbooks/validate_inventory.yml -e "@inventory.vault.yml" --ask-vault-pass
+ansible-playbook -i inventory.yml prereq_facts_check.yml -e "@inventory.vault.yml" --ask-vault-pass
+ansible-playbook -i inventory.yml playbooks/validate_inventory.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
 
@@ -128,7 +128,7 @@ There are a few main playbooks provided in this repository:
 Each of the playbooks requires an inventory and an inventory vault file, and can be run like this:
 
 ```bash
-ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pass
+ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
 When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
@@ -138,7 +138,7 @@ If this option is enabled, the generation of a deployment plan is omitted, and t
 
 ```bash
 # Careful: this command will start the deployment right away, and will not ask for manual confirmation.
-ansible-playbook -i inventory site.yml -e "@inventory.vault.yml" --ask-vault-pass \
+ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault-pass \
   -e skip_interactive_prompts=true
 ```
 
