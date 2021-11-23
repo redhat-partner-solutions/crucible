@@ -182,7 +182,7 @@ all:
 
     vm_hosts:
       hosts:
-        vm_host: # Required for using "KVM" nodes, ignored if not.
+        vm_host1: # Required for using "KVM" nodes, ignored if not.
           ansible_user: root
           ansible_host: vm_host.clustername.example.lab
           host_ip_keyword: ansible_host # the varname in the KVM node hostvars which contains the *IP* of the VM
@@ -242,6 +242,7 @@ all:
             role: master
             vendor: KVM # this example is a virtual control plane
             bmc_address: "vm_host.clustername.example.lab:8082" # port can be changed using sushy_tools_port on the vm_host
+            vm_host: vm_host1
             vm_spec:
               cpu_cores: 4
               ram_mib: 6144
