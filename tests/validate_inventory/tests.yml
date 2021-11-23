@@ -8,6 +8,7 @@
       - secrets.yml
       - prereqs.yml
       - network.yml
+      - vms.yml
       - day2.yml
   tasks:
     - name: Run Inventory Validation test suites
