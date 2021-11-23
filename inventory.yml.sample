@@ -52,7 +52,7 @@ all:
 
     # NTP Service
     # ntp_server is the address at which the NTP service is (or will be) available
-    ntp_server: ntp.example.lab
+    ntp_server: 10.40.0.100
     # ntp_server_allow is the range of IPs the NTP service will respond to
     # ntp_server_allow: 10.40.0.0/24 # not required if setup_ntp_service is false
 

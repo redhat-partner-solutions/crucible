@@ -13,6 +13,11 @@ all:
         ansible_host: localhost
       hosts:
         assisted_installer:
+        ntp_host:
+          {% if item.template.ntp_server is defined %}
+          ntp_server: {{ item.template.ntp_server }}
+          {% endif %}
+          setup_ntp_service: {{ item.template.setup_ntp_service | default(false) }}
         dns_host:
           use_dhcp: {{ item.template.use_dhcp | default(false) }}
           {% if item.template.dhcp_range_first is defined %}

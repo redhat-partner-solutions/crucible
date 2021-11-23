@@ -9,6 +9,7 @@
       - prereqs.yml
       - network.yml
       - vms.yml
+      - ntp.yml
       - day2.yml
   tasks:
     - name: Run Inventory Validation test suites
