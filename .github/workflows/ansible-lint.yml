@@ -2,7 +2,7 @@ name: Ansible Lint
 
 on:
   push:
-    branches: 
+    branches:
       - main
   pull_request:
 
@@ -31,3 +31,6 @@ jobs:
       - name: Run ansible Lint
         run: |
           ansible-lint --exclude .github/ -v
+        env:
+          ANSIBLE_INVENTORY_UNPARSED_FAILED: false
+
