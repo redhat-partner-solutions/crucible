@@ -1,16 +1,11 @@
 ---
-- name: Play to populate image_hashes for relevant images
-  hosts: localhost
+- import_playbook: ./populate_image_hashes.yml
   vars:
     destination_hosts:
-      - assisted_installer
-  pre_tasks:
-    - name: pre-compute need to get hashes
-      set_fact:
-        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
-  roles:
-    - role: get_image_hash
-      when: run_get_hash
+      - registry_host
+    pre_compute: True
+  when: run_get_hash
+
 
 - name: Deploy OpenShift Assisted Installer On Prem
   hosts: assisted_installer

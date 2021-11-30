@@ -1,0 +1,11 @@
+---
+- name: Populate image_hashes for relevant images
+  hosts: localhost
+  connection: local
+  pre_tasks:
+    - name: pre-compute need to get hashes
+      set_fact:
+        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
+      when: pre_compute == True
+  roles:
+    - get_image_hash
