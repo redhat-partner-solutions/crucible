@@ -203,6 +203,8 @@ One of the simplest examples is a simple cluster with no workers, virtual master
 
 That diagram gives the following excerpt from the inventory for the `bastion` and `services`:
 
+> **Note**: We use `ansible_connection: local` here because crucible should be executed from the bastion, the use of connection local removes the need to configure your user to be able to SSH into its self. 
+
 ```yaml
 # ...
   children:
@@ -210,22 +212,34 @@ That diagram gives the following excerpt from the inventory for the `bastion` an
       hosts:
         bastion:
           ansible_host: 192.168.10.5
+          ansible_connection: local
+
     services:
       hosts:
         assisted_installer:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
+          ansible_connection: local
+
           # ...
         registry_host:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
+          ansible_connection: local
+
           # ...
         dns_host:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
+          ansible_connection: local
+
           # ...
         http_store:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
+          ansible_connection: local
+
           # ...
         ntp_host:
           ansible_host: "{{ hostvars['bastion']['ansible_host'] }}"
+          ansible_connection: local
+
           # ...
     vm_hosts:
       hosts:
@@ -342,6 +356,6 @@ The basic network configuration of the inventory for the fully bare metal deploy
           # ...
 ```
 
-Note that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
+> **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
 
 These two examples are not the only type of clusters that can be deployed using Crucible. A hybrid cluster can be created by mixing virtual and bare metal nodes.

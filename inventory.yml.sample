@@ -12,7 +12,7 @@ all:
     cluster_name: clustername
     base_dns_domain: example.lab
 
-    # OpenShift version
+    # OpenShift version (4.6.16, 4.7.33, 4.8.14 or 4.9.0)
     openshift_full_version: 4.6.16
 
     # Virtual IP addresses used to access the resulting OpenShift cluster
@@ -134,7 +134,8 @@ all:
     bastions: # n.b. Currently only a single bastion is supported
       hosts:
         bastion:
-          ansible_host: 172.28.11.51 # Must be reachable from the Ansible control node
+          ansible_host:  10.40.0.100 # Must be reachable from the Ansible control node
+          ansible_connection: local # if your are not running crucible from the bastion then remove this line
 
     # Configuration and access information for the pre-requisite services
     # TODO: document differences needed for already-deployed and auto-deployed
@@ -167,6 +168,7 @@ all:
 
         dns_host:
           ansible_host: 10.40.0.100
+          # upstream_dns: 8.8.8.8 # an optional upstream dns server
           # The following are required for DHCP setup
           # use_dhcp: true
           # dhcp_range_first: 10.60.0.101
@@ -190,6 +192,15 @@ all:
           vm_bridge_ip: 10.60.0.190 # IP for the bridge between VMs and machine network
           vm_bridge_interface: ens7f1 # Interface to be connected to the bridge. DO NOT use your primary interface.
           dns: 10.40.0.100 # DNS used by the bridge
+          # ssl cert configuration
+          # sushy_fqdn: ... # use in case of different FQDN for the cert
+          cert_vars_host_var_key: registry_host # Look up cert values from another host by name (excluding cert_common_name)
+          # or
+          # cert_country: US
+          # cert_locality: Raleigh
+          # cert_organization: Red Hat, Inc.
+          # cert_organizational_unit: Lab
+          # cert_state: NC
 
     # Describe the desired cluster members
     nodes:
@@ -245,8 +256,8 @@ all:
             vm_host: vm_host1
             vm_spec:
               cpu_cores: 4
-              ram_mib: 6144
-              disk_size_gb: 20
+              ram_mib: 16384
+              disk_size_gb: 50
           hosts:
             super1:
               ansible_host: 10.60.0.101
