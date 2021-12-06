@@ -142,6 +142,13 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
   -e skip_interactive_prompts=true
 ```
 
+### Priviledge Escalation
+
+For simplicity we suggest that passwordless sudo is set up on all machines. If this is not desirable or possible in your environment then there are two options:
+
+1. Use the same sudo password for all hosts, and use the `-K` flag on `ansible-playbook`. This will cause Ansible to [prompt for the sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-command-line-options). The password provided is then used for *all* hosts.
+1. Set the `ansible_become_password` variable for each host that needs a [sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-connection-variables). The passwords can be securely stored in an encrypted Ansible vault.
+
 
 ## Prerequisite Services
 
