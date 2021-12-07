@@ -1,4 +1,6 @@
 all:
+  vars:
+    openshift_full_version: 4.6.16
   children:
     nodes:
       vars:

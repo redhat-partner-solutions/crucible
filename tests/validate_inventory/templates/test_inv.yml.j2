@@ -3,6 +3,7 @@ all:
     {% if item.template.day2_discovery_iso_name is defined %}
     day2_discovery_iso_name: {{ item.template.day2_discovery_iso_name }}
     {% endif %}
+    openshift_full_version: {{ item.template.openshift_full_version | default('4.6.16') }}
   children:
     bastions:
       hosts:
