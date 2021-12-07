@@ -1,0 +1,12 @@
+force: "no" # force downloads for oc and opm
+
+file_owner: "{{ ansible_env.USER }}"
+file_group: "{{ file_owner }}"
+
+openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
+downloads_path: "{{ ansible_env.HOME }}"
+
+# oc and opm install
+release_url: "https://mirror.openshift.com/pub/openshift-v{{ openshift_full_version.split('.')[0] }}/clients/ocp"
+oc_tar: openshift-client-linux.tar.gz
+opm_tar: opm-linux.tar.gz

@@ -1,2 +1,3 @@
 dependencies:
   - role: validate_inventory
+  - role: install_cli_deps

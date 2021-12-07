@@ -1,17 +1,8 @@
 ---
 # defaults file for disconnected_registry
-force: "no" # force downloads for oc and opm
-
-openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
-downloads_path: "{{ ansible_env.HOME }}"
 
 # Name of the pod running as the registry.
 image_name_registry: ocpdiscon-registry
-
-# oc and opm install
-release_url: "https://mirror.openshift.com/pub/openshift-v{{ openshift_version_parts[0] }}/clients/ocp"
-oc_tar: openshift-client-linux.tar.gz
-opm_tar: opm-linux.tar.gz
 
 # The information for the locally created registry
 registry_fqdn: "{{ ansible_fqdn }}"
@@ -49,6 +40,3 @@ mirror_packages:
   - performance-addon-operator
   - ptp-operator
   - sriov-network-operator
-
-file_owner: "{{ ansible_env.USER }}"
-file_group: "{{ file_owner }}"

@@ -4,10 +4,6 @@
   tags:
     - populate_registry
 
-- import_tasks: prerequisites.yml
-  tags:
-    - populate_registry
-
 - import_tasks: populate_registry.yml
   tags:
     - populate_registry

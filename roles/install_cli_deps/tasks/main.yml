@@ -1,10 +1,4 @@
 ---
-- name: Make sure needed packages are installed
-  package:
-    name: tar
-    state: present
-  become: true
-
 - name: Create download dir
   ansible.builtin.file:
     path: "{{ downloads_path }}"
@@ -53,33 +47,30 @@
         owner: "{{ file_owner }}"
         group: "{{ file_group }}"
         remote_src: yes
-      become: true
 
     - name: Move oc to /usr/bin
       copy:
         src: "{{ downloads_path }}/openshift-client-linux/oc"
-        dest: /usr/bin/oc
+        dest: "{{ ansible_env.HOME }}/bin/oc"
         owner: "{{ file_owner }}"
         group: "{{ file_group }}"
         mode: 0775
         remote_src: yes
-      become: true
 
     - name: Move kubectl to /usr/bin
       copy:
         src: "{{ downloads_path }}/openshift-client-linux/kubectl"
-        dest: /usr/bin/kubectl
+        dest: "{{ ansible_env.HOME }}/bin/kubectl"
         owner: "{{ file_owner }}"
         group: "{{ file_group }}"
         mode: 0775
         remote_src: yes
-      become: true
 
     - name: Check kubectl installed
-      command: /usr/bin/kubectl version
+      command: "{{ ansible_env.HOME }}/bin/kubectl version"
 
     - name: Check oc installed
-      command: /usr/bin/oc version
+      command: "{{ ansible_env.HOME }}/bin/kubectl version"
 
   tags:
     - create_registry
@@ -113,15 +104,14 @@
     - name: Move opm to /usr/bin
       copy:
         src: "{{ downloads_path }}/opm-linux/opm"
-        dest: /usr/bin/opm
+        dest: "{{ ansible_env.HOME }}/bin/opm"
         owner: "{{ file_owner }}"
         group: "{{ file_group }}"
         mode: 0775
         remote_src: yes
-      become: true
 
     - name: Check opm installed
-      command: opm version
+      command: "{{ ansible_env.HOME }}/bin/opm version"
   tags:
     - create_registry
     - fetch_opm
