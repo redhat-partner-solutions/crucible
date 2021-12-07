@@ -9,6 +9,6 @@
     - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
     - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
     - SSH_PUBLIC_KEY: "{{ ssh_public_key }}"
-    - PULL_SECRET: "{{ hostvars['registry_host']['pull_secret'] | default(pull_secret) }}"
+    - PULL_SECRET: "{{ pull_secret }}"
     - DOWNLOAD_DEST_FILE: "{{ discovery_iso_name }}"
     - DOWNLOAD_DEST_PATH: "{{ iso_download_dest_path | default('/opt/http_store/data') }}"
