@@ -208,6 +208,9 @@ node_types:
         type: string
       version:
         type: string
+      base-dns-domain:
+        type: string
+        default: example.lab
       api-vip:
         description: >-
           The IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab

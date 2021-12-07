@@ -65,6 +65,8 @@ class Inventory:
         ard.write(inventory, out)
 
     def add_cluster(self, cluster):
+        self.all['vars']['cluster_name'] = cluster.properties['name']
+        self.all['vars']['base_dns_domain'] = cluster.properties['base-dns-domain']
         self.all['vars']['openshift_full_version'] = cluster.properties['version']
         self.all['vars']['api_vip'] = cluster.properties['api-vip']
         self.all['vars']['ingress_vip'] = cluster.properties['ingress-vip']
@@ -117,7 +119,7 @@ class Inventory:
     def add_node(self, node):
         machine = node.target
         role = node.properties['role']
-        
+
         host = to_host(machine)
         host['role'] = role
         host['vendor'] = machine.properties['vendor']
