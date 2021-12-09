@@ -2,3 +2,5 @@
   roles:
     - role: create_day2_cluster
       when: groups['day2_workers'] | default([]) | length > 0
+  vars:
+    - disconnected: "{{ use_local_mirror_registry | default(setup_registry_service | default(true)) }}"
