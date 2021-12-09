@@ -40,6 +40,27 @@ There three possible groups of nodes are `masters`, `workers` and `day2_workers`
 
 Day 2 nodes are added to an existing cluster. The reason why the installation of day 2 nodes is built into the main path of our automation is that for assisted installer day 2 nodes can be on a different L2 network which the main flow does not allow.
 
+Add a second iso name parameter to the inventory to avoid conflict with the original:
+
+```yaml
+# day2 workers require custom parameter
+day2_discovery_iso_name: "discovery/day2_discovery-image.iso"
+```
+
+Then add the stanza for day2 workers:
+
+```yaml
+day2_workers:
+  vars:
+    role: worker
+    vendor: HPE
+  hosts:
+    worker3: # Ensure this does not conflict with any existing workers
+      ansible_host: 10.60.0.106
+      bmc_address: 172.28.11.26
+      mac: 3C:FD:FE:78:AB:05
+```
+
 ### Network checks
 
 - All node `bmc_address`es are reachable
