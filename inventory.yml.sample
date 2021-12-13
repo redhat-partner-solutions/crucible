@@ -65,7 +65,7 @@ all:
 
     # HTTP Store Configuration
     # ISO name must include the `discovery` directory if you have a SuperMicro machine
-    discovery_iso_name: "discovery/discovery-image.iso"
+    discovery_iso_name: "discovery/{{ cluster_name }}/discovery-image.iso"
 
     # discovery_iso_server must be discoverable from all BMCs in order for them to mount the ISO hosted there.
     # It is usually necessary to specify different values for KVM nodes and/or physical BMCs if they are on different subnets.
