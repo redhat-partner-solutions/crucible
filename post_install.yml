@@ -8,6 +8,10 @@
     kube_filename: "{{ kubeconfig_dest_filename | default('kubeconfig') }}"
     dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
     kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
+
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
   tasks:
     - name: Download kubeconfig
       get_url:
@@ -15,18 +19,18 @@
         dest: "{{ kubeconfig_path }}"
         mode: 0664
 
-    - name: Check kubectl
+    - name: Perform simple connectivity check with oc
       shell:
-        cmd: "kubectl --kubeconfig {{ kubeconfig_path }} explain pods"
+        cmd: "oc explain pods"
 
-    - name: Check cluster
+    - name: Check status of cluster operators
       block:
-        - name: Wait up to 10 mins for cluster to become functional
+        - name: Wait up to 20 mins for cluster to become functional
           shell:
-            cmd: oc --kubeconfig {{ kubeconfig_path }} wait clusteroperators --all --for=condition=Available --timeout=10m
+            cmd: oc wait clusteroperators --all --for=condition=Available --timeout=20m
       rescue:
         - name: Get better info for failure message
-          shell: oc --kubeconfig {{ kubeconfig_path }} get co
+          shell: oc get clusteroperators
           register: co_result
 
         - fail:
@@ -42,4 +46,4 @@
 
     - name: Login to add token to kubeconfig
       shell:
-        cmd: "oc --kubeconfig {{ kubeconfig_path }} login -u {{ credentials.json.username }} -p '{{ credentials.json.password }}'"
+        cmd: "oc login -u {{ credentials.json.username }} -p '{{ credentials.json.password }}'"

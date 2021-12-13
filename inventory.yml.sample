@@ -124,6 +124,8 @@ all:
 
     openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
 
+    is_valid_single_node_openshift_config: "{{ (groups['nodes'] | length == 1) and (groups['masters'] | length == 1) }}"
+
     ############################
     # ^^^^^^^^^^^^^^^^^^^^^^^^ #
     #    LOGIC: DO NOT TOUCH   #
