@@ -6,5 +6,3 @@
   serial: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary(omit, 1) }}"
   roles:
     - boot_iso
-  vars:
-    - boot_iso_url: "{{ discovery_iso_server }}/{{ discovery_iso_name }}"
