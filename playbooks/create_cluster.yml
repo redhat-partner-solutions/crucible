@@ -3,20 +3,3 @@
   gather_facts: False
   roles:
     - create_cluster
-  vars:
-    - disconnected: "{{ use_local_mirror_registry | default(setup_registry_service | default(true)) }}"
-    - CLUSTER_NAME: "{{ cluster_name }}"
-    - BASE_DNS_DOMAIN: "{{ base_dns_domain }}"
-    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
-    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
-    - SSH_PUBLIC_KEY: "{{ ssh_public_key }}"
-    - PULL_SECRET: "{{ hostvars['registry_host']['pull_secret'] | default(pull_secret) }}"
-    - CLUSTER_NETWORK_CIDR: "{{ cluster_network_cidr }}"
-    - CLUSTER_NETWORK_HOST_PREFIX: "{{ cluster_network_host_prefix }}"
-    - SERVICE_NETWORK_CIDR: "{{ service_network_cidr }}"
-    - OPENSHIFT_VERSION: "{{ openshift_version }}"
-    - VIP_DHCP_ALLOCATION: "{{ vip_dhcp_allocation }}"
-    - INGRESS_VIP: "{{ ingress_vip }}"
-    - API_VIP: "{{ api_vip }}"
-    - MACHINE_NETWORK_CIDR: "{{ machine_network_cidr }}"
-    - NTP_SERVER: "{{ ntp_server }}"

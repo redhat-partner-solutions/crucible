@@ -18,7 +18,6 @@
     - role: setup_assisted_installer
       when: SETUP_ASSISTED_INSTALLER == True
   vars:
-    PULL_SECRET: "{{ pull_secret }}"
     SETUP_ASSISTED_INSTALLER: "{{ setup_assisted_installer | default(True) }}"
   post_tasks:
     - name: Wait for up to 60 minutes for the assisted installer to come online

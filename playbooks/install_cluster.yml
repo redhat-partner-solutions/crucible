@@ -5,10 +5,3 @@
   gather_facts: False
   roles:
     - install_cluster
-  vars:
-    - ASSISTED_INSTALLER_HOST: "{{ hostvars['assisted_installer']['host'] }}"
-    - ASSISTED_INSTALLER_PORT: "{{ hostvars['assisted_installer']['port'] }}"
-    - CLUSTER_ID: "{{ cluster_id }}"
-    - INGRESS_VIP: "{{ ingress_vip }}"
-    - API_VIP: "{{ api_vip }}"
-    - VIP_DHCP_ALLOCATION: "{{ vip_dhcp_allocation }}"
