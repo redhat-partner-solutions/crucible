@@ -13,21 +13,21 @@
     return_content: True
     body:
       {
-        "name": "{{ CLUSTER_NAME }}",
-        "openshift_version": "{{ OPENSHIFT_VERSION }}",
-        "base_dns_domain": "{{ BASE_DNS_DOMAIN }}",
-        "cluster_network_cidr": "{{ CLUSTER_NETWORK_CIDR }}",
+        "name": "{{ cluster_name }}",
+        "openshift_version": "{{ openshift_version }}",
+        "base_dns_domain": "{{ base_dns_domain }}",
+        "cluster_network_cidr": "{{ cluster_network_cidr }}",
         "cluster_network_host_prefix": 23,
-        "service_network_cidr": "{{ SERVICE_NETWORK_CIDR }}",
-        "ingress_vip": "{{ INGRESS_VIP }}",
-        "pull_secret": "{{ PULL_SECRET | to_json }}",
-        "ssh_public_key": "{{ SSH_PUBLIC_KEY }}",
-        "vip_dhcp_allocation": "{{ VIP_DHCP_ALLOCATION | lower | bool }}",
-        "api_vip": "{{ API_VIP }}",
+        "service_network_cidr": "{{ service_network_cidr }}",
+        "ingress_vip": "{{ ingress_vip }}",
+        "pull_secret": "{{ pull_secret | to_json }}",
+        "ssh_public_key": "{{ ssh_public_key }}",
+        "vip_dhcp_allocation": "{{ vip_dhcp_allocation | lower | bool }}",
+        "api_vip": "{{ api_vip }}",
         "http_proxy": "{{ HTTP_PROXY }}",
         "https_proxy": "{{ HTTPS_PROXY }}",
         "no_proxy": "{{ NO_PROXY }}",
-        "additional_ntp_source": "{{ NTP_SERVER }}",
+        "additional_ntp_source": "{{ ntp_server }}",
       }
   when: create | bool == True
   register: http_reply

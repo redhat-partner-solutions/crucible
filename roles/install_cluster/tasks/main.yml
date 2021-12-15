@@ -68,9 +68,9 @@
     body_format: json
     body:
       {
-        "vip_dhcp_allocation": "{{ VIP_DHCP_ALLOCATION | lower | bool }}",
-        "ingress_vip": "{{ INGRESS_VIP }}",
-        "api_vip": "{{ API_VIP }}",
+        "vip_dhcp_allocation": "{{ vip_dhcp_allocation | lower | bool }}",
+        "ingress_vip": "{{ ingress_vip }}",
+        "api_vip": "{{ api_vip }}",
       }
   when: install | bool == True
   register: http_reply
