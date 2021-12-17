@@ -2,11 +2,22 @@
 # tasks file for install_cluster/hosts_discovery
 
 - name: "Wait for up to 10 minutes for node discovery - {{ discovered_host.id }}"
-  uri:
-    url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/hosts/{{ discovered_host.id }}"
-    method: GET
-    status_code: [200, 201]
-    return_content: True
+  crucible.ocm.rest_api_call:
+    method: "PATCH"
+    query: None
+    url_endpoint: { 
+                    #"host": "" for on-prem installation specify installer host dns
+                    #"port": "" for on-prem install specify installer port 
+                    "api_version": "v1" 
+                    "api_endpoint": "clusters"
+
+                  }
+    authentication: { 
+                      ##include api_token if use cloud installer 
+                      "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" 
+                    }
   register: host
   until: host.json.inventory is defined
   retries: 10
@@ -51,12 +62,22 @@
   when: host_name is defined or host_role is defined
 
 - name: Set host name and role for {{ host_name }}
-  uri:
-    url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}"
-    method: PATCH
-    url_username: "{{ HTTP_AUTH_USERNAME }}"
-    url_password: "{{ HTTP_AUTH_PASSWORD }}"
-    body_format: json
+  crucible.ocm.rest_api_call:
+    method: "PATCH"
+    query: None
+    url_endpoint: { 
+                    #"host": "" for on-prem installation specify installer host dns
+                    #"port": "" for on-prem install specify installer port 
+                    "api_version": "v1" 
+                    "api_endpoint": "clusters"
+
+                  }
+    authentication: { 
+                      ##include api_token if use cloud installer 
+                      "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" 
+                    }
     status_code: [201]
     return_content: True
     body: {
@@ -73,12 +94,22 @@
         installation_disk_path: "{{ hostvars[host_name]['installation_disk_path'] }}"
 
     - name: "Set the installation disk to {{ installation_disk_path }} for {{ host_name }}"
-      uri:
-        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}"
-        method: PATCH
-        status_code: [201]
-        return_content: true
-        body_format: json
+      crucible.ocm.rest_api_call:
+        method: "PATCH"
+        query: None
+        url_endpoint: { 
+                        #"host": "" for on-prem installation specify installer host dns
+                        #"port": "" for on-prem install specify installer port 
+                        "api_version": "v1" 
+                        "api_endpoint": "clusters"
+
+                      }
+        authentication: { 
+                          ##include api_token if use cloud installer 
+                          "username": "{{ HTTP_AUTH_USERNAME }}", 
+                          "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                          "api_token": "{{ HTTP_API_TOKEN }}" 
+                        }
         body: {
           "disks_selected_config": [
             {
