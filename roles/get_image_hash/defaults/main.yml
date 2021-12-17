@@ -3,16 +3,16 @@ controller_tag: "{{ ai_version }}"
 installer_agent_tag: "{{ ai_version }}"
 installer_tag: "{{ ai_version }}"
 
-ocp_release_versions_map_all:
+get_release_images: true
+get_all_release_versions: false
+
+openshift_full_version_mapping:
   '4.6': 4.6.16
   '4.7': 4.7.33
   '4.8': 4.8.14
   '4.9': 4.9.0
 
-get_release_images: true
-get_all_release_versions: false
-
-ocp_release_versions_map: "{{ get_all_release_versions | ternary(ocp_release_versions_map_all, {openshift_version: ocp_release_versions_map_all[openshift_version]}) }}"
+ocp_release_versions_map: "{{ get_all_release_versions | ternary(openshift_full_version_mapping, { (openshift_version | string): openshift_full_version_mapping[openshift_version | string]}) }}"
 
 release_image_url: "quay.io/openshift-release-dev/ocp-release"
 

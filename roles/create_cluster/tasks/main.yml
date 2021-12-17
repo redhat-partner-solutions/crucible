@@ -14,7 +14,7 @@
     body:
       {
         "name": "{{ cluster_name }}",
-        "openshift_version": "{{ openshift_version }}",
+        "openshift_version": "{{ openshift_version | string }}",
         "base_dns_domain": "{{ base_dns_domain }}",
         "cluster_network_cidr": "{{ cluster_network_cidr }}",
         "cluster_network_host_prefix": 23,

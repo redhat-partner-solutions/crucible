@@ -2,7 +2,6 @@
 # defaults file for disconnected_registry
 force: "no" # force downloads for oc and opm
 
-openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
 downloads_path: "{{ ansible_env.HOME }}"
 
 # Name of the pod running as the registry.
@@ -34,14 +33,14 @@ installer_controller_image:
   local_tag: "latest"
 
 release_image_item:
-  remote: "quay.io/openshift-release-dev/ocp-release@{{ image_hashes['release_' + openshift_version] }}"
+  remote: "quay.io/openshift-release-dev/ocp-release@{{ image_hashes['release_' + (openshift_version | string)] }}"
   local: "{{ local_registry }}/ocp4/openshift4"
   local_tag: "{{ openshift_full_version }}-x86_64"
 
 olm_index_item:
-  remote: "registry.redhat.io/redhat/redhat-operator-index:v{{ openshift_version_parts[:2] | join('.') }}"
+  remote: "registry.redhat.io/redhat/redhat-operator-index:v{{ (openshift_version | string) }}"
   local: "{{ local_registry }}/olm-index/redhat-operator-index"
-  local_tag: "v{{ openshift_version_parts[:2] | join('.') }}"
+  local_tag: "v{{ (openshift_version | string) }}"
 
 ocpmetal_images:
   - "{{ installer_agent_image }}"

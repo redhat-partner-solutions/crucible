@@ -12,8 +12,8 @@ all:
     cluster_name: clustername
     base_dns_domain: example.lab
 
-    # OpenShift version (4.6.16, 4.7.33, 4.8.14 or 4.9.0)
-    openshift_full_version: 4.6.16
+    # Openshift version (4.6, 4.7, 4.8 or 4.9)
+    openshift_version: 4.8
 
     # Virtual IP addresses used to access the resulting OpenShift cluster
     api_vip: 10.60.0.96 # the IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab
@@ -122,8 +122,7 @@ all:
       }}"
     mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
 
-    openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
-
+    openshift_full_version: "{{ openshift_full_version_mapping[openshift_version | string] }}"
     ############################
     # ^^^^^^^^^^^^^^^^^^^^^^^^ #
     #    LOGIC: DO NOT TOUCH   #

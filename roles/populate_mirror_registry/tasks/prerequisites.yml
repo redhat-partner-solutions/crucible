@@ -89,7 +89,7 @@
   block:
     - name: Download opm tarball
       get_url:
-        url: "{{ release_url }}/stable-{{ openshift_version }}/{{ opm_tar }}"
+        url: "{{ release_url }}/stable-{{ (openshift_version | string) }}/{{ opm_tar }}"
         dest: "{{ downloads_path }}/"
         force: "{{ force }}"
         backup: yes

@@ -20,7 +20,14 @@ supported_vendor_values:
 ai_version: "{{ hostvars.assisted_installer.ai_version | default('v1.0.24.2') }}"
 ai_version_number: "{{ ai_version | regex_replace('v(\\d+\\.\\d+.\\d+\\.\\d+)', '\\1') }}"
 
-supported_ocp_versions:
+# This way a simple find and replace or an override of openshift_full_version_mapping will update the supported versions
+openshift_full_version_mapping:
+  '4.6': 4.6.16
+  '4.7': 4.7.33
+  '4.8': 4.8.14
+  '4.9': 4.9.0
+
+supported_ocp_versions: 
   - 4.6.16
   - 4.7.33
   - 4.8.14
