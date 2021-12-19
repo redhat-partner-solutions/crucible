@@ -47,7 +47,7 @@ def main():
 
         query=dict(required=True,type='str'),
     )
-    required_together = [["url", "access_token"]]
+    required_together = [["auth", "url_endpoint"]]
 
     #module parameter
     module = AnsibleModule(
