@@ -23,6 +23,14 @@
         var: discovered_host
         verbosity: 1
 
+    - name: Patch host
+      import_role:
+        name: patch_host_config
+      vars:
+        patch_cluster_id: "{{ add_host_cluster_id }}"
+        inventory_nodes:
+          - "{{ inventory_hostname }}"
+
     - name: "Wait for 20 min until {{ inventory_hostname }} to be ready"
       uri:
         url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/hosts/{{ discovered_host.id }}"
@@ -33,27 +41,6 @@
       until: discovered_host_reply.json.status in day2_states
       retries: 20
       delay: 60
-
-    - name: Patch host
-      import_role:
-        name: patch_host_config
-      vars:
-        cluster_id: "{{ add_host_cluster_id }}"
-        discovered_host: "{{ discovered_host_reply.json }}"
-        inventory_nodes:
-          - "{{ inventory_hostname }}"
-
-    - name: "Refresh {{ inventory_hostname }} values"
-      uri:
-        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/hosts/{{ discovered_host.id }}"
-        method: GET
-        status_code: [200, 201]
-        return_content: True
-      register: discovered_host_reply
-
-    - debug: # noqa unnamed-task
-        var: discovered_host_reply.json
-        verbosity: 1
 
     - name: Install cluster
       uri:
