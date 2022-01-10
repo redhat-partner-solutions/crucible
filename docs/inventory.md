@@ -223,6 +223,20 @@ When using one or more virtual nodes, they are identified as such by having `ven
   - The BMC user and password will be set in `sushy-tools` and must therefore be the same for all virtual nodes.
 - The specified MAC address will be set on the VM interface.
 
+#### Reusable VMs
+
+If you need VMs with static UUIDs to allow them to be reused then the UUID for a VM can be set using the `uuid` var for each VM node. e.g.
+
+```yaml
+          hosts:
+            super1:
+              vendor: KVM
+              ansible_host: 192.168.10.11
+              mac: "DE:AD:BE:EF:C0:2C"
+              uuid: d36ebda0-25bf-55ef-9c69-66ad5ef0d39d
+```
+
+
 ### SSH Key Gen
 
 ---
