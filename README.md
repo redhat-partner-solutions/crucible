@@ -37,13 +37,9 @@ Crucible targets versions of Python and Ansible that ship with RHEL. At the mome
 
 ## Assisted Installer versions Tested
 
-- v1.0.18.3
-- v1.0.19.3
-- v1.0.20.3
-- v1.0.21.3
-- v1.0.22.3
-- v1.0.23.2
-- v1.0.24.2
+- v2.1.0
+- v2.1.1
+- v2.1.2
 
 
 ### Dependencies
