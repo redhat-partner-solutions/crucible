@@ -3,7 +3,7 @@
   hosts: bastion
   vars:
     secure: false
-    ASSISTED_INSTALLER_BASE_URL: "{{ secure | ternary('https', 'http') }}://{{ hostvars['assisted_installer']['host'] }}:{{ hostvars['assisted_installer']['port'] }}/api/assisted-install/v1"
+    ASSISTED_INSTALLER_BASE_URL: "{{ secure | ternary('https', 'http') }}://{{ hostvars['assisted_installer']['host'] }}:{{ hostvars['assisted_installer']['port'] }}/api/assisted-install/v2"
     URL_ASSISTED_INSTALLER_CLUSTER: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ cluster_id }}"
     kube_filename: "{{ kubeconfig_dest_filename | default(cluster_name + '-kubeconfig') }}"
     dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
@@ -12,9 +12,10 @@
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
+
     - name: Download kubeconfig
       get_url:
-        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/downloads/kubeconfig"
+        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/downloads/credentials?file_name=kubeconfig"
         dest: "{{ kubeconfig_path }}"
         mode: 0664
 

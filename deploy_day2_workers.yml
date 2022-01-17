@@ -5,7 +5,7 @@
   when: groups['day2_workers'] | default([]) | length > 0
   vars:
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
-    URL_ASSISTED_INSTALLER_CLUSTERS_DOWNLOAD_IMAGE: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ add_host_cluster_id }}/downloads/image"
+    iso_cluster_id: "{{ add_host_cluster_id }}"
 
 - import_playbook: playbooks/boot_iso.yml
   when: groups['day2_workers'] | default([]) | length > 0
