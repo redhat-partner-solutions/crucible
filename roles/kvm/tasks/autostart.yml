@@ -1,0 +1,31 @@
+---
+- name: VM Inventory Mapper
+  import_tasks: mapper.yml
+
+- name: What VMs to Adjust
+  block:
+    - name: List VMs
+      community.libvirt.virt:
+        command: list_vms
+      register: vms_list
+    - debug:
+        var: vms_list.list_vms
+        verbosity: 1
+    - name: Filter VM List
+      set_fact:
+        vms_to_autostart: "{{ (vms_to_autostart | default([])) + [item] }}"
+      loop: "{{ vms_list.list_vms }}"
+      when: item in cluster_vm_names
+  become: true
+
+- debug:
+    var: vms_to_autostart
+    verbosity: 1
+
+- name: "Setting {{ item }} to autostart"
+  community.libvirt.virt:
+    command: autostart
+    name: "{{ item }}"
+  loop: "{{ vms_to_restart | default([]) }}"
+  ignore_errors: yes
+  become: true

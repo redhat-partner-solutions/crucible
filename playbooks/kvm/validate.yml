@@ -1,0 +1,10 @@
+---
+- name: Validate vm_hosts
+  hosts: vm_hosts
+  vars:
+    SETUP_VMS: "{{ setup_vms | default((kvm_nodes | default([])) | length | int >= 1) }}"
+  tasks:
+    - name: Validate
+      import_role:
+        name: kvm
+        tasks_from: validate

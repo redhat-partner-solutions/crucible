@@ -16,6 +16,6 @@
 
 - import_playbook: playbooks/deploy_assisted_installer_onprem.yml
 
-- import_playbook: playbooks/create_vms.yml
+- import_playbook: playbooks/kvm/create.yml
 
 - import_playbook: playbooks/deploy_sushy_tools.yml

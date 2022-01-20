@@ -1,0 +1,12 @@
+---
+- name: Process KVM Nodes
+  import_playbook: process.yml
+  
+- name: Destroy VMs
+  hosts: vm_hosts
+  tasks:
+    - name: Destroy
+      import_role:
+        name: kvm
+        tasks_from: destroy
+

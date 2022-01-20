@@ -1,0 +1,39 @@
+---
+- name: VM Inventory Mapper
+  import_tasks: mapper.yml
+
+- name: Setup KVM Environment
+  import_tasks: install.yml
+
+- name: Destroy Networks
+  import_tasks: destroy_networks.yml
+  become: true
+
+- name: Get VMs to Remove
+  block:
+    - name: List vms
+      community.libvirt.virt:
+        command: list_vms
+      register: vms_list
+      become: true
+
+    - name: VM list
+      debug:
+        var: vms_list.list_vms
+        verbosity: 1
+
+    - name: Get filtered vm list
+      set_fact:
+        vms_to_remove: "{{ (vms_to_remove | default([])) + [item] }}"
+      loop: "{{ vms_list.list_vms }}"
+      when: item in cluster_vm_names
+
+- name: VMS to remove
+  debug:
+    var: vms_to_remove
+    verbosity: 1
+
+- name: Destroy vms
+  import_tasks: destroy_vms.yml
+  ignore_errors: yes
+  become: true

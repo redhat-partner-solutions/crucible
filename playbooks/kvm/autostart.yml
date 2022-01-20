@@ -1,0 +1,15 @@
+---
+# To disable autostart on vm's set the autostart var below to False.
+# To enable autostart on vm's set the autostart var to True.
+- name: Process KVM Nodes
+  import_playbook: process.yml
+  
+- name: Process Autostart on VMs
+  hosts: vm_hosts
+  tasks:
+    - import_role:
+        name: kvm
+        tasks_from: autostart
+  vars:
+    autostart: False
+

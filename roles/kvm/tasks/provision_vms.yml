@@ -1,0 +1,28 @@
+---
+- name: Provision Nodes
+  become: true
+  block:
+    - name: Create rng device XML file
+      template:
+        src: rng_device.xml.j2
+        dest: "/tmp/{{ cluster_name }}_rng_device.xml"
+        mode: 0664
+
+    - name: Create vm create scripts dir
+      file:
+        path: "{{ vm_create_scripts_dir }}"
+        state: directory
+        recurse: yes
+        mode: 0755
+
+    - name: Create vm creation_scripts
+      template:
+        src: create_vm.sh.j2
+        dest: "{{ vm_create_scripts_dir }}/{{ item.name }}_setup_vm.sh"
+        lstrip_blocks: true
+        mode: 0774
+      loop: "{{ kvm_nodes }}"
+
+    - name: Run vm creation_scripts
+      shell: "/bin/bash {{ vm_create_scripts_dir }}/{{ item.name }}_setup_vm.sh"
+      loop: "{{ kvm_nodes }}"

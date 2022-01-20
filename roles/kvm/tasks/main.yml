@@ -1,0 +1,7 @@
+---
+- fail:
+    msg: |
+        Incorrect role inclusion.
+        This is intended to be run from the import_role module. Please see
+        https://docs.ansible.com/ansible/2.9/modules/import_role_module.html
+        

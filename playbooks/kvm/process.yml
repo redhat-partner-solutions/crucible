@@ -1,0 +1,8 @@
+---
+- name: Process KVM Nodes
+  hosts: bastion
+  tasks:
+    - name: Process KVM nodes
+      import_role:
+        name: kvm
+        tasks_from: process_kvm_nodes

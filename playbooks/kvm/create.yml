@@ -1,0 +1,35 @@
+---
+- name: Process KVM Nodes
+  import_playbook: process.yml
+  when: (setup_vms | default(true))
+
+- name: Provision VMS
+  hosts: vm_hosts
+  vars:
+    SETUP_VMS: "{{ setup_vms | default((kvm_nodes | default([])) | length | int >= 1) }}"
+  tasks:
+    - name: Validate vm_host
+      import_role:
+        name: kvm
+        tasks_from: validate
+    - name: Destroy VMs
+      import_role:
+        name: kvm
+        tasks_from: destroy
+      when: SETUP_VMS | bool
+      tags:
+        - destroy_vms
+    - name: Setup VM Host Network
+      import_role:
+        name: kvm
+        tasks_from: setup_up_host_network.yml
+      when: (SETUP_VM_BRIDGE | default(SETUP_VMS)) | bool
+    - name: Create VMs
+      import_role:
+        name: kvm
+        tasks_from: create
+      when: SETUP_VMS | bool
+      tags:
+        - setup_vms
+
+

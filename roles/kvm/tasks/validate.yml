@@ -1,0 +1,30 @@
+---
+- name: Validate | Testing binary
+  command: which virt-host-validate
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
+  register: result
+
+- name: Validate | Fail if missing
+  fail:
+    msg: "/usr/bin/virt-host-validate appears to be missing."
+  when: result.rc != 0
+
+- name: Validate | Testing the vm_host
+  command: /usr/bin/virt-host-validate
+  changed_when: false
+  failed_when: false
+  ignore_errors: false
+  register: result
+
+- name: Validate | Notify if Warnings found
+  debug:
+    msg: "{{ item }}"
+  when: result.stdout_lines | select('search', 'WARN') | list  
+  with_items: "{{ result.stdout_lines | select('search', 'WARN') | list}}"
+
+- name: Validate | Notify if Failed
+  fail:
+    msg: "{{ result.stdout_lines }}"
+  when: result.stdout_lines | select('search', 'FAIL') | list

@@ -1,0 +1,12 @@
+---
+- name: "Install virt-manager"
+  package:
+    name: "{{ virt_packages }}"
+    state: present
+  become: true
+
+- name: Start libvirtd
+  service:
+    name: libvirtd
+    state: started
+  become: true

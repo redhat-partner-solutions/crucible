@@ -1,0 +1,48 @@
+---
+- name: VM Inventory Mapper
+  import_tasks: mapper.yml
+
+- name: Setup KVM Environment
+  import_tasks: install.yml
+
+- name: What VMs to Restart
+  block:
+    - name: List VMs
+      community.libvirt.virt:
+        command: list_vms
+      register: vms_list
+    - debug:
+        var: vms_list.list_vms
+        verbosity: 1
+    - name: Filter VM List
+      set_fact:
+        vms_to_restart: "{{ (vms_to_restart | default([])) + [item] }}"
+      loop: "{{ vms_list.list_vms }}"
+      when: item in cluster_vm_names
+  become: true
+
+- debug:
+    var: vms_to_restart
+    verbosity: 1
+
+- name: Restarting VMs
+  block:
+    - name: "Shuting Down {{ item }}"
+      community.libvirt.virt:
+        command: shutdown
+        name: "{{ item }}"
+    - name: "Waiting for {{ item }}"
+      community.libvirt.virt:
+        command: status
+        name: "{{ item }}"
+      register: vmstatus
+      until: vmstatus.status == 'shutdown'
+      retries: 15
+      delay: 2
+    - name: "Starting Up {{ item }}"
+      community.libvirt.virt:
+        command: start
+        name: "{{ item }}"
+  loop: "{{ vms_to_restart | default([]) }}"
+  ignore_errors: yes
+  become: true
