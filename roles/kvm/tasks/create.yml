@@ -1,12 +1,12 @@
 ---
-- name: Setup KVM Environment
+- name: Create | Setup KVM Environment
   import_tasks: install.yml
 
-- name: Provision Network
+- name: Create | Provision Network
   import_tasks: prepare_network.yml
 
-- name: Provision Storage Pool
+- name: Create | Provision Storage Pool
   import_tasks: prepare_storage_pool.yml
 
-- name: Provision VMS
+- name: Create | Provision VMS
   import_tasks: provision_vms.yml

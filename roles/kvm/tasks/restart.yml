@@ -11,7 +11,8 @@
       community.libvirt.virt:
         command: list_vms
       register: vms_list
-    - debug:
+    - name: Vms to restart
+      debug:
         var: vms_list.list_vms
         verbosity: 1
     - name: Filter VM List
@@ -21,7 +22,8 @@
       when: item in cluster_vm_names
   become: true
 
-- debug:
+- name: Vms that are being restarted
+  debug:
     var: vms_to_restart
     verbosity: 1
 

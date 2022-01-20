@@ -22,7 +22,7 @@
   debug:
     msg: "{{ item }}"
   when: result.stdout_lines | select('search', 'WARN') | list  
-  with_items: "{{ result.stdout_lines | select('search', 'WARN') | list}}"
+  with_items: "{{ result.stdout_lines | select('search', 'WARN') | list }}"
 
 - name: Validate | Notify if Failed
   fail:
