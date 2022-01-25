@@ -30,3 +30,8 @@
   include_tasks: supermicro.yml
   loop: "{{ hosts }}"
   when: hostvars[item]['vendor'] | lower == 'supermicro'
+
+- name: Reboot Nokia
+  include_tasks: nokia.yml
+  loop: "{{ hosts }}"
+  when: hostvars[item]['vendor'] | lower == 'nokia'

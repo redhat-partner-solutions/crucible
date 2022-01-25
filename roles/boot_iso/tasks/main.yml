@@ -25,6 +25,12 @@
     apply:
       delegate_to: bastion
 
+- include_tasks: nokia/main.yml
+  when: hostvars[inventory_hostname]['vendor'] | lower == 'nokia'
+  args:
+    apply:
+      delegate_to: bastion
+
 - include_tasks: lenovo.yml
   when: hostvars[inventory_hostname]['vendor'] | lower == 'lenovo'
   args:
