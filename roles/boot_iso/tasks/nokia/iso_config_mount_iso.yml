@@ -1,5 +1,5 @@
 ---
-- name: Unmount SuperMicro ISO
+- name: Unmount Nokia ISO
   uri:
     url: "https://{{ hostvars[inventory_hostname]['bmc_address'] }}/redfish/v1/Managers/Self/Actions/Oem/AMIVirtualMedia.ConfigureCDInstance/Actions/IsoConfig.UnMount"
     user: "{{ hostvars[inventory_hostname]['bmc_user'] }}"
@@ -14,7 +14,7 @@
     force_basic_auth: yes
     return_content: yes
 
-- name: Mount SuperMicro ISO
+- name: Mount Nokia ISO
   uri:
     url: "https://{{ hostvars[inventory_hostname]['bmc_address'] }}/redfish/v1/ManagersSelf/Actions/Oem/AMIVirtualMedia.ConfigureCDInstance/Actions/IsoConfig.Mount"
     user: "{{ hostvars[inventory_hostname]['bmc_user'] }}"

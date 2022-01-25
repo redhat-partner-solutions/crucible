@@ -187,41 +187,11 @@ network_config:
       type: ethernet
       mac: "40:A6:B7:3D:B3:71"
       state: down
-  dns_server_ips:
-    -  10.40.0.100
+  dns_resolver_ip: 10.40.0.100
   routes:
     - destination: 0.0.0.0/0
       address: 172.17.0.1
       interface: bond0
-```
-
-#### VLAN
-
-Here is an example of how to do VLAN taged interface on top of primary interface.
-
-```yaml
-network_config:
-  interfaces:
-    - name: ens7f0.350
-      type: vlan
-      state: up
-        addresses:
-          ipv4:
-            - ip: 172.17.0.101
-              prefix: 24
-      vlan:
-        interface: ens7f0
-        tag: 350
-    - name: ens7f0
-      type: ethernet
-      mac: "40:A6:B7:3D:B3:71"
-      state: up
-  dns_server_ips:
-    - 10.40.0.100
-  routes:
-    - destination: 0.0.0.0/0
-      address: 172.17.0.1
-      interface: ens43f0.350
 ```
 
 ### Prerequisites
