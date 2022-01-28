@@ -5,13 +5,12 @@
     secure: false
     ASSISTED_INSTALLER_BASE_URL: "{{ secure | ternary('https', 'http') }}://{{ hostvars['assisted_installer']['host'] }}:{{ hostvars['assisted_installer']['port'] }}/api/assisted-install/v1"
     URL_ASSISTED_INSTALLER_CLUSTER: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ cluster_id }}"
-    kube_filename: "{{ kubeconfig_dest_filename | default('kubeconfig') }}"
+    kube_filename: "{{ kubeconfig_dest_filename | default(cluster_name + '-kubeconfig') }}"
     dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
     kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
-
+    kubeadmin_vault_name: "{{ cluster_name }}-kubeadmin.vault.yml"
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
-
   tasks:
     - name: Download kubeconfig
       get_url:
@@ -47,3 +46,12 @@
     - name: Login to add token to kubeconfig
       shell:
         cmd: "oc login -u {{ credentials.json.username }} -p '{{ credentials.json.password }}'"
+
+    - name: Save credentials to file
+      copy:
+        content: "{{ credentials.json | to_yaml }}"
+        dest: "{{ dest_dir }}/{{ kubeadmin_vault_name }}"
+
+    - name: Save credentials to vault
+      shell:
+        cmd: "ansible-vault encrypt --vault-password-file {{ kubeadmin_vault_password_file_path }} {{ dest_dir }}/{{ kubeadmin_vault_name }}"
