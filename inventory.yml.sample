@@ -162,10 +162,6 @@ all:
           disconnected_registry_user: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_USER | mandatory }}"
           disconnected_registry_password: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_PASSWORD | mandatory }}"
 
-          # # registry_container_image defaults to docker.io/library/registry:2
-          # # Note that docker.io may rate-limit heavy users. Use this to provide your own image.
-          # registry_container_image: quay.io/example/registry:latest
-
         dns_host:
           ansible_host: 10.40.0.100
           # upstream_dns: 8.8.8.8 # an optional upstream dns server
