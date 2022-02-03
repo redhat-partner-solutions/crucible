@@ -3,3 +3,4 @@
   gather_facts: False
   roles:
     - create_cluster
+    - patch_cluster
