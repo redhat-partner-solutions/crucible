@@ -417,6 +417,17 @@ The basic network configuration of the inventory for the fully bare metal deploy
           bmc_address: 172.30.10.7
           # ...
 ```
+## Additional Partition Deployment
+
+For OCP 4.8+ deployments you can set partitions if required on the nodes. You do this by adding the snippet below to the node defination. Please ensure you provide the correct label and size(MiB) for the additional partitions you want to create. The device can either be the drive in which RHCOS image needs to be installed or it can be any additional drive on the node that requires partitioning. In the case that the device is equal to the host's `installation_disk_path` then a partition will be added defined by `disks_rhcos_root`. All additional partitions must be added under `extra_partitions` key as per the example below.
+
+```yaml
+disks:
+  - device: "{{ installation_disk_path }}"
+    extra_partitions:
+      partition_1: 1024
+      partition_2: 1024
+ ```     
 
 > **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
 

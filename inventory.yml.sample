@@ -294,7 +294,7 @@ all:
 
               # # Uncomment to set an alternate installation disk device for the node
               # installation_disk_path: /dev/sdb
-
+              
             worker2:
               ansible_host: 10.60.0.105
               bmc_address: 172.28.11.26
@@ -302,3 +302,5 @@ all:
 
               # # Uncomment to set an alternate installation disk device for the node
               # installation_disk_path: /dev/sdb
+             
+           
