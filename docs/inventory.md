@@ -20,8 +20,20 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ### Cluster config checks:
 
+#### Highly Available OpenShift cluster node checks
+
 - 3 or more master nodes
 - 2 or more, or 0 worker nodes
+
+#### Single Node OpenShift cluster node checks
+
+- 1 master node
+- 0 worker nodes
+
+Single Node OpenShift requires the API and Ingress VIPs to be set to the IP address (`ansible_host`) of the master node.
+
+In addition to that, the following checks must be met for both HA and SNO deployments:
+
 - every node has required vars:
   - `bmc_address`
   - `bmc_password`

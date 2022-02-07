@@ -124,6 +124,8 @@ all:
 
     openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
 
+    is_valid_single_node_openshift_config: "{{ (groups['nodes'] | length == 1) and (groups['masters'] | length == 1) }}"
+
     ############################
     # ^^^^^^^^^^^^^^^^^^^^^^^^ #
     #    LOGIC: DO NOT TOUCH   #
@@ -161,10 +163,6 @@ all:
           REGISTRY_HTTP_SECRET: "{{ VAULT_REGISTRY_HOST_REGISTRY_HTTP_SECRET | mandatory }}"
           disconnected_registry_user: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_USER | mandatory }}"
           disconnected_registry_password: "{{ VAULT_REGISTRY_HOST_DISCONNECTED_REGISTRY_PASSWORD | mandatory }}"
-
-          # # registry_container_image defaults to docker.io/library/registry:2
-          # # Note that docker.io may rate-limit heavy users. Use this to provide your own image.
-          # registry_container_image: quay.io/example/registry:latest
 
         dns_host:
           ansible_host: 10.40.0.100
