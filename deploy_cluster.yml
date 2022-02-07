@@ -6,6 +6,8 @@
 
 - import_playbook: playbooks/generate_discovery_iso.yml
 
+- import_playbook: playbooks/mount_discovery_iso_for_pxe.yml
+
 - import_playbook: playbooks/boot_iso.yml
   vars:
     boot_iso_hosts: masters,workers

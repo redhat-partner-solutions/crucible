@@ -10,6 +10,7 @@ and are nominally put in the order of usage with some exceptions. This may be us
 | `deploy_http_store.yml`                | Deploys HTTP server                                           | -                     |
 | `deploy_registry.yml`                  | Deploys container image registry                              | -                     |
 | `deploy_dns.yml`                       | Deploys DNS and DHCP                                          | -                     |
+| `deploy_tftp.yml`                      | Deploys tftp server                                          | -                     |
 | `deploy_assisted_installer_onprem.yml` | Deploys podman pod with assisted service containers           | -                     |
 | `create_vms.yml`                       | Destroys and creates VMs and bridge                           | -                     |
 | `deploy_sushy_tools.yml`               | Deploys sushy tools                                           | -                     |
@@ -18,6 +19,7 @@ and are nominally put in the order of usage with some exceptions. This may be us
 | `create_cluster.yml`                   | Creates cluster definition in assisted installer              | -                     |
 | `generate_discovery_iso.yml`           | Generate descovery iso                                        | `cluster_id`          |
 | `boot_iso.yml`                         | Reboots nodes to discovery iso                                | -                     |
+| `mount_discovery_iso_for_pxe.yml`      |  Mounts discovery iso, generates grub config and syncs files to the TFTP server                                 | -                     |
 | `install_cluster.yml`                  | Trigger install of discovered hosts                           | `cluster_id`          |
 | `monitor_hosts.yml`                    | Monitor hosts for discovery and to become ready               | `cluster_id`          |
 | `monitor_cluster.yml`                  | Monitor cluster for installation and initalisation            | `cluster_id`          |
