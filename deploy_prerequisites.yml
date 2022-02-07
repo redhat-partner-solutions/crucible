@@ -16,6 +16,8 @@
 
 - import_playbook: playbooks/deploy_dns.yml
 
+- import_playbook: playbooks/deploy_tftp.yml
+
 - import_playbook: playbooks/deploy_assisted_installer_onprem.yml
 
 - import_playbook: playbooks/deploy_sushy_tools.yml

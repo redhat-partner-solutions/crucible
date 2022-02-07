@@ -56,13 +56,16 @@ Requires the following to be installed on the deployment host:
 - [skopeo](https://github.com/containers/skopeo)
 - [podman](https://github.com/containers/podman/)
 - [kubectl + oc](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html)
+- [pyghmi](https://pypi.org/project/pyghmi/) #For PXE deployment
+- [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
+
 
 **Important Note** The `openshift-clients` package is part of the (Red Hat OpenShift Container Platform Subscription
 )[https://access.redhat.com/downloads/content/290/]. The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash
-dnf install ansible python3-netaddr python3-jmespath skopeo podman openshift-clients
+dnf install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath
 ```
 
 There's also some required Ansible modules that can be installed with the following command:
@@ -165,6 +168,7 @@ Crucible can automatically set up the services required to deploy and run a clus
 - HTTP Store - Used to serve the Assisted Installer discovery ISO and allow it to be used as Virtual Media for nodes to boot from.
 - DNS - Optionally set up DNS records for the required cluster endpoints, and nodes. If not automatically set up then the existing configuration will be validated.
 - Assisted Installer - A pod running the Assisted Installer service, database store and UI. It will be configured for the target environment and is used by the cluster deployment playbook to coordinate the cluster deployment.
+- TFTP Host - A server that stores all the file mounted from the discovery image (required only for PXE deployments).
 
 While setup of each of these can be disabled if you wish to manually configure them, but it's highly recommended to use the automatic setup of all prerequisites.
 
@@ -205,6 +209,9 @@ The following are defaults for a full setup:
 - HTTP Store
   - A running pod containing the `httpd` service
   - The discovery image from Assisted Installer will be placed in and served from `/opt/http_store/data`
+
+- TFTP Host
+  - The discovery image will be mounted to this server and do the PXE boot with TFTP 
 
 
 ### Bastion
