@@ -13,22 +13,18 @@
     - role: get_image_hash
       when: run_get_hash
 
-- name: Play to install and setup mirror registry
+
+- name: Play populate mirror registry
   hosts: registry_host
   gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
   vars:
-    downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
     SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
   roles:
-    - role: setup_selfsigned_cert
-      when: SETUP_REGISTRY_SERVICE == True
-    - role: setup_mirror_registry
+    - role: populate_mirror_registry
       when: SETUP_REGISTRY_SERVICE == True
   collections:
     - containers.podman
     - community.crypto
     - community.general
     - ansible.posix
-
-- import_playbook: populate_registry.yml
