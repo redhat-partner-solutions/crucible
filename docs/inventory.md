@@ -524,3 +524,16 @@ You must have these services when using PXE deployment
 > **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
 
 These two examples are not the only type of clusters that can be deployed using Crucible. A hybrid cluster can be created by mixing virtual and bare metal nodes.
+
+
+# Mirroring operators and index for disconnected installations
+
+By default we do not populate the disconnected registry with operators used post install
+this is because this takes a substantial amount of time and can be done post install or 
+even in parallel by the user by running:
+
+```bash
+$ ansible-playbook -i inventory.yml playbook playbooks/deploy_registry.yml -e populate_operator_catalog=True
+```
+
+If you wish to populate the registry as part of deploying the pre-requistes you can add `populate_operator_catalog: true` to the `registry_host`
