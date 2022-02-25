@@ -1,6 +1,6 @@
 - name: Setup DNS Records
   hosts: dns_host
-  gather_facts: setup_dns_service | default(True)
+  gather_facts: "{{ (setup_dns_service | default(True)) | bool }}"
   vars:
     SETUP_DNS_SERVICE: "{{ setup_dns_service | default(True) }}"
   roles:
