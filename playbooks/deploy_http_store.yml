@@ -1,7 +1,7 @@
 ---
 - name: Install and http_store service
   hosts: http_store
-  gather_facts: setup_http_store_service | default(True)
+  gather_facts: "{{ (setup_http_store_service | default(True)) | bool }}"
   vars:
     SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(True) }}"
   roles:

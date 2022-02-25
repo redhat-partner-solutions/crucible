@@ -1,7 +1,7 @@
 ---
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: setup_registry_service | default(True)
+  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
   vars:
     destination_hosts:
       - registry_host
@@ -15,7 +15,7 @@
 
 - name: Play to install and setup mirror registry
   hosts: registry_host
-  gather_facts: setup_registry_service | default(True)
+  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
