@@ -8,7 +8,7 @@
     kube_filename: "{{ kubeconfig_dest_filename | default(cluster_name + '-kubeconfig') }}"
     dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
     kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
-    kubeadmin_vault_name: "{{ cluster_name }}-kubeadmin.vault.yml"
+    kubeadmin_vault_name: "{{ kubeadmin_dest_filename | default(cluster_name +'-kubeadmin.vault.yml') }}"
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
   tasks:
@@ -55,3 +55,4 @@
     - name: Save credentials to vault
       shell:
         cmd: "ansible-vault encrypt --vault-password-file {{ kubeadmin_vault_password_file_path }} {{ dest_dir }}/{{ kubeadmin_vault_name }}"
+      when: (kubeadmin_vault_password_file_path is defined) and (kubeadmin_vault_password_file_path is file)

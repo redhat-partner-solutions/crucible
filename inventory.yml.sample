@@ -101,6 +101,8 @@ all:
     # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
     kubeconfig_dest_dir: /home/redhat/
     kubeconfig_dest_filename: "{{ cluster_name }}-kubeconfig"
+    kubeadmin_dest_filename: "{{ cluster_name }}-kubeadmin.vault.yml"
+    # You can comment out the line below if you want the kubeadmin credentials to be stored in plain text
     kubeadmin_vault_password_file_path: "{{ repo_root_path }}/kubeadmin_vault_password_file"
 
     ############################
