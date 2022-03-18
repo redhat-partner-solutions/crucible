@@ -1,11 +1,19 @@
 ---
 # Node `ansible_host`s are not pinged. They are not required to be running at this stage.
 # KVM node BMCs are not checked, the vm_host will be pinged later.
-- name: Ensure baremetal node BMCs are reachable
+- name: Ensure baremetal node BMCs are reachable with ping
   shell: # noqa 305
     cmd: "ping -c 1 -W 2 {{ hostvars[item]['bmc_address'] }}"
   changed_when: False
-  when: hostvars[item]['vendor'] | lower != 'kvm'
+  when: hostvars[item]['vendor'] | lower != 'kvm' and not (hostvars['bastion']['curl_bmc'] | default(false))
+  loop: "{{ groups['nodes'] }}"
+
+- name: Ensure baremetal node BMCs are reachable with curl
+  uri:
+    url: https://{{ hostvars[item]['bmc_address'] }}
+    validate_certs: no
+  changed_when: False
+  when: hostvars[item]['vendor'] | lower != 'kvm' and (hostvars['bastion']['curl_bmc'] | default(false))
   loop: "{{ groups['nodes'] }}"
 
 - name: Ensure service hosts are reachable
