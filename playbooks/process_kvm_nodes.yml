@@ -1,0 +1,8 @@
+- name: Process KVM nodes
+  hosts: bastion
+  gather_facts: "{{ ((setup_vms | default(true)) and all_kvm_nodes is undefined) | bool }}"
+  vars:
+    PROCESS_NODES: "{{ all_kvm_nodes is undefined }}"
+  roles:
+    - role: process_kvm_nodes
+      when: (setup_vms | default(true)) | bool and PROCESS_NODES

@@ -1,0 +1,10 @@
+---
+- import_playbook: playbooks/process_kvm_nodes.yml
+
+- import_playbook: playbooks/destroy_vms.yml
+
+- import_playbook: playbooks/configure_vm_host_network.yml
+
+- import_playbook: playbooks/create_vms.yml
+
+- import_playbook: playbooks/deploy_sushy_tools.yml

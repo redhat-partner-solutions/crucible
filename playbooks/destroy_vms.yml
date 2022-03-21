@@ -1,10 +1,13 @@
 ---
-- name: Process KVM nodes
-  hosts: bastion
-  roles:
-    - process_kvm_nodes
+- import_playbook: playbooks/process_kvm_nodes.yml
 
-- name: Destroy VMs
+- name: Destroy VMS
   hosts: vm_hosts
+  gather_facts: "{{ (setup_vms | default((kvm_nodes | default([])) | length | int >= 1)) | bool }}"
+  vars:
+    SETUP_VMS: "{{ setup_vms | default((kvm_nodes | default([])) | length | int >= 1) }}"
   roles:
-    - destroy_vms
+    - role: destroy_vms
+      when: SETUP_VMS | bool
+      tags:
+        - destroy_vms

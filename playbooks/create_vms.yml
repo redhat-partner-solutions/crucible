@@ -1,10 +1,5 @@
 ---
-
-- name: Process KVM nodes
-  hosts: bastion
-  roles:
-    - role: process_kvm_nodes
-      when: (setup_vms | default(true))
+- import_playbook: playbooks/process_kvm_nodes.yml
 
 - name: Provision VMS
   hosts: vm_hosts
@@ -16,14 +11,6 @@
       setup:
       when: SETUP_VMS == True
   roles:
-    - role: destroy_vms
-      when: SETUP_VMS | bool
-      tags:
-        - destroy_vms
-
-    - role: setup_vm_host_network
-      when: (SETUP_VM_BRIDGE | default(SETUP_VMS)) | bool
-
     - role: create_vms
       when: SETUP_VMS | bool
       tags:

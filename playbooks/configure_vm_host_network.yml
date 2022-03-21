@@ -1,0 +1,12 @@
+---
+- import_playbook: playbooks/process_kvm_nodes.yml
+
+- name: Configuring vm host network
+  hosts: vm_hosts
+  gather_facts: "{{ configure_vm_host_network | (setup_vms | default((kvm_nodes | default([])) | length | int >= 1)) | bool }}"
+  vars:
+    SETUP_VMS: "{{ setup_vms | default((kvm_nodes | default([])) | length | int >= 1) }}"
+    CONFIGURE_VM_HOST_NETWORK: "{{ configure_vm_host_network | default(SETUP_VMS) }}"
+  roles:
+    - role: setup_vm_host_network
+      when: CONFIGURE_VM_HOST_NETWORK | bool
