@@ -52,6 +52,7 @@ Requires the following to be installed on the deployment host:
 
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-specific-operating-systems)
 - [netaddr](https://github.com/netaddr/netaddr)
+- [jmespath](https://github.com/jmespath)
 - [skopeo](https://github.com/containers/skopeo)
 - [podman](https://github.com/containers/podman/)
 - [kubectl + oc](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html)
@@ -61,7 +62,7 @@ Requires the following to be installed on the deployment host:
 
 
 ```bash
-dnf install ansible python3-netaddr skopeo podman openshift-clients
+dnf install ansible python3-netaddr python3-jmespath skopeo podman openshift-clients
 ```
 
 There's also some required Ansible modules that can be installed with the following command:
