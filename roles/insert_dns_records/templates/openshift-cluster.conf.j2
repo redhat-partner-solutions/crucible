@@ -2,7 +2,7 @@ domain={{ domain }}
 {% if write_dnsmasq_config %}
 domain-needed
 bogus-priv
-listen-address=127.0.0.1,{{ listen_address }}
+listen-address={% if listen_local %}127.0.0.1,{% endif %}{{ listen_address }}
 expand-hosts
 {% if upstream_dns | default(False) %}
 server={{ upstream_dns }}
