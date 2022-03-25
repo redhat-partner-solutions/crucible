@@ -1,0 +1,10 @@
+---
+- import_playbook: playbooks/01_users.yml
+
+- import_playbook: playbooks/02_packages.yml
+
+- import_playbook: playbooks/03_openshift_client.yml
+
+- import_playbook: playbooks/04_all_in_one_specific.yml
+
+- import_playbook: playbooks/05_configure_crucible.yml

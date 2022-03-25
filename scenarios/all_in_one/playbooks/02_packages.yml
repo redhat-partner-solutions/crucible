@@ -1,0 +1,16 @@
+---
+- name: Install packages
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Python version is at least 3.6.8
+      debug:
+        var: ansible_facts['python_version']
+
+    - name: Install python3-netaddr, skopeo and podman
+      package:
+        name:
+          - python3-netaddr
+          - skopeo
+          - podman
+        state: present

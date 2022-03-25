@@ -1,0 +1,23 @@
+---
+- name: Install OpenShift Client
+  hosts: localhost
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Register with Red Hat Subscription Manager
+      redhat_subscription:
+        state: present
+        username: "{{ REDHAT_SUBSCRIPTION_USERNAME }}"
+        password: "{{ REDHAT_SUBSCRIPTION_PASSWORD }}"
+        autosubscribe: true
+
+    - name: Enable Red Hat Repositories
+      rhsm_repository:
+        name:
+          - rhocp-4.9-for-rhel-8-x86_64-rpms
+        state: present
+
+    - name: Install openshift-clients package
+      package:
+        name: openshift-clients
+        state: present

@@ -1,0 +1,11 @@
+---
+- name: Configure user accounts
+  hosts: localhost
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Verify that the user crucible exists and belongs to the crucible group
+      user:
+        name: crucible
+        password: "{{ CRUCIBLE_PASS | password_hash('sha512') }}"
+        groups: crucible

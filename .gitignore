@@ -5,6 +5,7 @@
 __stuff/**
 .history/
 .vscode
+.idea
 te?mp
 logs?
 *.swp

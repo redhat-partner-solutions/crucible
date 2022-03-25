@@ -1,0 +1,53 @@
+---
+- name: Prepare the system for the all_in_one_scenario
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    virt_packages:
+      - python3
+      - libvirt
+      - virt-install
+      - qemu-kvm
+      - virt-manager
+      - python3-pip
+      - python3-lxml
+      - python3-libvirt
+  tasks:
+    - block:
+      - name: "Install virt-manager"
+        package:
+          name: "{{ virt_packages }}"
+          state: present
+
+      - name: Start libvirtd
+        service:
+          name: libvirtd
+          state: started
+
+      - name: Add user to qemu.conf
+        lineinfile:
+          path: /etc/libvirt/qemu.conf
+          line: 'user = "redhat"'
+
+      - name: Add group to qemu.conf
+        lineinfile:
+          path: /etc/libvirt/qemu.conf
+          line: 'group = "crucible"'
+
+      - name: Start libvirtd
+        service:
+          name: libvirtd
+          state: restarted
+
+    - name: Update firewall policies
+      firewalld:
+        permanent: yes
+        masquerade: yes
+        zone: public
+        state: enabled
+
+    - name: Restart firewalld service
+      service:
+        name: firewalld
+        state: restarted
