@@ -77,3 +77,14 @@ this document but it's a useful skill and there are [many](https://thoughtbot.co
 - Favour readability over brevity in both naming and structure
 - Document the _why_ with comments, and the _what_ with clear code
 - As far as Ansible allows, encapsulate
+- Assume you can not have sudo on the bastion
+- Try not to break people inventories. If you have to make a braking change write a check for the old config and inform the user how to fix it.
+- When using a become with a block, put the become at the top
+    ```yaml
+        - name: Example
+          become: True
+          block:
+            - name: My Task
+              debug: 
+                msg: "Hello"
+    ```
