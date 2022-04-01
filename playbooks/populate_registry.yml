@@ -23,8 +23,3 @@
   roles:
     - role: populate_mirror_registry
       when: SETUP_REGISTRY_SERVICE == True
-  collections:
-    - containers.podman
-    - community.crypto
-    - community.general
-    - ansible.posix
