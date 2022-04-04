@@ -118,7 +118,10 @@ These are the steps that are automated. Some of them mentioned in [the crucible 
 ### 05_configure_crucible.yml
 
 - Copy the pull secret in the crucible folder and rename it
-- Install required Ansible collections
+
+### Install required Ansible collections
+
+> $ ansible-galaxy collection install -r /home/redhat/crucible/requirements.yml
 
 ## Run crucible
 

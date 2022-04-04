@@ -7,7 +7,4 @@
       copy:
         src: /home/redhat/pull-secret
         dest: /home/redhat/crucible/pull-secret.txt
-
-    - name: Install Ansible requirements
-      shell:
-        cmd: ansible-galaxy collection install -r /home/redhat/crucible/requirements.yml
+        mode: 0644
