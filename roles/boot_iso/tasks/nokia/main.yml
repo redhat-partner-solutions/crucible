@@ -1,0 +1,62 @@
+---
+- name: Check boot iso is not in webroot
+  assert:
+    that:
+      - boot_iso_url is match("https?://.+/.+/.+")
+    fail_msg: "Boot iso should not be in webroot"
+
+- name: Nokia Power ON
+  community.general.redfish_command:
+    category: Systems
+    command: PowerOn
+    baseuri: "{{ hostvars[inventory_hostname]['bmc_address'] }}"
+    username: "{{ hostvars[inventory_hostname]['bmc_user'] }}"
+    password: "{{ hostvars[inventory_hostname]['bmc_password'] }}"
+
+- block:
+    - import_tasks: virtual_media_mount_iso.yml
+
+    - name: Set BootSourceOverrideTarget (Cd)
+      set_fact:
+        boot_source_override_target: Cd
+
+  rescue:
+    - import_tasks: iso_config_mount_iso.yml
+
+    - name: Set BootSourceOverrideTarget (Cd)
+      set_fact:
+        boot_source_override_target: Cd
+
+
+- name: Set Boot for the Nokia # noqa var-spacing # linter wrongly detects a var
+  uri:
+    url: "https://{{ hostvars[inventory_hostname]['bmc_address'] }}/redfish/v1/Systems/Self/SD"
+    user: "{{ hostvars[inventory_hostname]['bmc_user'] }}"
+    password: "{{ hostvars[inventory_hostname]['bmc_password'] }}"
+    method: PATCH
+    headers:
+      content-type: application/json
+      Accept: application/json
+      If-None-Match: "aaaa"
+    body: '{"Boot":{"BootSourceOverrideEnabled":"Once","BootSourceOverrideTarget":"{{ boot_source_override_target }}"}}'
+    body_format: json
+    force_basic_auth: yes
+    validate_certs: no
+    return_content: yes
+    status_code: 204,202
+
+- name: Restart the Nokia
+  uri:
+    url: "https://{{ hostvars[inventory_hostname]['bmc_address'] }}/redfish/v1/Systems/Self/Actions/ComputerSystem.Reset"
+    user: "{{ hostvars[inventory_hostname]['bmc_user'] }}"
+    password: "{{ hostvars[inventory_hostname]['bmc_password'] }}"
+    method: POST
+    headers:
+      content-type: application/json
+      Accept: application/json
+    body: '{"ResetType": "ForceRestart"}'
+    body_format: json
+    force_basic_auth: yes
+    validate_certs: no
+    return_content: yes
+    status_code: 202
