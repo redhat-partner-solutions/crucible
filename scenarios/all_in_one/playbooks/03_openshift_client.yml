@@ -9,7 +9,7 @@
         state: present
         username: "{{ REDHAT_SUBSCRIPTION_USERNAME }}"
         password: "{{ REDHAT_SUBSCRIPTION_PASSWORD }}"
-        autosubscribe: true
+        auto_attach: true
 
     - name: Enable Red Hat Repositories
       rhsm_repository:
