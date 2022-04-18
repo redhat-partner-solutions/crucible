@@ -182,7 +182,7 @@ all:
         http_store:
           ansible_host: 10.40.0.100
         
-        tftp_host
+        tftp_host:
           ansible_host: "{{ hostvars['dns_host']['ansible_host'] }}"
           tftp_directory: /var/lib/tftpboot/ 
 
