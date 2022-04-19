@@ -1,0 +1,45 @@
+---
+# tasks file for hosts_monitoring
+
+- name: "Wait for up to 60 minutes for node {{ host_name }} to reboot"
+ crucible.ocm.rest_api_call:
+    method: "GET"
+    query: "status"
+    url_endpoint: { 
+                    #"host": "" for on-prem installation specify installer host dns
+                    #"port": "" for on-prem install specify installer port 
+                    "api_version": "v1" 
+                    "api_endpoint": "clusters/{{ CLUSTER_ID }}"
+
+                  }
+    authentication: { 
+                      ##include api_token if use cloud installer 
+                      "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" 
+                    }
+
+    status_code: [200, 201]
+    return_content: True
+  register: host
+  until:
+    (host.json.progress.current_stage == 'Rebooting' and host.json.status in waiting_termination_states)
+    or
+    host.json.progress.current_stage in ['Configuring', 'Done']
+    or
+    host.json.status == 'error'
+  retries: 60
+  delay: 60
+
+- name: Force rebooting on disk
+  include_role:
+    name: boot_disk
+  vars:
+    hosts:
+      - "{{ host.json.requested_hostname }}"
+  when: host.json.progress.current_stage == 'Rebooting' and host.json.status == 'installing-pending-user-action'
+
+- name: Fail if host is in error condition
+  fail:
+    msg: "{{ host_name }} is in error condition can not continue"
+  when: host.json.status == 'error'

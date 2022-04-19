@@ -23,14 +23,21 @@
     verbosity: 1
 
 - name: Generate a new discovery ISO
-  uri:
-    url: "{{ URL_ASSISTED_INSTALLER_CLUSTERS_DOWNLOAD_IMAGE }}"
-    method: POST
-    url_username: "{{ HTTP_AUTH_USERNAME }}"
-    url_password: "{{ HTTP_AUTH_PASSWORD }}"
-    body_format: json
-    status_code: [201]
-    return_content: True
+  crucible.ocm.rest_api_call:
+    method: "POST"
+    query: None
+    url_endpoint: { 
+                    #"host": "" for on-prem installation specify installer host dns
+                    #"port": "" for on-prem install specify installer port 
+                    "api_version": "v1" 
+                    "api_endpoint": "clusters/{{ CLUSTER_ID }}/downloads/image"
+                  }
+    authentication: { 
+                      ##include api_token if use cloud installer 
+                      "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" 
+                    }
     body: "{{ request_body }}"
   when: generate | bool == True
   register: http_reply
@@ -49,32 +56,44 @@
         state: directory
       become: true
 
-    - name: Download discovery ISO
-      get_url:
-        url: "{{ URL_ASSISTED_INSTALLER_CLUSTERS_DOWNLOAD_IMAGE }}"
-        dest: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
-      when: download | bool == True
-      register: http_reply
-      become: true
+- name: get url
+  crucible.ocm.get_url:
+    url_endpoint: { "api_version": "v1" }    
+    auth: { "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" }
+    cluster_id: "{{ CLUSTER_ID }}"
+    #dest: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
+  when: download | bool == True
+  register: response
 
-    - debug: # noqa unnamed-task
-        var: http_reply.status_code
-        verbosity: 1
-      when: download | bool == True
+  - debug: # noqa unnamed-task
+      var: http_reply.status_code
+      verbosity: 1
+    when: download | bool == True
 
-    - name: Upload discovery ISO
-      uri:
-        url: "{{ URL_HTTP_STORE_UPLOAD_IMAGE }}/{{ CLUSTER_ID }}.iso"
-        method: PUT
-        url_username: "{{ HTTP_STORE_AUTH_USERNAME }}"
-        url_password: "{{ HTTP_STORE_AUTH_PASSWORD }}"
-        src: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
-        status_code: [200]
-      when: upload | bool == True
-      register: http_reply
+  - name: Upload discovery ISO
+    crucible.ocm.rest_api_call:
+      method: "PUT"
+      query: None
+      url_endpoint: { 
+                      #"host": "" for on-prem installation specify installer host dns
+                      #"port": "" for on-prem install specify installer port 
+                      "api_version": "v1" 
+                      "api_endpoint": "clusters/{{ CLUSTER_ID }}/downloads/image"
+                    }
+      authentication: { 
+                        ##include api_token if use cloud installer 
+                        "username": "{{ HTTP_AUTH_USERNAME }}", 
+                        "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                        "api_token": "{{ HTTP_API_TOKEN }}" 
+                      }
+      upload: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
+    when: upload | bool == True
+    register: http_reply
 
-    - debug: # noqa unnamed-task
-        var: http_reply.status_code
-        verbosity: 1
-      when: upload | bool == True
-  delegate_to: http_store
+  - debug: # noqa unnamed-task
+      var: http_reply.status_code
+      verbosity: 1
+    when: upload | bool == True
+delegate_to: http_store

@@ -1,0 +1,40 @@
+---
+# tasks file for monitor_cluster
+
+# Monitor cluster installation
+- name: Wait for up to 60 minutes for the cluster to report as installed
+  crucible.ocm.rest_api_call:
+    url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}"
+    method: "GET"
+    query: "status"
+    url_endpoint: { 
+                    #"host": "" for on-prem installation specify installer host dns
+                    #"port": "" for on-prem install specify installer port 
+                    "api_version": "v1" 
+                    "api_endpoint": "clusters/{{ CLUSTER_ID }}"
+
+                  }
+    authentication: { 
+                      ##include api_token if use cloud installer 
+                      "username": "{{ HTTP_AUTH_USERNAME }}", 
+                      "password": "{{ HTTP_AUTH_PASSWORD }}", 
+                      "api_token": "{{ HTTP_API_TOKEN }}" 
+                    }
+    body: {}
+  register: cluster
+  until: cluster.json.status in ['installed', 'error', 'cancelled']
+  retries: 60
+  delay: 60
+  delegate_to: bastion
+
+- name: "Fail installation because user cancelled (ERROR)"
+  fail:
+    msg: "Cluster installation failed - Reset the installation process to return to the configuration and try again"
+  when: cluster.json.status == 'error'
+  delegate_to: bastion
+
+- name: "Fail installation because user cancelled (CANCELLED)"
+  fail:
+    msg: "Installation was canceled by user - Reset the installation process to return to the configuration and try again"
+  when: cluster.json.status == 'cancelled'
+  delegate_to: bastion
