@@ -537,3 +537,61 @@ $ ansible-playbook -i inventory.yml playbook playbooks/deploy_registry.yml -e po
 ```
 
 If you wish to populate the registry as part of deploying the pre-requistes you can add `populate_operator_catalog: true` to the `registry_host`
+
+# Automated non-node DNS entries.
+
+## DNS Entries for Bastion, Services and VM_Hosts.
+
+When using the crucible provided DNS, the automation will create entries for the bastion, the service hosts and, then vm hosts.
+The value of `ansible_fqdn` will be used except in where `registry_fqdn` is defined as part of `registry_host`, or when `sushy_fqdn` is defined as part of `vm_hosts`. 
+
+NOTE: The DNS entries will only be created if the `ansible_host` is an _IP address_ otherwise it will be skipped. 
+
+To force the automation to skip a host you can add `dns_skip_record: true` to the host definition. 
+
+## DNS Entries for BMCs
+
+Automatic creation of DNS records for your BMC nodes requires `setup_dns_service: true`. Crucible will create DNS A and PTR records.
+For this to occur you  you are required to add `bmc_ip:` alongside `ansible_host` in your host definitions.
+The addresses will be templated as `{{ inventory_hostname }}-bmc.infra.{{ base_dns_domain }}`.
+If `setup_dns_service` is `false` crucible will not create any DNS records.
+
+For example: The BMC address for host `super1` will be `"super1-bmc.infra.example.com"`. 
+
+Note: This can be useful when working with proxies as you can add `*.infra.example.com` to your no_proxy setting.
+
+```yaml
+all:
+  vars:
+    base_dns_domain: example.com
+  ...
+    masters:
+      vars:
+        role: master
+        vendor: SuperMicro
+      hosts:
+        super1:
+          ansible_host: 192.168.10.11
+          bmc_ip: 172.30.10.1
+          # ...
+        super2:
+          ansible_host: 192.168.10.12
+          bmc_ip: 172.30.10.2
+          # ...
+        super3:
+          ansible_host: 192.168.10.13
+          bmc_ip: 172.30.10.3
+          # ...
+    workers:
+      vars:
+        role: worker
+        vendor: Dell
+      hosts:
+        worker1:
+          ansible_host: 192.168.10.16
+          bmc_ip: 172.30.10.6
+          # ...
+        worker2:
+          ansible_host: 192.168.10.17
+          bmc_ip: 172.30.10.7
+```

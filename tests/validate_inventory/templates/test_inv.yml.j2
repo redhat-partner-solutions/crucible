@@ -4,6 +4,7 @@ all:
     day2_discovery_iso_name: {{ item.template.day2_discovery_iso_name }}
     {% endif %}
     openshift_full_version: {{ item.template.openshift_full_version | default('4.6.16') }}
+    setup_dns_service: {{ item.template.setup_dns_service | default(False)}}
     {% if item.template.allow_custom_vendor is defined %}
     allow_custom_vendor: {{ item.template.allow_custom_vendor }}
     {% endif %}
@@ -37,7 +38,12 @@ all:
     {% endif %}
     nodes:
       vars:
+        {% if not (item.template.no_bmc_address | default(false)) == true  %}
         bmc_address: {{ item.template.bmc_address | default("localhost") }}
+        {%endif%}
+        {%if item.template.bmc_ip is defined %}
+        bmc_ip: {{ item.template.bmc_ip }}
+        {% endif %}
         bmc_password: {{ item.template.bmc_password | default("password") }}
         bmc_user: {{ item.template.bmc_user | default("exists") }}
         vendor: {{ item.template.vendor | default("Dell") }}
