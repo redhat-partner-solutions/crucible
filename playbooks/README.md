@@ -19,7 +19,7 @@ and are nominally put in the order of usage with some exceptions. This may be us
 | `create_cluster.yml`                   | Creates cluster definition in assisted installer                                 | -                     |
 | `generate_discovery_iso.yml`           | Generate descovery iso                                                           | `cluster_id`          |
 | `boot_iso.yml`                         | Reboots nodes to discovery iso                                                   | -                     |
-| `mount_discovery_iso_for_pxe.yml`      |  Mounts discovery iso, generates grub config and syncs files to the TFTP server  | -                     |
+| `mount_discovery_iso_for_pxe.yml`      | Mounts discovery iso, generates grub config and syncs files to the TFTP server   | -                     |
 | `install_cluster.yml`                  | Trigger install of discovered hosts                                              | `cluster_id`          |
 | `monitor_hosts.yml`                    | Monitor hosts for discovery and to become ready                                  | `cluster_id`          |
 | `monitor_cluster.yml`                  | Monitor cluster for installation and initalisation                               | `cluster_id`          |
@@ -31,3 +31,6 @@ and are nominally put in the order of usage with some exceptions. This may be us
 | `boot_disk.yml`                        | Reboots nodes to disk                                                            | -                     |
 | `dell_idrac_soft_reset.yml`            | Runs `racadm racreset` on dell nodes                                             | -                     |
 | `destroy_vms.yml`                      | Destroy VMs and bridge                                                           | -                     |
+| `rhsm_register.yml`                    | Registers hosts with Red Hat Subscription Manager and enables specified repos    | `rhel_release`        |
+|                                        |                                                                                  | `rhsm_pool_ids`       |
+|                                        |                                                                                  | `rhsm_repos`          |

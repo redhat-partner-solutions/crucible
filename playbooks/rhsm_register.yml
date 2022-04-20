@@ -1,0 +1,44 @@
+---
+- name: Register host with Red Hat Subscription Manager
+  hosts: bastions,services,vm_hosts
+  gather_facts: true
+  vars_prompt:
+    - name: rhsm_username
+      prompt: "RHSM Username"
+      private: no
+    - name: rhsm_password
+      prompt: "RHSM Password"
+      private: yes
+      unsafe: yes
+  vars:
+    rhel_release: 8.5
+    rhsm_pool_ids: []
+    rhsm_repos: []
+    rhsm_usage: "Development/Test"
+    rhsm_role: "Red Hat Enterprise Server"
+    rhsm_sla: "Self-Support"
+  tasks:
+    - name: "Testing vars"
+      ansible.builtin.fail:
+        msg: "The variables rhsm_username and rhsm_password are required."
+      when: ( (rhsm_username | length) > 0 ) and ( (rhsm_password | length) > 0 )
+    - name: "Registering hosts as {{ rhsm_username }}"
+      community.general.redhat_subscription:
+        state: present
+        force_register: yes
+        release: "{{ rhel_release }}"
+        username: "{{ rhsm_username }}"
+        password: "{{ rhsm_password }}"
+        pool_ids: "{{ item }}"
+        syspurpose:
+          usage: "{{ rhsm_usage }}"
+          role: "{{ rhsm_role }}"
+          service_level_agreement: "{{ rhsm_sla }}"
+          sync: yes
+      loop: rhsm_pool_ids
+    - name: Add repositories to host
+      community.general.rhsm_repository:
+        name: "{{ item }}"
+        state: enabled
+        purge: yes
+      loop: rhsm_repos
