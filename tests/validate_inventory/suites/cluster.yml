@@ -16,6 +16,24 @@ tests:
     template:
       bmc_address: host.name.lab:10
 
+  - test_name: valid_bmc_ip
+    expected: 0
+    template:
+      no_bmc_address: true
+      setup_dns_service: true
+      bmc_ip: 192.168.100.101
+
+  - test_name: invalid_no_bmc_ip_or_bmc_address
+    expected: 2
+    template:
+      no_bmc_address: true
+
+  - test_name: invalid_bmc_ip_no_dns_setup
+    expected: 2
+    template:
+      no_bmc_address: true
+      setup_dns_service: false
+
   - test_name: valid_dhcp_ranges_defined
     expected: 0
     template:
