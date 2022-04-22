@@ -12,6 +12,7 @@ skip_list:
   - literal-compare # Allow explicit comparison to True or False
   - meta-no-info # Allow omitting galaxy info.
   - ignore-errors # Allow ignore-errors: Linter is stupid and permits `failed_when: false` but disallows `ignore-errors`.
+  - no-changed-when
 
 # These rules would be in the `warn_list` except that ansible-lint doesn't handle warnings sensibly.
 # warn_list:
