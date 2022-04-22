@@ -32,7 +32,7 @@
           shell: oc get clusteroperators
           register: co_result
 
-        - fail:
+        - fail:  # noqa unnamed-task
             msg: |
               Cluster has not come up correctly:
                 {{ co_result.stdout }}
@@ -43,7 +43,7 @@
         return_content: yes
       register: credentials
 
-    - name: Login to add token to kubeconfig
+    - name: Login to add token to kubeconfig 
       shell:
         cmd: "oc login -u {{ credentials.json.username }} -p '{{ credentials.json.password }}'"
 
@@ -51,6 +51,7 @@
       copy:
         content: "{{ credentials.json | to_yaml }}"
         dest: "{{ dest_dir }}/{{ kubeadmin_vault_name }}"
+        mode: 0600
 
     - name: Save credentials to vault
       shell:
