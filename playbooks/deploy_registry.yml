@@ -1,11 +1,15 @@
 ---
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
+  gather_facts: False
   vars:
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
     destination_hosts:
       - registry_host
   pre_tasks:
+    - name: Setup facts
+      setup:
+      when: SETUP_REGISTRY_SERVICE == True
     - name: pre-compute need to get hashes
       set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
@@ -15,11 +19,15 @@
 
 - name: Play to install and setup mirror registry
   hosts: registry_host
-  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
+  gather_facts: False
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
     SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+  pre_tasks:
+    - name: Setup facts
+      setup:
+      when: SETUP_REGISTRY_SERVICE == True
   roles:
     - role: setup_selfsigned_cert
       when: SETUP_REGISTRY_SERVICE == True

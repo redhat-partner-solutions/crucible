@@ -1,8 +1,12 @@
 - name: Deploy sushy tools
   hosts: vm_hosts
-  gather_facts: "{{ (setup_sushy_tools | default(setup_vms | default(True))) | bool }}"
+  gather_facts: False
   vars:
     SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(True)) }}"
+  pre_tasks:
+    - name: Setup facts
+      setup:
+      when: SETUP_SUSHY_TOOLS == True
   roles:
     - name: setup_sushy_tools
       when: SETUP_SUSHY_TOOLS == True
