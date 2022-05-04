@@ -43,8 +43,8 @@ Install the EPEL repository
 
 Install Ansible
 
-> $ sudo yum install ansible
+> $ sudo dnf install ansible
 
 ### Install git package
 
-> $ sudo yum install git
+> $ sudo dnf install git
