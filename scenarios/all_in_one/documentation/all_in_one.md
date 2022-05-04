@@ -98,20 +98,6 @@ These are the steps that are automated. Some of them mentioned in [the crucible 
 
 ### 04_all_in_one_specific.yml
 
-- Installs virt-manager packages
-  - python3
-  - libvirt
-  - virt-install
-  - qemu-kvm
-  - virt-manager
-  - python3-pip
-  - python3-lxml
-  - python3-libvirt
-- Starts livbirtd service
-- Updates /etc/libvirt/qemu.conf
-  - Adds user = "redhat"
-  - Adds group = "crucible"
-- Restarts livbirtd service
 - Updates firewall policies
 - Restarts firewalld service
 
