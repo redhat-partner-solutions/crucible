@@ -1,8 +1,12 @@
 - name: Setup DNS Records
   hosts: dns_host
-  gather_facts: "{{ (setup_dns_service | default(True)) | bool }}"
+  gather_facts: False
   vars:
     SETUP_DNS_SERVICE: "{{ setup_dns_service | default(True) }}"
+  pre_tasks:
+    - name: Setup facts
+      setup:
+      when: SETUP_DNS_SERVICE == True
   roles:
     - role: insert_dns_records
       when: SETUP_DNS_SERVICE == True

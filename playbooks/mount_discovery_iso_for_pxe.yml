@@ -1,0 +1,6 @@
+- hosts: http_store
+  vars:
+    MOUNT_DISCOVERY_ISO: "{{ setup_pxe_service | default(False)}}"
+  roles:
+    - role: mount_discovery_iso_for_pxe
+      when: MOUNT_DISCOVERY_ISO == True

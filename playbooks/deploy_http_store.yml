@@ -1,9 +1,13 @@
 ---
 - name: Install and http_store service
   hosts: http_store
-  gather_facts: "{{ (setup_http_store_service | default(True)) | bool }}"
+  gather_facts: False
   vars:
     SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(True) }}"
+  pre_tasks:
+    - name: Setup facts
+      setup:
+      when: SETUP_HTTP_STORE_SERVICE == True
   roles:
     - name: setup_http_store
       when: SETUP_HTTP_STORE_SERVICE == True

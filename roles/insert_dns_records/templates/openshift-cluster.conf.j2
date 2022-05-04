@@ -2,7 +2,13 @@ domain={{ domain }}
 {% if write_dnsmasq_config %}
 domain-needed
 bogus-priv
-listen-address=127.0.0.1,{{ listen_address }}
+listen-address={{ listen_addresses | join(',') }}
+{% for  listening_intf in (listening_interfaces | default([])) %}
+interface={{ listening_intf }}
+{% endfor%}
+{% for  no_dhcp_intf in (no_dhcp_interfaces | default([])) %}
+no-dhcp-interface={{ no_dhcp_intf }}
+{% endfor%}
 expand-hosts
 {% if upstream_dns | default(False) %}
 server={{ upstream_dns }}
@@ -43,3 +49,11 @@ address=/{{ item.address }}/{{ item.ip }}
 ptr-record={{ item.ip.split('.')[::-1] | join('.')  }}.in-addr.arpa,{{ item.address }}
 
 {% endfor %}
+
+{% if use_pxe %}
+enable-tftp
+tftp-root={{ TFTP_ROOT }}
+dhcp-vendorclass=BIOS,PXEClient:Arch:00000
+dhcp-boot=tag:BIOS,lpxelinux.0
+dhcp-boot=tag:!BIOS,shimx64.efi
+{% endif %}
