@@ -45,6 +45,7 @@ all:
     # You will need to ensure alternatives are available for anything that will not be automatically set up
     setup_ntp_service: true
     setup_dns_service: true
+    setup_pxe_service: false
     setup_registry_service: true # Only required for a Restricted Network installation
     setup_http_store_service: true
     setup_assisted_installer: true # default is true you may wish to turn it off if multiple users are using the same instance.
@@ -101,6 +102,9 @@ all:
     # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
     kubeconfig_dest_dir: /home/redhat/
     kubeconfig_dest_filename: "{{ cluster_name }}-kubeconfig"
+    kubeadmin_dest_filename: "{{ cluster_name }}-kubeadmin.vault.yml"
+    # You can comment out the line below if you want the kubeadmin credentials to be stored in plain text
+    # kubeadmin_vault_password_file_path: "{{ repo_root_path }}/kubeadmin_vault_password_file"
 
     ############################
     #    LOGIC: DO NOT TOUCH   #
@@ -169,13 +173,16 @@ all:
           listen_address: 10.60.0.190
           upstream_dns: 8.8.8.8 # an optional upstream dns server
           use_dhcp: true
-          write_dnsmasq_config: true
+          use_pxe: false
           dhcp_range_first: 10.60.0.101
           dhcp_range_last:  10.60.0.105
           prefix: 24
           gateway: 10.60.0.190
 
         http_store:
+
+        tftp_host:
+          tftp_directory: /var/lib/tftpboot/
 
         ntp_host:
 
@@ -218,6 +225,7 @@ all:
       #     - "KVM" identifies a node as a VM to be created. If a "KVM" node is present,
       #       then a "vm_host" must be defined in the node and a host with that name must exist
       #       inside the "vm_hosts" group.
+      #     - "PXE" identifies a node as a baremetal that needs to boot from PXE.
       #
       # - bmc_address
       # - bmc_user
