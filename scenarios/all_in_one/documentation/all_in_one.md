@@ -73,7 +73,7 @@ Execute the `~/crucible/scenarios/all_in_one/all_in_one.yml` playbook to install
 and run scenario-specific steps.
 
 > $ cd ~/crucible/scenarios/all_in_one
-> $ ansible-playbook -i inventory.yml all_in_one.yml --ask-vault-pass -e '@inventory.vault.yml'
+> $ sudo ansible-playbook -i inventory.yml all_in_one.yml --ask-vault-pass -e '@inventory.vault.yml'
 
 These are the steps that are automated. Some of them mentioned in [the crucible README file](../../../README.md)
 
