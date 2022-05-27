@@ -43,24 +43,20 @@ assisted_service_openshift_versions_defaults:
 becomes two dicts (notice that the value in the new version is a list):
 
 ```yaml
-
-assisted_installer_os_images_defualts:
-  "4.6":
-    - openshift_version: "4.6"
-      cpu_architecture: "x86_64"
-      url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-4.6.8-x86_64-live.x86_64.iso"
-      rootfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-live-rootfs.x86_64.img"
-      version: "46.82.202012051820-0"
+os_images:
+  - openshift_version: '4.6'
+    cpu_architecture: x86_64
+    url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-4.6.8-x86_64-live.x86_64.iso
+    rootfs_url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-live-rootfs.x86_64.img
+    version: 46.82.202012051820-0
   ...
-
-assisted_installer_release_images_defaults: 
-  "4.6":
-    - openshift_version: "4.6"
-      cpu_architecture: "x86_64"
-      url: "quay.io/openshift-release-dev/ocp-release{% if 'release_4.6' in image_hashes %}@{{ image_hashes['release_4.6'] }}{% else %}:4.6.16-x86_64{% endif %}"
-      version: "4.6.16"
+release_images:
+  - openshift_version: '4.6'
+    cpu_architecture: x86_64
+    url: quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64
+    version: 4.6.16
   ...
-``
+```
 
 ## Proxy
 
