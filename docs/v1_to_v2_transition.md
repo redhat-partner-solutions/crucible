@@ -26,8 +26,7 @@ services:
 
 ## Overrides
 
-For good reason assisted installer has changed the stucture of the required data for defining openshift version available to install. If you have overridden the images you will need to split the former data into two parts as follows:
-
+The Assisted Installer has changed the structure of the required data for defining OpenShift versions available to install. If you have overridden the images you will need to split the former data into two parts as follows:
 ```yaml
 assisted_service_openshift_versions_defaults:
   "4.6":
