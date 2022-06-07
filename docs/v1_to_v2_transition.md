@@ -61,3 +61,7 @@ assisted_installer_release_images_defaults:
       version: "4.6.16"
   ...
 ``
+
+## Proxy
+
+For people using proxies you will need to make HTTP_PROXY, HTTPS_PROXY and NO_PROXY all lower case. 
