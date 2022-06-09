@@ -3,5 +3,6 @@ collections:
   - ansible.posix
   - containers.podman
   - community.crypto
-  - community.general
+  - name: community.general
+    version: '<5.0.0'
   - community.libvirt
