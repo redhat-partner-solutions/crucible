@@ -4,6 +4,7 @@
       shell:
           chdir: "{{ playbook_dir }}/../.."
           cmd: "ansible-playbook playbooks/validate_inventory.yml -i {{ temp_dir.path }}/{{ item.test_name }}.yml -t {{ suite_data.tags }}"
+      environment: "{{ suite_data.env | default({}) }}"
       register: res
       failed_when: res.rc != item.expected
       changed_when: false # Keep simple success/failure state for tests
