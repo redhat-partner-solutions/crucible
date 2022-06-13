@@ -12,3 +12,4 @@
     - name: "Record failure of testcase {{ item.test_name  }}"
       set_fact:
         test_failures: "{{ test_failures | default([]) + [item.test_name] }}"
+      failed_when: true # Keep non-zero exit code
