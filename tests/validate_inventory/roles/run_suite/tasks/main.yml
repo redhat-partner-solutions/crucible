@@ -30,7 +30,7 @@
       copy:
         src: "{{ temp_dir.path }}"
         dest: "{{ playbook_dir }}/failed/"
-        mode: copy
+        mode: preserve
         backup: true
       failed_when: true # Keep non-zero exit code
 
