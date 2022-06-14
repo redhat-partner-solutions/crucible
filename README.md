@@ -56,8 +56,7 @@ Requires the following to be installed on the deployment host:
 - [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
 
 
-**Important Note** The `openshift-clients` package is part of the (Red Hat OpenShift Container Platform Subscription
-)[https://access.redhat.com/downloads/content/290/]. The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash
@@ -147,7 +146,7 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
   -e skip_interactive_prompts=true
 ```
 
-### Priviledge Escalation
+### Privilege Escalation
 
 For simplicity we suggest that passwordless sudo is set up on all machines. If this is not desirable or possible in your environment then there are two options:
 
