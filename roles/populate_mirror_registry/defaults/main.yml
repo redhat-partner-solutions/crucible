@@ -44,7 +44,7 @@ installer_controller_image:
 release_image_remote: "quay.io/openshift-release-dev/ocp-release"
 
 release_image_item:
-  remote: "{{ release_image_remote }}@{{ image_hashes['release_' + (openshift_version | string)] }}"
+  remote: "{{ release_image_remote }}@{{ image_hashes['release_' + (openshift_full_version | string) + '_x86_64'] }}"
   local: "{{ local_registry }}/ocp4/openshift4"
   local_tag: "{{ openshift_full_version }}-x86_64"
 
