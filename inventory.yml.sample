@@ -37,9 +37,17 @@ all:
     # network_type: OVNKubernetes
     # network_type: OpenShiftSDN
 
+
+
     ######################################
     # Prerequisite Service Configuration #
     ######################################
+
+    # Proxy settings. These settings apply to: Assisted Installer, Day1 clusters and Day2 clusters.
+    # This assumes the host where the AI runs and the OpenShift cluster share the same proxy settings.
+    # http_proxy: ""
+    # https_proxy: ""
+    # no_proxy: ""
 
     # Flags to enable/disable prerequisite service setup
     # You will need to ensure alternatives are available for anything that will not be automatically set up
