@@ -595,3 +595,7 @@ all:
           ansible_host: 192.168.10.17
           bmc_ip: 172.30.10.7
 ```
+# Defining a password for the discovery iso.
+
+If users wish to provide password for the discovery iso they must define `hashed_discovery_password` in the `all` section inventory.
+The value provided in `hashed_discovery_password` can be created by using `mkpasswd --method=SHA-512 MyAwesomePassword`.
