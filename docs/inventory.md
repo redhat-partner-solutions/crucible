@@ -206,6 +206,127 @@ network_config:
       interface: bond0
 ```
 
+#### IPv6
+
+At the momment crucible doesn't configure DHCP for IPv6 entries, so you will have to roll your own or use static ips (see the above section on network configuration)
+
+Note: Crucible doesn't require the BMC's to be on the same network as long as both are routable from the bastion. So you could have as per the example the BMC addresses as IPv4 even if the cluster is IPv6. However it should be noted that the HTTP Store has to be routeable from the BMC network.  
+
+To setup an IPv6 single stack cluster you need to change the following variables:
+```yaml
+all:
+  vars:
+    ...
+    api_vip: fd00:6:6:2051::96
+    ingress_vip: fd00:6:6:2051::97
+
+    machine_network_cidr:  fd00:6:6:2051::0/64
+    service_network_cidr: fd02::/112
+    cluster_network_cidr: fd01::/48
+    cluster_network_host_prefix: 64
+    ...
+...
+      children:
+        masters:
+          vars:
+            role: master
+            vendor: Dell
+            # Note: Crucible currently requires you to setup your own IPv6 DHCP
+            # Or use static ip addresses.
+            network_config:
+              interfaces:
+                - name: "enp1s0"
+                  mac: "{{ mac }}"
+                  addresses:
+                    ipv6:
+                      - ip: "{{ ansible_host }}"
+                        prefix: "64"
+              dns_server_ips:
+                - "fd00:6:6:11::52"
+              routes:
+                - destination: "0:0:0:0:0:0:0:0/0"
+                  address: "fd00:6:6:2051::1"
+                  interface: "enp1s0"
+          hosts:
+            super1:
+              ansible_host: fd00:6:6:2051::101
+              bmc_address: 172.28.11.29
+              mac: "40:A6:B7:3D:B3:70"
+            ...
+```
+
+To enable assisted installer to communicate via IPv6 you must first have the host configured with an IPv6 then add `use_ipv6: True` to the `assisted_installer` host: 
+```yaml
+    services:
+      hosts:
+        assisted_installer:
+          ...
+          use_ipv6: True
+          # Optionallyu use these two values to configure the ipv6 network which podman will create
+          # podman_ipv6_network_subnet: 'fd00::1:8:0/112'
+          # podman_ipv6_network_gateway: 'fd00::1:8:1'
+          ...
+```
+
+#### Dual Stack
+
+Openshift currently only allows the ingress and API VIPs to be single stack so you must choose IPv4 or IPv6. Then crucible offers 3 variables for the extra network configuration (`extra_machine_networks`, `extra_service_networks` and `extra_cluster_networks`): 
+
+```yaml
+all:
+  vars:
+    ...
+    api_vip: 10.60.0.96
+    ingress_vip: 10.60.0.97
+
+    machine_network_cidr: 10.60.0.0/24
+    service_network_cidr: 172.30.0.0/16
+    cluster_network_cidr: 10.128.0.0/14
+    cluster_network_host_prefix: 23
+
+    extra_machine_networks:
+      - cidr: fd00:6:6:2051::/64
+    extra_service_networks: 
+      - cidr: fd02::/112
+    extra_cluster_networks: 
+      - cidr: fd01::/48
+        host_prefix: 64
+...
+      children:
+        masters:
+          vars:
+            ...
+            network_config:
+              interfaces:
+                - name: "enp1s0"
+                  mac: "{{ mac }}"
+                  addresses:
+                    ipv4: 
+                      - ip: "{{ ansible_host }}"
+                        prefix: "24"
+                    ipv6:
+                      - ip: "{{ ipv6_address }}"
+                        prefix: "64"
+              dns_server_ips:
+                - "fd00:6:6:11::52"
+                - "10.40.0.100"
+              routes:
+                - destination: "0:0:0:0:0:0:0:0/0"
+                  address: "fd00:6:6:2051::1"
+                  interface: "enp1s0"
+                - destination: 0.0.0.0/0
+                  address: "10.60.0.1"
+                  interface: "enp1s0"
+          hosts:
+            super1:
+              ansible_host: 10.60.0.101
+              ipv6_address: fd00:6:6:2051::101
+              bmc_address: 172.28.11.29
+              mac: "40:A6:B7:3D:B3:70"
+            ...
+
+```
+
 ### Prerequisites
 
 ---
