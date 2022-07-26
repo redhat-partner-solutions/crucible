@@ -11,12 +11,11 @@ bug, or helping another user.
 
 ### Suggestions
 
-To make a suggestion open an Issue in the GitHub repository describing what feature/change you think is needed, why, and
-if possible give an example.
+To make a suggestion open an Issue in the GitHub repository describing what feature/change you think is needed, why, and, if possible, give an example.
 
 ### Bug Reports
 
-> ❗ _Red Hat does not provide commercial support for the content of this repo. Any assistance is purely on a best-effort basis, as resource permits._
+> ❗ _Red Hat does not provide commercial support for the content of this repo. Any assistance is purely on a best-effort basis, as resources permit._
 
 If you encounter a bug then carefully examine the output. If you choose to open an issue then please include as much
 information about the problem as possible as this gives the best chance someone can help. We suggest:
@@ -60,7 +59,7 @@ produced, and review is also an excellent opportunity to learn.
 
 A good commit does a *single* thing, does it completely, concisely, and describes *why*.
 
-The commit message should explain both what is being changed, and in the case of anything non-obvious why that change
+The commit message should explain both what is being changed and, in the case of anything non-obvious, why that change
 was made. Commit messages are something that has been extensively written about so need not be discussed in more detail
 here but contributors should follow [these seven rules](https://chris.beams.io/posts/git-commit/#seven-rules) and keep
 individual commits focussed.
@@ -70,7 +69,7 @@ is that a Pull Request may contain one or more commits that together prepare for
 
 Instructions on how to restructure commits to create a clear and understandable set of changes is outside the scope of
 this document but it's a useful skill and there are [many](https://thoughtbot.com/blog/autosquashing-git-commits)
-[guides](https://git-scm.com/docs/git-rebase) and [approaches](https://nuclearsquid.com/writings/git-add/) for to do it.
+[guides](https://git-scm.com/docs/git-rebase) and [approaches](https://nuclearsquid.com/writings/git-add/) for how to do it.
 
 ## Style Guidelines
 
@@ -78,7 +77,7 @@ this document but it's a useful skill and there are [many](https://thoughtbot.co
 - Document the _why_ with comments, and the _what_ with clear code
 - As far as Ansible allows, encapsulate
 - Assume you can not have sudo on the bastion
-- Try not to break people inventories. If you have to make a braking change write a check for the old config and inform the user how to fix it.
+- Try not to break people's inventories. If you have to make a breaking change write a check for the old config and inform the user how to fix it.
 - When using a become with a block, put the become at the top
     ```yaml
         - name: Example
