@@ -15,7 +15,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
 
-These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of RHEL 8.4, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
+These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of Red Hat Enterprise Linux (RHEL) 8.6, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
 
 See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and understand [what steps the playbooks take](docs/pipeline_into_the_details.md).
 
@@ -23,7 +23,7 @@ See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and 
 ## Software Versions Supported
 Crucible targets versions of Python and Ansible that ship with RHEL. At the moment the supported versions are:
 
-- RHEL 8.3
+- RHEL 8.6
 - Python 3.6.8
 - Ansible 2.9.27
 
@@ -33,6 +33,9 @@ Crucible targets versions of Python and Ansible that ship with RHEL. At the mome
 - 4.6
 - 4.7
 - 4.8
+- 4.9
+- 4.10
+
 
 
 ## Assisted Installer versions Tested
@@ -51,12 +54,12 @@ Requires the following to be installed on the deployment host:
 - [jmespath](https://github.com/jmespath)
 - [skopeo](https://github.com/containers/skopeo)
 - [podman](https://github.com/containers/podman/)
-- [kubectl + oc](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html)
+- [kubectl + oc](https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html)
 - [pyghmi](https://pypi.org/project/pyghmi/) #For PXE deployment
 - [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
 
 
-**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash

@@ -2,7 +2,7 @@ all:
   vars:
     setup_ntp_service: false
     ntp_server: 240.0.0.0
-    openshift_full_version: 4.6.16
+    openshift_full_version: 4.10.16
 
   children:
     bastions:
