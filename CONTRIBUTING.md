@@ -38,7 +38,7 @@ How to create and update a fork is outside the scope of this document but there 
 [in-depth](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
 [instructions](https://reflectoring.io/github-fork-and-pull/) explaining how to go about it.
 
-All contributions should must have as much test coverage as possible and include relevent additions and changes to both
+All contributions should must have as much test coverage as possible and include relevant additions and changes to both
 documentation and tooling. Once a change is implemented, tested, documented, and passing all checks then submit a Pull
 Request for it to be reviewed.
 
