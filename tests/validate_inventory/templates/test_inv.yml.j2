@@ -3,7 +3,7 @@ all:
     {% if item.template.day2_discovery_iso_name is defined %}
     day2_discovery_iso_name: {{ item.template.day2_discovery_iso_name }}
     {% endif %}
-    openshift_full_version: {{ item.template.openshift_full_version | default('4.6.16') }}
+    openshift_full_version: {{ item.template.openshift_full_version | default('4.10.16') }}
     setup_dns_service: {{ item.template.setup_dns_service | default(False)}}
     {% if item.template.allow_custom_vendor is defined %}
     allow_custom_vendor: {{ item.template.allow_custom_vendor }}
