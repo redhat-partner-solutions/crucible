@@ -1,0 +1,5 @@
+---
+- name:  Generate agent iso using agent_based_installer
+  hosts: bastion
+  roles:
+    - generate_agent_iso
