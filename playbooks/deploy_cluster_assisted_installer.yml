@@ -1,0 +1,19 @@
+---
+- import_playbook: generate_ssh_key_pair.yml
+  when: generate_ssh_keys | default(True) == True
+
+- import_playbook: create_cluster.yml
+
+- import_playbook: generate_discovery_iso.yml
+
+- import_playbook: mount_discovery_iso_for_pxe.yml
+
+- import_playbook: boot_iso.yml
+  vars:
+    boot_iso_hosts: masters,workers
+
+- import_playbook: install_cluster.yml
+
+- import_playbook: monitor_hosts.yml
+
+- import_playbook: monitor_cluster.yml
