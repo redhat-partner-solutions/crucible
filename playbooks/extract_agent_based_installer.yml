@@ -1,0 +1,15 @@
+---
+- name: Extract openshift installer
+  hosts: bastion
+  gather_facts: false
+  vars:
+    destination_hosts:
+      - bastion
+  pre_tasks:
+    - name: pre-compute need to get hashes
+      set_fact:
+        run_get_hash: "{{ assisted_installer_release_images | default({}) | length == 0  }}"
+  roles:
+    - role: get_image_hash
+      when: run_get_hash | bool
+    - extract_openshift_installer

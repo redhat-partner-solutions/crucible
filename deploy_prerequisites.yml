@@ -21,5 +21,6 @@
 - import_playbook: playbooks/deploy_registry.yml
 
 - import_playbook: playbooks/deploy_assisted_installer_onprem.yml
+  when: not ((use_agent_based_installer | default(false)) | bool)
 
 - import_playbook: playbooks/deploy_sushy_tools.yml

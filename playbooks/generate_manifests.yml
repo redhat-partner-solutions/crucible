@@ -1,0 +1,14 @@
+---
+- name: Generate manfiests for agent_based_installer
+  hosts: bastion
+  vars:
+    destination_hosts:
+      - bastion
+  pre_tasks:
+    - name: Pre-compute need to get hashes
+      ansible.builtin.set_fact:
+        run_get_hash: "{{ assisted_installer_release_images | default({}) | length == 0 }}"
+  roles:
+    - role: get_image_hash
+      when: run_get_hash
+    - generate_manifests
