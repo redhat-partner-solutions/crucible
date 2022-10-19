@@ -86,15 +86,15 @@ ansible-galaxy collection install -r requirements.yml
 
 ### Inventory Vault File Management
 
-The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information. 
+The inventory vault files should be encrypted and protected at all times, as they may contain secret values and sensitive information.
 
 To encrypt a vault file named `inventory.vault.yml`, issue the following command.
 
 ```bash
-ansible-vault encrypt inventory.vault.yml 
+ansible-vault encrypt inventory.vault.yml
 ```
 
-An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.  
+An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.
 To that end, provide the option `-e "@{PATH_TO_THE_VAULT_FILE}"`.
 
 To allow Ansible to read values from an encrypted vault file, a password for decrypting the vault must be provided. Provide the `--ask-vault-pass` flag to force Ansible to ask for a password to the vault before the selected playbook is executed.
@@ -140,7 +140,7 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
 
 When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
 
-In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.  
+In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.
 If this option is enabled, the generation of a deployment plan is omitted, and the deployment process starts immediately after the command is run.
 
 ```bash
@@ -209,7 +209,7 @@ The following are defaults for a full setup:
   - The discovery image from Assisted Installer will be placed in and served from `/opt/http_store/data`
 
 - TFTP Host
-  - The discovery image will be mounted to this server and do the PXE boot with TFTP 
+  - The discovery image will be mounted to this server and do the PXE boot with TFTP
 
 
 ### Bastion
@@ -218,7 +218,7 @@ As well as deploying prerequisites and a cluster, the playbooks create or update
 
 - An updated `pull-secret.txt` containing an additional secret to authenticate with the deployed registry.
 - The self-signed certificate created for the registry host as `registry.crt`.
-- The SSH public and private keys generated for access to the nodes, if any, at `/home/redhat/ssh_keys` (temporarily stored in `/tmp/ssh_key_pair`)
+- The SSH public and private keys generated for access to the nodes, if any, at  `{{ path_base_dir }}/ssh_keys` (where `path_base_dir = /home/redhat` temporarily stored in `/tmp/ssh_key_pair`)
 - Any created CoreOS ignition files.
 
 When doing multiple runs ensure you retain any authentication artefacts you need between deploys.

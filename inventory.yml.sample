@@ -38,7 +38,6 @@ all:
     # network_type: OpenShiftSDN
 
 
-
     ######################################
     # Prerequisite Service Configuration #
     ######################################
@@ -84,7 +83,9 @@ all:
     # Local File Configuration #
     ############################
 
-    repo_root_path: /home/redhat/crucible/ # path to repository root
+    path_base_dir: /home/redhat
+
+    repo_root_path: "{{ path_base_dir }}/crucible" # path to repository root
 
     # Directory in which created/updated artifacts are placed
     fetched_dest: "{{ repo_root_path }}/fetched"
@@ -105,10 +106,9 @@ all:
       - ~/.ssh/id_rsa.pub
 
     # Set the base directory to store ssh keys
-    ssh_key_dest_base_dir: /home/redhat
-
+    ssh_key_dest_base_dir: "{{ path_base_dir }}"
     # The retrieved cluster kubeconfig will be placed on the bastion host at the following location
-    kubeconfig_dest_dir: /home/redhat/
+    kubeconfig_dest_dir: "{{ path_base_dir }}"
     kubeconfig_dest_filename: "{{ cluster_name }}-kubeconfig"
     kubeadmin_dest_filename: "{{ cluster_name }}-kubeadmin.vault.yml"
     # You can comment out the line below if you want the kubeadmin credentials to be stored in plain text
@@ -189,10 +189,10 @@ all:
 
         http_store:
           ansible_host: 10.40.0.100
-        
+
         tftp_host:
           ansible_host: "{{ hostvars['dns_host']['ansible_host'] }}"
-          tftp_directory: /var/lib/tftpboot/ 
+          tftp_directory: /var/lib/tftpboot/
 
         ntp_host:
           ansible_host: 10.40.0.100
@@ -203,7 +203,7 @@ all:
           ansible_user: root
           ansible_host: vm_host.clustername.example.lab
           host_ip_keyword: ansible_host # the varname in the KVM node hostvars which contains the *IP* of the VM
-          images_dir: /home/redhat/libvirt/images # directory where qcow images will be placed.
+          images_dir: "{{ path_base_dir }}/libvirt/images" # directory where qcow images will be placed.
           vm_bridge_ip: 10.60.0.190 # IP for the bridge between VMs and machine network
           vm_bridge_interface: ens7f1 # Interface to be connected to the bridge. DO NOT use your primary interface.
           dns: 10.40.0.100 # DNS used by the bridge
@@ -234,7 +234,7 @@ all:
       #     - One of "Dell", "HPE", "Lenovo", "SuperMicro", "KVM", "PXE" as the supported BMC APIs.
       #     - "KVM" identifies a node as a VM to be created. If a "KVM" node is present,
       #       then a "vm_host" must be defined in the node and a host with that name must exist
-      #       inside the "vm_hosts" group. 
+      #       inside the "vm_hosts" group.
       #     - "PXE" identifies a node as a baremetal that needs to boot from PXE.
       #
       # - bmc_address
@@ -309,7 +309,7 @@ all:
 
               # # Uncomment to set an alternate installation disk device for the node
               # installation_disk_path: /dev/sdb
-              
+
             worker2:
               ansible_host: 10.60.0.105
               bmc_address: 172.28.11.26
@@ -317,5 +317,3 @@ all:
 
               # # Uncomment to set an alternate installation disk device for the node
               # installation_disk_path: /dev/sdb
-             
-           
