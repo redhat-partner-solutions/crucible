@@ -1,0 +1,21 @@
+---
+- name: Play to populate image_hashes for relevant images
+  hosts: localhost
+  vars:
+    destination_hosts:
+      - http_store
+  pre_tasks:
+    - name: pre-compute need to get hashes
+      set_fact:
+        run_get_hash: "{{ assisted_installer_os_images | default({}) | length == 0  }}"
+  roles:
+    - role: get_image_hash
+      when: run_get_hash
+
+- name: Copy assisted instaler isos to http store
+  hosts: http_store
+  vars:
+    COPY_AI_ISOS_TO_HTTP_STORE: "{{ copy_ai_isos_to_http_store | default(false) }}"
+  roles:
+    - role: copy_ai_isos_to_http_store
+      when: COPY_AI_ISOS_TO_HTTP_STORE == True
