@@ -17,19 +17,19 @@
       register: ipmitool_check
       ignore_errors: True
       changed_when: False
-    
+
     - name: Record failures
       fail:
         msg: "ipmitool must be installed for pxe installation"
       when: ipmitool_check.rc != 0
-    
+
     - name: "Check if pyghmi installed"
       ansible.builtin.shell:
         cmd: "pip3 show pyghmi"
       register: pyghmi_check
       ignore_errors: True
       changed_when: False
-    
+
     - name: Record failures
       fail:
         msg: "pyghmi must be installed for pxe installation"

@@ -9,7 +9,7 @@
   loop: "{{ groups['nodes'] }}"
 
 - name: "Check vendors role exists"
-  include_role: 
+  include_role:
     name: "vendors/{{ hostvars[item]['vendor'] | lower }}"
     tasks_from: exists.yml
     allow_duplicates: true
