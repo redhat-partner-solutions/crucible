@@ -210,7 +210,7 @@ network_config:
 
 At the momment crucible doesn't configure DHCP for IPv6 entries, so you will have to roll your own or use static ips (see the above section on network configuration)
 
-Note: Crucible doesn't require the BMC's to be on the same network as long as both are routable from the bastion. So you could have as per the example the BMC addresses as IPv4 even if the cluster is IPv6. However it should be noted that the HTTP Store has to be routeable from the BMC network.  
+Note: Crucible doesn't require the BMC's to be on the same network as long as both are routable from the bastion. So you could have as per the example the BMC addresses as IPv4 even if the cluster is IPv6. However it should be noted that the HTTP Store has to be routeable from the BMC network.
 
 To setup an IPv6 single stack cluster you need to change the following variables:
 ```yaml
@@ -255,7 +255,7 @@ all:
             ...
 ```
 
-To enable assisted installer to communicate via IPv6 you must first have the host configured with an IPv6 then add `use_ipv6: True` to the `assisted_installer` host: 
+To enable assisted installer to communicate via IPv6 you must first have the host configured with an IPv6 then add `use_ipv6: True` to the `assisted_installer` host:
 ```yaml
     services:
       hosts:
@@ -270,7 +270,7 @@ To enable assisted installer to communicate via IPv6 you must first have the hos
 
 #### Dual Stack
 
-Openshift currently only allows the ingress and API VIPs to be single stack so you must choose IPv4 or IPv6. Then crucible offers 3 variables for the extra network configuration (`extra_machine_networks`, `extra_service_networks` and `extra_cluster_networks`): 
+Openshift currently only allows the ingress and API VIPs to be single stack so you must choose IPv4 or IPv6. Then crucible offers 3 variables for the extra network configuration (`extra_machine_networks`, `extra_service_networks` and `extra_cluster_networks`):
 
 ```yaml
 all:
@@ -286,9 +286,9 @@ all:
 
     extra_machine_networks:
       - cidr: fd00:6:6:2051::/64
-    extra_service_networks: 
+    extra_service_networks:
       - cidr: fd02::/112
-    extra_cluster_networks: 
+    extra_cluster_networks:
       - cidr: fd01::/48
         host_prefix: 64
 ...
@@ -301,7 +301,7 @@ all:
                 - name: "enp1s0"
                   mac: "{{ mac }}"
                   addresses:
-                    ipv4: 
+                    ipv4:
                       - ip: "{{ ansible_host }}"
                         prefix: "24"
                     ipv6:
@@ -433,7 +433,7 @@ One of the simplest examples is a simple cluster with no workers, virtual master
 
 That diagram gives the following excerpt from the inventory for the `bastion` and `services`:
 
-> **Note**: We use `ansible_connection: local` here because crucible should be executed from the bastion, the use of connection local removes the need to configure your user to be able to SSH into its self. 
+> **Note**: We use `ansible_connection: local` here because crucible should be executed from the bastion, the use of connection local removes the need to configure your user to be able to SSH into its self.
 
 ```yaml
 # ...
@@ -595,7 +595,7 @@ disks:
     extra_partitions:
       partition_1: 1024
       partition_2: 1024
- ```     
+ ```
 
 ## PXE Deployment
 You must have these services when using PXE deployment
@@ -651,7 +651,7 @@ These two examples are not the only type of clusters that can be deployed using 
 # Mirroring operators and index for disconnected installations
 
 By default we do not populate the disconnected registry with operators used post install
-this is because this takes a substantial amount of time and can be done post install or 
+this is because this takes a substantial amount of time and can be done post install or
 even in parallel by the user by running:
 
 ```bash
@@ -665,11 +665,11 @@ If you wish to populate the registry as part of deploying the pre-requistes you 
 ## DNS Entries for Bastion, Services and VM_Hosts.
 
 When using the crucible provided DNS, the automation will create entries for the bastion, the service hosts and, then vm hosts.
-The value of `ansible_fqdn` will be used except in where `registry_fqdn` is defined as part of `registry_host`, or when `sushy_fqdn` is defined as part of `vm_hosts`. 
+The value of `ansible_fqdn` will be used except in where `registry_fqdn` is defined as part of `registry_host`, or when `sushy_fqdn` is defined as part of `vm_hosts`.
 
-NOTE: The DNS entries will only be created if the `ansible_host` is an _IP address_ otherwise it will be skipped. 
+NOTE: The DNS entries will only be created if the `ansible_host` is an _IP address_ otherwise it will be skipped.
 
-To force the automation to skip a host you can add `dns_skip_record: true` to the host definition. 
+To force the automation to skip a host you can add `dns_skip_record: true` to the host definition.
 
 ## DNS Entries for BMCs
 
@@ -678,7 +678,7 @@ For this to occur you  you are required to add `bmc_ip:` alongside `ansible_host
 The addresses will be templated as `{{ inventory_hostname }}-bmc.infra.{{ base_dns_domain }}`.
 If `setup_dns_service` is `false` crucible will not create any DNS records.
 
-For example: The BMC address for host `super1` will be `"super1-bmc.infra.example.com"`. 
+For example: The BMC address for host `super1` will be `"super1-bmc.infra.example.com"`.
 
 Note: This can be useful when working with proxies as you can add `*.infra.example.com` to your no_proxy setting.
 
@@ -721,3 +721,8 @@ all:
 
 If users wish to provide password for the discovery iso they must define `hashed_discovery_password` in the `all` section inventory.
 The value provided in `hashed_discovery_password` can be created by using `mkpasswd --method=SHA-512 MyAwesomePassword`.
+
+
+# Operators
+
+It is possible to the install a few operators as part of the cluster installtion. These operators are local storage operator (`install_lso: True`), open data fabric (`install_odf: True`) and openshift virtualision (`install_cnv: True`)
