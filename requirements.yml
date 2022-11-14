@@ -1,6 +1,7 @@
 ---
 collections:
   - ansible.posix
+  - ansible.utils
   - containers.podman
   - community.crypto
   - name: community.general
