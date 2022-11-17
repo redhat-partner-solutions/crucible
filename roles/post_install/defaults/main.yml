@@ -7,3 +7,4 @@ kube_filename: "{{ kubeconfig_dest_filename | default(cluster_name + '-kubeconfi
 dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
 kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
 kubeadmin_vault_name: "{{ kubeadmin_dest_filename | default(cluster_name +'-kubeadmin.vault.yml') }}"
+node_labels: {}

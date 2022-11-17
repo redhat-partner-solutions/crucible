@@ -6,3 +6,4 @@ collections:
   - name: community.general
     version: '<5.0.0'
   - community.libvirt
+  - kubernetes.core

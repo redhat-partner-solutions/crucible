@@ -1,0 +1,12 @@
+#jinja2:trim_blocks: True, lstrip_blocks: True
+{% for node in node_labels %}
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: {{ node }}
+  labels:
+    {% for item in  (node_labels[node] | dict2items(key_name='label')) %}
+    {{ item.label }}: "{{ item.value }}"
+    {% endfor %}
+{% endfor %}

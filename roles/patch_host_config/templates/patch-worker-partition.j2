@@ -1,14 +1,14 @@
 #jinja2:trim_blocks: True, lstrip_blocks: True
 {
   "ignition": {
-    "version": "3.2.0" 
+    "version": "3.2.0"
   },
   "storage": {
     "disks": [
       {% for disk in disks %}
       {
         "device": "{{ disk.device }}",
-        "partitions": [ 
+        "partitions": [
           {% set partitions = ((disk.extra_partitions | default({})).items() | list) %}
           {% if disk.device == (installation_disk_path | default(host.json.installation_disk_path)) %}
           {{ (disks_rhcos_root | tojson) + (((partitions | length) > 0) | ternary(',','')) }}
