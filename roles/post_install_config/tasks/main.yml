@@ -1,0 +1,21 @@
+- name: Add things to cluster
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  block:
+    - name: Deploy GitOps Operator
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=gitops_deployment_kustomize_target) }}"
+        apply: true
+      when: deploy_gitops | bool
+
+    - name: Target application_set
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=gitops_target_sync_repo) }}"
+        apply: true
+      when:
+        - deploy_gitops | bool
+        - gitops_target_sync_repo is defined
+      register: target_apply_result
+      until: target_apply_result is not failed and target_apply_result is not changed
+      retries: 10
+      delay: 30
