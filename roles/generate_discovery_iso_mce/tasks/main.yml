@@ -1,0 +1,18 @@
+- name: Get CA Secret and save to ca-trust path
+  shell: "oc get secret router-ca -o json -n openshift-ingress-operator |jq -r \".data.\\\"tls.crt\\\"\"|base64 -d > /etc/pki/ca-trust/source/anchors/nokianom.crt "
+  register: cert
+
+- name: Update CA Trust
+  command: update-ca-trust
+
+- name: Get ISO Download Link
+  shell: oc get infraenv -A -o json|jq -r '.items[0].status.isoDownloadURL'
+  register: iso_url
+
+- set_fact:
+      iso_url_str: "{{ iso_url.stdout | replace ('minimal' , 'full') }}"
+
+- name: Download ISO
+  get_url:
+    url: "{{iso_url_str}}"
+    dest: /opt/http_store/data/discovery/discovery_mce.iso

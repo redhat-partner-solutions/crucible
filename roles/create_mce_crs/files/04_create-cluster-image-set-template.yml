@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: create-cluster-image-set-template
+metadata:
+  name: create-cluster-image-set-template
+objects:
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterImageSet
+  metadata:
+    name: openshift-v${OCPVERSION}
+  spec:
+    releaseImage: quay.io/openshift-release-dev/ocp-release:${OCPVERSION}-x86_64
+parameters:
+- description: The OCP version
+  name: OCPVERSION
+  value: "4.10.16"
+  required: true

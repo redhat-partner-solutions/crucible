@@ -1,0 +1,38 @@
+- name: Source Kubeconfig file
+  shell: "export KUBECONFIG={{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create MCE Operator
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_operator/files/mce_operator.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Wait until MCE Pods are running
+  command: "oc -n multicluster-engine get pods --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json"
+  register: oc_get_pods
+  until: oc_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  retries: 10
+  delay: 10
+
+- name: Deploy MCE Plugins
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_operator/files/multicluster-engine.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Wait until MCE Pods are running
+  command: "oc -n multicluster-engine get pods --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json"
+  register: oc_get_pods
+  until: oc_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  retries: 10
+  delay: 10
+
+- name: Patch the provisioning-configuration to enable CIM service
+  command: "oc patch provisioning provisioning-configuration --type merge -p '{\"spec\":{\"watchAllNamespaces\": true }}'"
+
+- name: Create Template for AgentServiceConfig for imported cluster
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_operator/files/00_create-agent-service-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name:  Create the AgentServiceConfig
+  shell: "oc process create-agentserviceconfig-template -p OPENSHIFTVERSION={{ openshift_version }} -p VERSION={{ version }} -p URL={{ url }} -p ROOTFSURL={{ rootfsurl }} | oc create -f -"
+
+- name: Wait until CIM is configured correctly
+  command: "oc -n multicluster-engine get pods --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json"
+  register: oc_get_pods
+  until: oc_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  retries: 10
+  delay: 10

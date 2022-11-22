@@ -1,0 +1,16 @@
+- name: Get Agent name
+  shell: "oc get agent -n {{ namespace }} --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json | jq -r .items[].metadata.name"
+  register: oc_get_agent_name
+
+- name: Approve the host
+  shell: "oc patch agent {{ oc_get_agent_name.stdout }} -n {{ namespace }} --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} --type merge --patch '{\"spec\":{\"approved\":true }}'"
+
+- name: Add host to cluster
+  shell: "oc patch agent {{ oc_get_agent_name.stdout }} -n {{ namespace }} --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} --type merge --patch '{\"spec\":{\"clusterDeploymentName\":{\"name\": \"{{ namespace }}\", \"namespace\": \"{{ namespace }}\"}}}'"
+
+- name: Wait until Host is installed
+  command: "oc get agent {{ oc_get_agent_name.stdout }} -n {{ namespace }} --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json"
+  register: oc_get_managedcluster
+  until: oc_get_managedcluster.stdout|from_json|json_query('status.conditions[*].status')|unique == ["True"]
+  retries: 20
+  delay: 60

@@ -1,0 +1,29 @@
+apiVersion: multicluster.openshift.io/v1
+kind: MultiClusterEngine
+metadata:
+  name: multiclusterengine-sample
+spec:
+  availabilityConfig: High
+  overrides:
+    components:
+      - enabled: true
+        name: assisted-service
+      - enabled: true
+        name: cluster-lifecycle
+      - enabled: true
+        name: cluster-manager
+      - enabled: true
+        name: discovery
+      - enabled: true
+        name: hive
+      - enabled: true
+        name: server-foundation
+      - enabled: true
+        name: cluster-proxy-addon
+      - enabled: false
+        name: managedserviceaccount-preview
+      - enabled: false
+        name: hypershift-preview
+      - enabled: true
+        name: console-mce
+  targetNamespace: multicluster-engine

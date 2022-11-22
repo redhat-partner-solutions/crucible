@@ -1,0 +1,72 @@
+- name: Create Template for Namespace for imported cluster
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/01_create-ns-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for Pull Secret
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/02_create-pull-secet-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for InfraEnv
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/03_create-infraenv-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for Cluster Image Set
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/04_create-cluster-image-set-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for Agent Cluster Install
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/05_create-agent-cluster-install-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for Import Cluster (ClusterDeployment)
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/07_create-cluster-deployment-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Template for Managed Cluster
+  command: "oc apply -f {{ repo_root_path }}/roles/create_mce_crs/files/managed-cluster-template.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Create Namespace for imported cluster
+  shell: "oc process create-ns-template -p NAMESPACE={{ namespace }} | oc create -f -"
+
+- name: Create Pull Secret
+  shell: "oc process create-pullsecret-template -p NAMESPACE={{ namespace }} -p DOCKERCONFIG={{ dockerconfig }} | oc create -f -"
+
+- name: Create InfraEnv
+  shell: "oc process create-infraenv-template -p NAMESPACE={{ namespace }} -p SSHKEY='{{ sshkey }}' | oc create -f -"
+
+- name: Create Cluster Image Set
+  shell: "oc process create-cluster-image-set-template -p OCPVERSION={{ openshift_full_version }} | oc create -f -"
+
+- name: Create Agent Cluster Install
+  shell: "oc process create-agentclusterinstall-template -p NAMESPACE={{ namespace }} -p APIVIP='{{ api_vip }}' -p OCPVERSION='{{ openshift_full_version }}' -p INGRESSVIP='{{ ingress_vip }}' -p PLATFORMTYPE={{ platform_type }} -p CLUSTERNETWORK={{ cluster_network_cidr }} -p SERVICENETWORK={{ service_network_cidr }} -p SSHKEY='{{ sshkey }}'| oc create -f -"
+
+- name: Create Kubeconfig
+  command: "oc -n {{ namespace }} create secret generic {{ namespace }}-admin-kubeconfig --from-file=kubeconfig={{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Get credentials
+  uri:
+    url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/credentials"
+    return_content: yes
+  register: credentials
+
+- name: Create kubeadmin user password
+  command: "oc -n {{ namespace }} create secret generic {{ namespace }}-admin-password --from-literal=username={{ credentials.json.username }} --from-literal=password={{ credentials.json.password }}"
+
+- name: Create  Import Cluster (ClusterDeployment)
+  shell: "oc process create-clusterdeployment-template -p NAMESPACE={{ namespace }} -p BASEDOMAIN={{ base_dns_domain }} -p CLUSTERID={{ clusterID }} -p INFRAID={{ infraID }} -p CLUSTERNAME={{ cluster_name }} | oc create -f -"
+
+- name: Prepare for Import
+  shell: "oc process create-managedcluster-template -p NAMESPACE={{ namespace }} | oc create -f -"
+
+- name: Obtain the klusterlet-crd.yaml
+  shell: "oc get secret {{ namespace }}-import -n {{ namespace }} -o jsonpath={.data.crds\\\\\\.yaml} | base64 --decode > {{kubeconfig_dest_dir}}klusterlet-crd.yml"
+
+- name: Obtain the import.yaml
+  shell: "oc get secret {{ namespace }}-import -n {{ namespace }} -o jsonpath={.data.import\\\\\\.yaml} | base64 --decode > {{kubeconfig_dest_dir}}import.yml"
+
+- name: Apply the klusterlet-crd.yaml
+  command: "oc apply -f {{kubeconfig_dest_dir}}klusterlet-crd.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Apply the import.yaml
+  command: "oc apply -f {{kubeconfig_dest_dir}}import.yml --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Wait until Cluster is imported
+  command: "oc get managedcluster {{ namespace }} --kubeconfig {{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}} -o json"
+  register: oc_get_managedcluster
+  until: oc_get_managedcluster.stdout|from_json|json_query('status.conditions[*].status')|unique == ["True"]
+  retries: 10
+  delay: 10

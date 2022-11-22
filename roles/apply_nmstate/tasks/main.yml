@@ -7,11 +7,11 @@
         name: nmstate
         state: present
 
-    - name: "Copy rendered_nmstate_yml to {{ vm_nmstate_config_path }}"
-      copy:
-        content: "{{ rendered_nmstate_yml }}"
-        dest: "{{ vm_nmstate_config_path }}"
-        mode: 0644
+   # - name: "Copy rendered_nmstate_yml to {{ vm_nmstate_config_path }}"
+   #   copy:
+   #     content: "{{ rendered_nmstate_yml }}"
+   #     dest: "{{ vm_nmstate_config_path }}"
+   #     mode: 0644
       # No commit is done to revert the changes if they cause the host to be come unreachable
 
     - name: Apply nmstate

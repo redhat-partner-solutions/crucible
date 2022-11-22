@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: create-agentserviceconfig-template
+metadata:
+  name: create-agentserviceconfig-template
+objects:
+- apiVersion: agent-install.openshift.io/v1beta1
+  kind: AgentServiceConfig
+  metadata:
+   name: agent
+  spec:
+    databaseStorage:
+      storageClassName: ocs-storagecluster-cephfs
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+    filesystemStorage:
+      storageClassName: ocs-storagecluster-cephfs
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+    imageStorage:
+      storageClassName: ocs-storagecluster-cephfs
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+    osImages:
+      - openshiftVersion: "${OPENSHIFTVERSION}"
+        version: "${VERSION}"
+        url: "${URL}"
+        rootFSUrl: "${ROOTFSURL}"
+        cpuArchitecture: "x86_64"
+parameters:
+- description: The namespace that will be created for imported cluster
+  name: OPENSHIFTVERSION
+  value: "4.10"
+  required: true
+- description: The namespace that will be created for imported cluster
+  name: VERSION
+  value: "410.84.202205191234-0"
+  required: true
+- description: The URL
+  name: URL
+  value: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.10/4.10.3/rhcos-4.10.3-x86_64-live.x86_64.iso"
+  required: true
+- description: The RootFSURL
+  name: ROOTFSURL
+  value: "https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.10/4.10.3/rhcos-4.10.3-x86_64-live-rootfs.x86_64.img"
+  required: true
