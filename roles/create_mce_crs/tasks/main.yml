@@ -1,0 +1,248 @@
+- name: Create Namespace for imported cluster
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ day2_add_worker_namespace }}"
+
+- name: Create Pull Secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: v1
+      data:
+        .dockerconfigjson: "{{ docker_config }}"
+      kind: Secret
+      metadata:
+        name: pull-secret
+        namespace: "{{ day2_add_worker_namespace }}"
+      type: kubernetes.io/dockerconfigjson
+
+- name: Create InfraEnv
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: agent-install.openshift.io/v1beta1
+      kind: InfraEnv
+      metadata:
+        name: "{{ day2_add_worker_namespace }}-infraenv"
+        namespace: "{{ day2_add_worker_namespace }}"
+        labels:
+          agentclusterinstalls.extensions.hive.openshift.io/location: Dallas
+          networkType: static
+      spec:
+        pullSecretRef:
+          name: pull-secret
+        sshAuthorizedKey: '{{ sshkey }}'
+        nmStateConfigLabelSelector:
+          matchLabels:
+            infraenvs.agent-install.openshift.io: "{{ day2_add_worker_namespace }}"
+
+- name: Create Cluster Image Set
+  vars:
+    release_filter: "[?(version == '{{ openshift_full_version }}')] | [0] "
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: hive.openshift.io/v1
+      kind: ClusterImageSet
+      metadata:
+        name: "openshift-v{{ openshift_full_version }}"
+      spec:
+        releaseImage: "{{ (assisted_installer_release_images | json_query(release_filter)).url }}"
+
+- name: Create cluster install definition
+  set_fact:
+    create_cluster_install_def: '{{
+        {
+          "apiVersion": "extensions.hive.openshift.io/v1beta1",
+          "kind": "AgentClusterInstall",
+          "metadata": {
+            "name": day2_add_worker_namespace,
+            "namespace": day2_add_worker_namespace
+          },
+          "spec": {
+            "apiVIP": api_vip,
+            "clusterDeploymentRef": {
+              "name": day2_add_worker_namespace
+            },
+            "imageSetRef": {
+              "name": "openshift-v" + openshift_full_version
+            },
+            "ingressVIP": ingress_vip,
+            "platformType": platform_type,
+            "networking": {
+              "clusterNetwork": [
+                {
+                  "cidr": cluster_network_cidr,
+                  "hostPrefix": cluster_network_host_prefix | int
+                }
+              ],
+              "serviceNetwork": [service_network_cidr ]
+            },
+            "provisionRequirements": {
+              "controlPlaneAgents": (groups["masters"] | default([])) | length | int
+            },
+            "sshPublicKey": sshkey
+          }
+        } | to_json
+      }}'
+
+
+- name: Create Agent Cluster Install
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition: "{{ create_cluster_install_def }}"
+
+- name: Create Kubeconfig
+  command: "oc -n {{ day2_add_worker_namespace }} create secret generic {{ day2_add_worker_namespace }}-admin-kubeconfig --from-file=kubeconfig={{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+
+- name: Set password from day2_password
+  set_fact:
+    password:  "{{ day2_password }}"
+  when: day2_password is defined
+
+- name: Lookup day2 password from vault
+  when: day2_password is not defined
+  block:
+    - name: Decrypt vault
+      shell: ansible-vault ---decrypt {{ kubeadmin_vault_path }}
+      when: "{{  kubeadmin_vault_password_file_path is defined}}"
+
+    - name: Set Password from kubeadmin vault
+      set_fact:
+        password: "{{ (lookup(file, kubeadmin_vault_path) | from_yaml).password }}"
+
+  rescue:
+    - name: Get creds from assisted installer
+      uri:
+        url: "{{ URL_ASSISTED_INSTALLER_CLUSTER }}/credentials"
+        return_content: yes
+      register: credentials
+
+    - name: Set fact from assited installer creds
+      set_fact:
+        password: "{{  credentials.json.password }}"
+
+- name: Create kubeadmin user password
+  command: "oc -n {{ day2_add_worker_namespace }} create secret generic {{ day2_add_worker_namespace }}-admin-password --from-literal=username={{ day2_user }} --from-literal=password={{ password }}"
+
+- name: Get infraID
+  kubernetes.core.k8s_info:
+    name: "cluster"
+    api: config.openshift.io/v1
+    kind: Infrastructure
+    namespace: "default"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: infraID
+
+- name: Get clusterID
+  kubernetes.core.k8s_info:
+    name: "version"
+    api: config.openshift.io/v1
+    kind: ClusterVersion
+    namespace: "default"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: clusterID
+
+- name: Create Import Cluster (ClusterDeployment)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: hive.openshift.io/v1
+      kind: ClusterDeployment
+      metadata:
+        name: "{{ day2_add_worker_namespace }}"
+        namespace: "{{ day2_add_worker_namespace }}"
+      spec:
+        baseDomain: "{{ base_dns_domain }}"
+        clusterInstallRef:
+          group: extensions.hive.openshift.io
+          kind: AgentClusterInstall
+          name: "{{ day2_add_worker_namespace }}"
+          version: v1beta1
+        clusterMetadata:
+          adminKubeconfigSecretRef:
+            name: "{{ day2_add_worker_namespace }}-admin-kubeconfig"
+          adminPasswordSecretRef:
+            name: "{{ day2_add_worker_namespace }}-admin-password"
+          clusterID: "{{ clusterID.resources[0].spec.clusterID }}"
+          infraID: "{{ infraID.resources[0].status.infrastructureName }}"
+        clusterName: "{{ cluster_name }}"
+        installed: true
+        platform:
+          agentBareMetal:
+            agentSelector:
+              matchLabels:
+                cluster-name: "{{ cluster_name }}"
+        pullSecretRef:
+          name: pull-secret
+
+- name: Prepare for Import
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: cluster.open-cluster-management.io/v1
+      kind: ManagedCluster
+      metadata:
+        name: "{{ day2_add_worker_namespace }}"
+        labels:
+          cloud: auto-detect
+          vendor: auto-detect
+      spec:
+        hubAcceptsClient: true
+
+- name: Wait 10 seconds for ManagedCluster to be created
+  pause:
+    seconds: 10
+
+- name: Obtain the import secret
+  kubernetes.core.k8s_info:
+    name: "{{ day2_add_worker_namespace }}-import"
+    kind: Secret
+    namespace: "{{ day2_add_worker_namespace }}"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: importyml
+
+- name: Decode the klusterlet-crd.yaml to file
+  ansible.builtin.copy:
+    content: "{{ importyml.resources[0].data['crds.yaml'] | b64decode }}"
+    dest: "{{ repo_root_path }}/roles/create_mce_crs/files/klusterlet-crd.yml"
+
+- name: Decode the import.yaml to file
+  ansible.builtin.copy:
+    content: "{{ importyml.resources[0].data['import.yaml'] | b64decode }}"
+    dest: "{{ repo_root_path }}/roles/create_mce_crs/files/import.yml"
+
+- name: Apply the klusterlet-crd.yaml
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition: "{{ lookup('file', 'klusterlet-crd.yml') | from_yaml_all }}"
+
+- name: Apply the import.yaml
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition: "{{ lookup('file', 'import.yml') | from_yaml_all }}"
+
+- name: Wait until Cluster is imported
+  kubernetes.core.k8s_info:
+    kind: managedcluster
+    api: cluster.open-cluster-management.io/v1
+    name: "{{ day2_add_worker_namespace }}"
+    namespace: "{{ day2_add_worker_namespace }}"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: managedcluster_list
+  until: managedcluster_list.resources | map(attribute='status') | map(attribute='conditions') | flatten | selectattr('type', 'eq', 'ManagedClusterConditionAvailable') | map(attribute='status')  | map('bool') | list == [True]
+  retries: 10
+  delay: 10

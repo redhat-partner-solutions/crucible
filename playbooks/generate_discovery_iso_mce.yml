@@ -1,0 +1,5 @@
+---
+# file: generate_discovery_iso.yml
+- hosts: http_store
+  roles:
+    - generate_discovery_iso_mce

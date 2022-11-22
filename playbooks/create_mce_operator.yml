@@ -1,0 +1,32 @@
+- name: Play to populate image_hashes for relevant images
+  hosts: localhost
+  vars:
+    destination_hosts:
+      - bastion
+  pre_tasks:
+    - name: pre-compute need to get hashes
+      set_fact:
+        run_get_hash: "{{ assisted_installer_os_images | default([]) | length == 0  }}"
+  roles:
+    - role: get_image_hash
+      when: run_get_hash
+
+- hosts: bastion
+  vars:
+    mce_deployed: true
+  pre_tasks:
+    - name: Check if MCE Operator is deployed
+      kubernetes.core.k8s_info:
+        kind: Operator
+        kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+        api: operators.coreos.com/v1
+      register: operator_list
+
+    - name: Set mce_deployed variable
+      set_fact:
+        mce_deployed: false
+      when: operator_list.resources | map(attribute='metadata') | selectattr('name', 'in', 'multicluster-engine.multicluster-engine' ) | list | length == 0
+
+  roles:
+    - role: create_mce_operator
+      when: groups['day2_workers'] | default([]) | length > 0 and (not mce_deployed)

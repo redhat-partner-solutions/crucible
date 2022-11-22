@@ -1,0 +1,4 @@
+dependencies:
+  - role: validate_inventory
+    var:
+      check_for_mce_vars: True

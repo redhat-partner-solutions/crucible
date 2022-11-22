@@ -1,0 +1,59 @@
+- name: Join list for workers and masters
+  set_fact:
+    inventory_nodes: "{{ groups['day2_workers'] | default([]) }}"
+
+- name: Allow up to 20 minutes for new hosts to be discovered
+  kubernetes.core.k8s_info:
+    kind: agent
+    api: agent-install.openshift.io/v1beta1
+    namespace: "{{ day2_add_worker_namespace }}"
+  register: oc_get_managedcluster
+  until:
+    - (oc_get_managedcluster.resources | map(attribute='metadata') | map(attribute='name') | list | length ) == (inventory_nodes | length)
+  retries: 20
+  delay: 60
+
+- name: Get Agent name
+  kubernetes.core.k8s_info:
+    api: agent-install.openshift.io/v1beta1
+    kind: agent
+    namespace: "{{ day2_add_worker_namespace }}"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: oc_get_agent_name
+
+- name: Approve the host
+  kubernetes.core.k8s:
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    state: present
+    api_version: agent-install.openshift.io/v1beta1
+    kind: agent
+    name: "{{ oc_get_agent_name.resources | map(attribute='metadata') | map(attribute='name') | unique | list | join(',') }}"
+    namespace: "{{ day2_add_worker_namespace }}"
+    definition:
+      spec:
+        approved: true
+
+- name: Add host to cluster
+  kubernetes.core.k8s:
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    state: present
+    api_version: agent-install.openshift.io/v1beta1
+    kind: agent
+    name: "{{ oc_get_agent_name.resources | map(attribute='metadata') | map(attribute='name') | unique | list | join(',') }}"
+    namespace: "{{ day2_add_worker_namespace }}"
+    definition:
+      spec:
+        clusterDeploymentName:
+          name: "{{ day2_add_worker_namespace }}"
+          namespace: "{{ day2_add_worker_namespace }}"
+
+- name: Wait until Host is installed
+  kubernetes.core.k8s_info:
+    kind: agent
+    api: agent-install.openshift.io/v1beta1
+    name: "{{ oc_get_agent_name.resources | map(attribute='metadata') | map(attribute='name') | unique | list | join(',') }}"
+    namespace: "{{ day2_add_worker_namespace }}"
+  register: oc_get_managedcluster
+  until: oc_get_managedcluster.resources | map(attribute='status') | map(attribute='conditions') | flatten | selectattr('type', 'eq', 'Installed') | map(attribute='status')  | map('bool') | list  == [True]
+  retries: 20
+  delay: 60

@@ -1,5 +1,17 @@
-- name: Check for day2_discovery_iso_name if required
+- name: Check for variables if required
   assert:
     that:
       - day2_discovery_iso_name is defined
   when: (groups['day2_workers'] | default([])) | length > 0
+
+- name: Check for variables if required
+  assert:
+    that:
+      - day2_add_worker_namespace is defined
+      - sc_name is defined
+      - sshkey is defined
+      - use_mce_for_day2 is defined
+      - use_mce_for_day2 | bool
+  when:
+    - (groups['day2_workers'] | default([])) | length > 0
+    - check_for_mce_vars is defined and (check_for_mce_vars | bool)
