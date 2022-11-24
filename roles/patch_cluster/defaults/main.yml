@@ -23,6 +23,7 @@ single_node_openshift_enabled: "{{ is_valid_single_node_openshift_config | defau
 #     Requires at least three master nodes for High Availability.
 high_availability_mode: "{{ single_node_openshift_enabled | ternary('none', 'full') }}"
 
+
 manifest_templates_for_mode:
   none:
     - template: 50-worker-nm-fix-ipv6.yml.j2
