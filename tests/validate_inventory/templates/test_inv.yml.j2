@@ -8,6 +8,9 @@ all:
     {% if item.template.allow_custom_vendor is defined %}
     allow_custom_vendor: {{ item.template.allow_custom_vendor }}
     {% endif %}
+    {% if item.template.no_proxy is defined %}
+    no_proxy: {{ item.template.no_proxy }}
+    {% endif %}
   children:
     bastions:
       hosts:

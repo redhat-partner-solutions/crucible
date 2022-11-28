@@ -12,6 +12,7 @@
       - ntp.yml
       - day2.yml
       - vendor.yml
+      - proxy.yml
   tasks:
     - name: Run Inventory Validation test suites
       include_role:
