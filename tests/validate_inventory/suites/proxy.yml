@@ -1,0 +1,14 @@
+tags: validate_proxy_config
+
+template_file: test_inv.yml.j2
+
+tests:
+  - test_name: repeated_ip_no_proxy_config
+    expected: 2
+    template:
+      no_proxy: "2.1.1.1,2.1.1.2,2.1.1.2"
+
+  - test_name: unique_ips_in_no_proxy_config
+    expected: 0
+    template:
+      no_proxy: "2.1.1.1,2.1.1.2"
