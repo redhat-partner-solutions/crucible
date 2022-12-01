@@ -16,7 +16,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.6
+          python-version: 3.7
 
       - uses: actions/cache@v3
         with:
@@ -33,4 +33,3 @@ jobs:
           ansible-lint --exclude .github/ -v
         env:
           ANSIBLE_INVENTORY_UNPARSED_FAILED: false
-
