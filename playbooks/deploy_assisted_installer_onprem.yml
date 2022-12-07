@@ -22,7 +22,19 @@
   post_tasks:
     - name: Wait for up to 60 minutes for the assisted installer to come online
       uri:
-        url: "http://{{ ansible_host }}:8090/api/assisted-install/v2/clusters"
+        url: "http://{{ ansible_host }}:8090/ready"
+        method: GET
+        status_code: [200, 201]
+      register: result
+      until: result is succeeded
+      retries: 120
+      delay: 30
+      delegate_to: bastion
+      when: SETUP_ASSISTED_INSTALLER == True
+
+    - name: Wait for up to 60 minutes for the assisted installer image service to come online
+      uri:
+        url: "http://{{ ansible_host }}:8888/health"
         method: GET
         status_code: [200, 201]
       register: result
