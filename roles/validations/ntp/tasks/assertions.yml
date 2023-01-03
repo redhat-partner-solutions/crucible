@@ -4,3 +4,10 @@
       - hostvars['ntp_host']['ntp_server'] is defined
       - hostvars['ntp_host']['ntp_server'] | ipaddr('bool') == True
   when: hostvars['ntp_host']['setup_ntp_service'] | default(false)
+
+
+- name: Ensure NTP server is available if not being set up
+  shell: # noqa 305
+    cmd: "ping -c 1 -W 2 {{ ntp_server }}"
+  changed_when: False
+  when: not ((setup_ntp_service | default(true)) | bool)

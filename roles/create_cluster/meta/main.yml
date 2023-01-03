@@ -1,2 +1,6 @@
 dependencies:
-  - role: validate_inventory
+  - role: validations/required_vars
+  - role: validaitons/secrets
+  - role: validations/ai
+  - role: validations/cluster
+  - role: validations/ntp
