@@ -1,6 +1,12 @@
-- name: Check ntp_server is valid
-  assert:
-    that:
-      - hostvars['ntp_host']['ntp_server'] is defined
-      - hostvars['ntp_host']['ntp_server'] | ipaddr('bool') == True
-  when: hostvars['ntp_host']['setup_ntp_service'] | default(false)
+- name: "Check assertions for {{ display_name }}"
+  ansible.builtin.include_tasks:
+    file: assertions.yml
+  when: (part_name not in (inventory_parts_validated | default([])))
+  delegate_to: "{{ validation_host | default('bastion') }}"
+
+- name: Record successful validation on all hosts
+  ansible.builtin.set_fact:
+    inventory_parts_validated: "{{ inventory_parts_validated | default([]) + [part_name] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['all'] + ['localhost'] }}"

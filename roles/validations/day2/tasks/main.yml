@@ -1,5 +1,12 @@
-- name: Check for day2_discovery_iso_name if required
-  assert:
-    that:
-      - day2_discovery_iso_name is defined
-  when: (groups['day2_workers'] | default([])) | length > 0
+- name: "Check assertions for {{ display_name }}"
+  ansible.builtin.include_tasks:
+    file: assertions.yml
+  when: (part_name not in (inventory_parts_validated | default([])))
+  delegate_to: "{{ validation_host | default('bastion') }}"
+
+- name: Record successful validation on all hosts
+  ansible.builtin.set_fact:
+    inventory_parts_validated: "{{ inventory_parts_validated | default([]) + [part_name] }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['all'] + ['localhost'] }}"
