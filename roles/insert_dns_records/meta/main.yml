@@ -1,2 +1,3 @@
 dependencies:
-  - role: validate_inventory
+  - role: validations/ntp
+  - role: validations/dns
