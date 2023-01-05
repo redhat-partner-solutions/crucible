@@ -6,11 +6,19 @@
     register: result
     changed_when: false
 
-  - name: Update hashes
+  - name: "Set hash version"
     set_fact:
-      image_hashes: "{{ image_hashes | combine({item.key:  (result.stdout | from_json | json_query('Digest'))}) }}"
+      versioned_hash:
+        hash: "{{ result.stdout | from_json | json_query('Digest') }}"
+        version: "{{ item.value.version |  default(item.value.url.split(':')[-1]) }}" # Take a guess of a version if one is not supplied
 
 - name: "A hash was provided, only update the hash dict"
   when: (item.value.hash | default('')) != ''
   set_fact:
-    image_hashes: "{{ image_hashes | combine({item.key:  item.value.hash}) }}"
+    versioned_hash:
+      hash: "{{ item.value.hash }}"
+      version: "{{ item.value.version |  default(item.url.split(':')[-1]) }}" # Take a guess of a version if one is not supplied
+
+- name: Update hashes
+  set_fact:
+    image_hashes: "{{ image_hashes | combine({item.key:  versioned_hash}) }}"

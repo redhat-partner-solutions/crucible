@@ -101,13 +101,19 @@ assisted_service_image_repo_url: quay.io/edge-infrastructure
 assisted_installer_images:
   controller:
     url: "{{ assisted_service_image_repo_url }}/assisted-installer-controller:{{ controller_tag }}"
+    version: "{{ controller_tag }}"
   installer_agent:
     url: "{{ assisted_service_image_repo_url }}/assisted-installer-agent:{{ installer_agent_tag }}"
+    version: "{{ installer_agent_tag }}"
   installer:
     url: "{{ assisted_service_image_repo_url }}/assisted-installer:{{ installer_tag }}"
+    version: "{{ installer_tag }}"
   service:
     url: "{{ assisted_service_image_repo_url }}/assisted-service:{{ assisted_service_tag }}"
+    version: "{{ assisted_service_tag }}"
   gui:
     url: "{{ assisted_service_image_repo_url }}/assisted-installer-ui:{{ assisted_service_gui_tag }}"
+    version: "{{ assisted_service_gui_tag }}"
   image_service:
     url: "{{ assisted_service_image_repo_url }}/assisted-image-service:{{ assisted_service_image_service_tag }}"
+    version: "{{ assisted_service_image_service_tag }}"
