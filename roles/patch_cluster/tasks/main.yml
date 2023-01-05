@@ -21,7 +21,7 @@
 - name: Load patch for install config
   set_fact:
     patch_install_config: "{{ lookup('template', 'patch-install-config.j2') | from_yaml }}"
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - name: Add network_type to patch_install_config
   set_fact:
@@ -72,4 +72,4 @@
 - name: Apply manifests before cluster installation
   include_tasks: manifest.yml
   loop: "{{ manifest_templates }}"
-  when: manifests | bool == True
+  when: manifests | bool

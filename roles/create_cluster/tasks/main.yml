@@ -28,7 +28,7 @@
           "https_proxy": https_proxy,
           "no_proxy": no_proxy,
           "additional_ntp_source": ntp_server,
-          "schedulable_masters": schedulable_masters, 
+          "schedulable_masters": schedulable_masters,
         } | to_json
       }}'
 
@@ -51,13 +51,13 @@
     status_code: [201]
     return_content: True
     body: "{{ create_body | from_json | combine(create_body_extras) | to_json }}"
-  when: create | bool == True
+  when: create | bool
   register: http_reply
 
 - debug: # noqa unnamed-task
     var: http_reply.json
     verbosity: 1
-  when: create | bool == True
+  when: create | bool
 
 - name: "Make sure {{ fetched_dest }} exists"
   file:
@@ -70,7 +70,7 @@
 - name: Set the cluster ID
   set_fact:
     cluster_id: "{{ http_reply.json.id }}"
-  when: create | bool == True
+  when: create | bool
 
 - name: "Save cluster_id"
   copy:
@@ -79,4 +79,4 @@
     mode: 0644
   delegate_to: localhost
   become: no
-  when: create | bool == True
+  when: create | bool

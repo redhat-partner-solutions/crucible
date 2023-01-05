@@ -14,7 +14,7 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_VMS == True
+      when: SETUP_VMS | bool
   roles:
     - role: destroy_vms
       when: SETUP_VMS | bool

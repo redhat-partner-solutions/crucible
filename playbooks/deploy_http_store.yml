@@ -7,8 +7,8 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_HTTP_STORE_SERVICE == True
+      when: SETUP_HTTP_STORE_SERVICE | bool
   roles:
     - name: setup_http_store
-      when: SETUP_HTTP_STORE_SERVICE == True
+      when: SETUP_HTTP_STORE_SERVICE | bool
     - validate_http_store

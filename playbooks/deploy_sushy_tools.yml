@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_SUSHY_TOOLS == True
+      when: SETUP_SUSHY_TOOLS | bool
   roles:
     - name: setup_sushy_tools
-      when: SETUP_SUSHY_TOOLS == True
+      when: SETUP_SUSHY_TOOLS | bool

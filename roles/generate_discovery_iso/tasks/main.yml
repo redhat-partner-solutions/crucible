@@ -12,27 +12,27 @@
 - name: Load patch for search registries
   set_fact:
     search_registries: "{{ lookup('template', 'patch-search-registries.j2') }}"
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - debug: # noqa unnamed-task
     var: search_registries
     verbosity: 1
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - name: Load patch for discovery ignition
   set_fact:
     patch_discovery_ignition: "{{ lookup('template', 'patch-discovery-ignition-hostname-workground.j2') }}"
-  when: use_hostname_workaround | bool == True
+  when: use_hostname_workaround | bool
 
 - name: Load patch for discovery ignition
   set_fact:
     patch_discovery_ignition: "{{ (patch_discovery_ignition | default({})) | combine(lookup('template', 'patch-discovery-ignition.j2')) }}"
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - debug: # noqa unnamed-task
     var: patch_discovery_ignition
     verbosity: 1
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - name: static IP addresses
   include_tasks: static.yml
@@ -165,12 +165,12 @@
       get_url:
         url: "{{ infra_env_reply.json.download_url }}"
         dest: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
-      when: download | bool == True
+      when: download | bool
       register: http_reply
       become: true
 
     - debug: # noqa unnamed-task
         var: http_reply.status_code
         verbosity: 1
-      when: download | bool == True
+      when: download | bool
   delegate_to: http_store

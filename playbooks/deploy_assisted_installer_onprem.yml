@@ -16,7 +16,7 @@
   hosts: assisted_installer
   roles:
     - role: setup_assisted_installer
-      when: SETUP_ASSISTED_INSTALLER == True
+      when: SETUP_ASSISTED_INSTALLER | bool
   vars:
     SETUP_ASSISTED_INSTALLER: "{{ setup_assisted_installer | default(True) }}"
   post_tasks:
@@ -30,7 +30,7 @@
       retries: 120
       delay: 30
       delegate_to: bastion
-      when: SETUP_ASSISTED_INSTALLER == True
+      when: SETUP_ASSISTED_INSTALLER | bool
 
     - name: Wait for up to 60 minutes for the assisted installer image service to come online
       uri:
@@ -42,4 +42,4 @@
       retries: 120
       delay: 30
       delegate_to: bastion
-      when: SETUP_ASSISTED_INSTALLER == True
+      when: SETUP_ASSISTED_INSTALLER | bool

@@ -36,7 +36,7 @@
           validate_certs: no
           force_basic_auth: yes
           return_content: yes
-        when: cd1_contents.json.Inserted | bool == True
+        when: cd1_contents.json.Inserted | bool
       rescue:
         - name: Unmount SuperMicro ISO (ISO Config)
           uri:

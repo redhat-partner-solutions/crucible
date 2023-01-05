@@ -19,7 +19,7 @@
     - cluster.json.status in host_discovery_states
   retries: 20
   delay: 60
-  when: install | bool == True
+  when: install | bool
 
 - name: Patch discovered hosts
   include_role:
@@ -29,30 +29,30 @@
   loop_control:
     loop_var: discovered_host
   no_log: True
-  when: install | bool == True
+  when: install | bool
 
 - name: Patch cluster with config vars relevant to the selected HA mode
-  when: (install | bool == True)
+  when: install | bool
   block:
-  - name: Set config vars for patching the cluster (SNO)
-    set_fact:
-      cluster_config_patch_request_body: {
-        "machine_network_cidr": "{{ machine_network_cidr }}",
-      }
-    when: single_node_openshift_enabled
+    - name: Set config vars for patching the cluster (SNO)
+      set_fact:
+        cluster_config_patch_request_body: {
+          "machine_network_cidr": "{{ machine_network_cidr }}",
+        }
+      when: single_node_openshift_enabled
 
-  - name: Set config vars for patching the cluster (HA)
-    set_fact:
-      cluster_config_patch_request_body: {
-        "vip_dhcp_allocation": "{{ vip_dhcp_allocation | bool }}",
-        "ingress_vip": "{{ ingress_vip }}",
-        "api_vip": "{{ api_vip }}",
-      }
-    when: not single_node_openshift_enabled
+    - name: Set config vars for patching the cluster (HA)
+      set_fact:
+        cluster_config_patch_request_body: {
+          "vip_dhcp_allocation": "{{ vip_dhcp_allocation | bool }}",
+          "ingress_vip": "{{ ingress_vip }}",
+          "api_vip": "{{ api_vip }}",
+        }
+      when: not single_node_openshift_enabled
 
-  - debug: # noqa unnamed-task
-      var: cluster_config_patch_request_body
-      verbosity: 1
+    - debug: # noqa unnamed-task
+        var: cluster_config_patch_request_body
+        verbosity: 1
 
 - name: Add cluster_id to machine_networks
   vars:
@@ -101,7 +101,7 @@
         } | to_json
       }}'
   when:
-    - install | bool == True
+    - install | bool
     - extra_machine_networks_with_cluster_id is not defined
     - extra_cluster_networks_with_cluster_id is not defined
     - extra_service_networks_with_cluster_id is not defined
@@ -110,7 +110,7 @@
   set_fact:
     patch_cluster_networking_body: '{{
         {
-           "machine_networks": [
+          "machine_networks": [
               {
                 "cluster_id": cluster_id,
                 "cidr": machine_network_cidr,
@@ -132,7 +132,7 @@
         } | to_json
       }}'
   when:
-    - install | bool == True
+    - install | bool
     - extra_machine_networks_with_cluster_id is defined
     - extra_cluster_networks_with_cluster_id is defined
     - extra_service_networks_with_cluster_id is defined
@@ -158,12 +158,12 @@
     return_content: True
     body: "{{ cluster_config_patch_request_body | combine(patch_cluster_networking_body | from_json) | to_json }}"
   register: http_reply
-  when: install | bool == True
+  when: install | bool
 
 - debug: # noqa unnamed-task
     var: http_reply.json
     verbosity: 1
-  when: install | bool == True
+  when: install | bool
 
 # Monitor cluster discovery
 - name: Wait up to 20 minutes for the cluster to report as ready
@@ -176,7 +176,7 @@
   until: "cluster.json.status == 'ready'"
   retries: 20
   delay: 60
-  when: install | bool == True
+  when: install | bool
 
 # Install cluster
 - name: Install cluster
@@ -187,15 +187,14 @@
     return_content: True
     body_format: json
     body: {}
-  when: install | bool == True
+  when: install | bool
   register: http_reply
 
 - name: Debug http_reply
   debug:
     var: http_reply.json
     verbosity: 1
-  when: install | bool == True
-
+  when: install | bool
 
 - name: Allow up to 5 minutes for cluster to begin installing
   uri:
@@ -205,9 +204,8 @@
     return_content: True
     body_format: json
     body: {}
-  when: install | bool == True
+  when: install | bool
   register: cluster
   until: cluster.json.status in cluster_installation_states
   retries: 5
   delay: 60
-  

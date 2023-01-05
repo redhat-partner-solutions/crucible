@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_NTP_SERVICE == True
+      when: SETUP_NTP_SERVICE | bool
   roles:
     - role: setup_ntp
-      when: SETUP_NTP_SERVICE == True
+      when: SETUP_NTP_SERVICE | bool

@@ -4,4 +4,4 @@
     SETUP_TFTP_SERVICE: "{{ setup_pxe_service | default(False) }}"
   roles:
     - role: setup_tftp
-      when: SETUP_TFTP_SERVICE == True
+      when: SETUP_TFTP_SERVICE | bool

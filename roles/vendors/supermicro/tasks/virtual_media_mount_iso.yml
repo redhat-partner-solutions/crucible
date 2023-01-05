@@ -23,7 +23,7 @@
     validate_certs: no
     force_basic_auth: yes
     return_content: yes
-  when: cd1_contents.json.Inserted | bool == True
+  when: cd1_contents.json.Inserted | bool
 
 - name: Mount SuperMicro ISO
   uri:

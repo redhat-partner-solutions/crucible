@@ -1,7 +1,6 @@
 ---
 - import_playbook: playbooks/generate_ssh_key_pair.yml
-  when: generate_ssh_keys | default(True) == True
-
+  when: (generate_ssh_keys | default(true)) | bool
 - import_playbook: playbooks/create_cluster.yml
 
 - import_playbook: playbooks/generate_discovery_iso.yml

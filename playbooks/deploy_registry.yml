@@ -9,7 +9,7 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
     - name: pre-compute need to get hashes
       set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
@@ -27,11 +27,11 @@
   pre_tasks:
     - name: Setup facts
       setup:
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
   roles:
     - role: setup_selfsigned_cert
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
     - role: setup_mirror_registry
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
 
 - import_playbook: populate_registry.yml

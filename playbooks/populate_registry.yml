@@ -22,4 +22,4 @@
     SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
   roles:
     - role: populate_mirror_registry
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
