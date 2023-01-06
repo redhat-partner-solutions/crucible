@@ -11,6 +11,8 @@
 - import_playbook: playbooks/deploy_http_store.yml
 
 - import_playbook: playbooks/create_vms.yml
+  vars:
+    nodes_to_process: "{{ groups['masters'] + groups['workers'] | default([]) }}"
 
 - import_playbook: playbooks/deploy_tftp.yml
 
