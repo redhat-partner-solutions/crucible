@@ -1,4 +1,14 @@
 ---
+- import_playbook: playbooks/create_vms.yml
+  when: groups['day2_workers'] | default([]) | length > 0
+  vars:
+    nodes_to_process: "{{ groups['day2_workers'] | default([]) }}"
+    # DELETE_VM_BRIDGE is set to false because removing the bridge
+    # and vlan interface (if shared with the main cluster) will
+    # break the connection to the cluster that the day 2 nodes
+    # are trying to join
+    DELETE_VM_BRIDGE: false
+
 - import_playbook: playbooks/create_day2_cluster.yml
 
 - import_playbook: playbooks/generate_discovery_iso.yml
