@@ -15,7 +15,7 @@
       - proxy.yml
   tasks:
     - name: Run Inventory Validation test suites
-      include_role:
+      ansible.builtin.include_role:
         name: run_suite
       ignore_errors: true
       loop: "{{ test_suites | list }}"
@@ -23,7 +23,7 @@
         loop_var: test_suite_file
 
     - name: Record failures
-      fail:
+      ansible.builtin.fail:
         msg: "Test failed!: {{ item }}"
       when: (test_failures | default([])) | length > 0
       loop: "{{ test_failures }}"

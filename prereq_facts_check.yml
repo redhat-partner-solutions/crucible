@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: Prerequisite Facts Check
+  hosts: localhost
   connection: local
   strategy: free
   become: false
@@ -7,5 +8,5 @@
   roles:
     - prereq_facts_check
   vars:
-    ssh_public_check: "{{ not (generate_ssh_keys | default(True)) }}"
-    mirror_certificate_check: "{{ ((use_local_mirror_registry | default(False)) == True) and ((setup_registry_service | default(True)) == False) }}"
+    ssh_public_check: "{{ not (generate_ssh_keys | default(true)) }}"
+    mirror_certificate_check: "{{ ((use_local_mirror_registry | default(false)) | bool ) and not ((setup_registry_service | default(true)) | bool) }}"

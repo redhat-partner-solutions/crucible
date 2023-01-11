@@ -1,6 +1,6 @@
 ---
 - name: Get all PXE Nodes
-  set_fact:
+  ansible.builtin.set_fact:
     pxe_node_names: "{{ pxe_node_names + [item] }}"
   when: hostvars[item]['vendor'] | lower == 'pxe'
   loop: "{{ groups['nodes'] }}"
@@ -9,7 +9,7 @@
   when: not ((skip_interactive_prompts | default(false)) | bool)
   block:
     - name: Display inventory details and ask for user confirmation
-      pause:
+      ansible.builtin.pause:
         prompt: "{{ lookup('template', 'plan.j2').strip('\n') }}"
       vars:
         # Every row consists of two columns. To ensure all items in the right column are aligned,
@@ -65,7 +65,7 @@
       register: display_deployment_plan__confirmation
 
     - name: Assert the deployment plan is confirmed
-      assert:
+      ansible.builtin.assert:
         that:
           - (display_deployment_plan__confirmation.user_input | lower | trim) in ['y', 'yes']
         fail_msg: "The deployment plan must be confirmed by the user"

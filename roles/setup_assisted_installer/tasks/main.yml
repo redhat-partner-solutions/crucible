@@ -1,53 +1,53 @@
 ---
 - name: Setup AI Host
-  become: True
+  become: true
   block:
     - name: Install podman
-      package:
+      ansible.builtin.package:
         name: podman
         state: present
 
     - name: Configure registry cert and pull_secret
+      when: use_local_mirror_registry  | bool
       block:
         - name: Copy cert to pki directory
-          copy:
+          ansible.builtin.copy:
             content: "{{ mirror_certificate }}"
             dest: /etc/pki/ca-trust/source/anchors/ai_registry.crt
             mode: 0660
-            force: yes
-            backup: yes
+            force: true
+            backup: true
 
         - name: Update the CA trust files
-          command:
+          ansible.builtin.command:
             cmd: update-ca-trust extract
 
         - name: Create podman auth dir
-          file:
+          ansible.builtin.file:
             path: "{{ config_file_path }}/containers/"
             state: directory
             recurse: true
             mode: 0755
 
         - name: Copy pull_secrets file.
-          copy:
+          ansible.builtin.copy:
             content: "{{ pull_secret }}"
             dest: "{{ config_file_path }}/containers/auth.json"
             mode: 0644
-            remote_src: yes
-  
-      when: use_local_mirror_registry  | bool
+            remote_src: true
+
 
     - name: Open ports zone internal and public, for firewalld
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item.1 }}/tcp"
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled
         zone: "{{ item.0 }}"
       loop: "{{ ['internal', 'public'] | product(['8000', '8090', '8080', '8888']) | list }}"
 
     - name: Create directories for assisted-installer
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         mode: 0775
         state: directory
@@ -56,21 +56,21 @@
         - "{{ assisted_installer_data_dir }}"
 
     - name: Create directory for assisted-installer database
-      file:
+      ansible.builtin.file:
         path: "{{ assisted_installer_data_dir }}/postgresql"
         mode: 0775
         state: directory
         recurse: true
-    
-    - name: Create directory for assisted-installer images 
-      file:
+
+    - name: Create directory for assisted-installer images
+      ansible.builtin.file:
         path: "{{ assisted_installer_data_dir }}/image_service"
         mode: 0775
         state: directory
         recurse: true
 
     - name: Template out assisted-installer files
-      template:
+      ansible.builtin.template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
         mode: 0644
@@ -83,7 +83,7 @@
           dest: "{{ assisted_installer_dir }}/pod.yml"
 
 - name: Setup AI pod
-  become: True
+  become: true
   environment:
     XDG_RUNTIME_DIR: "{{ config_file_path }}"
   block:
@@ -98,7 +98,7 @@
         state: absent
       when: (ai_pod_details.pods | length) > 0
 
-    - name: network_name
+    - name: Set network_name
       ansible.builtin.set_fact:
         network_name: assisted_installer_network
       when: use_ipv6 | default(False)
@@ -132,7 +132,7 @@
   become: true
   block:
     - name: Copy the systemd service file
-      copy:
+      ansible.builtin.copy:
         content: |
           [Unit]
           Description=Podman assisted_installer.service
@@ -148,18 +148,18 @@
         mode: 0644
 
     - name: Reload systemd service
-      systemd:
-        daemon_reexec: yes
+      ansible.builtin.systemd:
+        daemon_reexec: true
         scope: system
 
     - name: Enable assisted_installer.service
-      systemd:
+      ansible.builtin.systemd:
         name: assisted_installer
-        enabled: yes
+        enabled: true
         scope: system
 
     - name: Start assisted_installer.service
-      systemd:
+      ansible.builtin.systemd:
         name: assisted_installer
         state: started
         scope: system

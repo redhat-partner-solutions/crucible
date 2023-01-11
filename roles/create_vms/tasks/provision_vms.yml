@@ -3,19 +3,19 @@
   become: true
   block:
     - name: Create rng device XML file
-      template:
+      ansible.builtin.template:
         src: rng_device.xml.j2
         dest: "/tmp/{{ cluster_name }}_rng_device.xml"
         mode: 0664
 
     - name: Create vm create scripts dir
-      file:
+      ansible.builtin.file:
         path: "{{ vm_create_scripts_dir }}"
         state: directory
-        recurse: yes
+        recurse: true
 
     - name: Create vm creation_scripts
-      template:
+      ansible.builtin.template:
         # community.libvirt.virt doesn't define the qcow image so it was chosen to use
         # virt-install. The reason we use a script is to aid with debugging on the host
         src: create_vm.sh.j2
@@ -25,7 +25,6 @@
       loop: "{{ kvm_nodes }}"
 
     - name: Run vm creation_scripts
-      shell: 
+      ansible.builtin.shell:
         cmd: "/bin/bash {{ vm_create_scripts_dir }}/{{ item.name }}_setup_vm.sh"
-      
       loop: "{{ kvm_nodes }}"

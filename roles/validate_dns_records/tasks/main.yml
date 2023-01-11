@@ -2,14 +2,14 @@
   ansible.builtin.shell:
     cmd: "which {{ required_binary }}"
   register: required_binary_check
-  ignore_errors: True
-  changed_when: False
+  ignore_errors: true
+  changed_when: false
 
 - name: (if binary is missing) Install the package providing the required binary
   ansible.builtin.package:
     name: "{{ required_binary_provided_in_package }}"
     state: present
-  become: True
+  become: true
   when: required_binary_check.rc != 0
 
 - name: Check required domain {item} exists
@@ -17,5 +17,6 @@
     cmd: "{{ required_binary }} {{ item }} +short"
   register: res
   changed_when: false
-  failed_when: res.stdout | ipaddr == false
+  failed_when: not (res.stdout | ipaddr('bool'))
   loop: "{{ required_domains }}"
+  ignore_errors: true

@@ -1,4 +1,4 @@
 ---
-- debug: # noqa: unnamed-task
+- ansible.builtin.debug: # noqa: unnamed-task
     msg: "I exist"
     verbosity: 1

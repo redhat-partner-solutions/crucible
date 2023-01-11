@@ -1,25 +1,34 @@
 ---
-- import_playbook: prereq_facts_check.yml
+- name: Prereq facts check
+  ansible.builtin.import_playbook: prereq_facts_check.yml
 
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
   roles:
     - get_image_hash
 
-- import_playbook: playbooks/deploy_ntp.yml
+- name: Deploy NTP
+  ansible.builtin.import_playbook: playbooks/deploy_ntp.yml
 
-- import_playbook: playbooks/deploy_http_store.yml
+- name: Deploy HTTP store
+  ansible.builtin.import_playbook: playbooks/deploy_http_store.yml
 
-- import_playbook: playbooks/create_vms.yml
+- name: Create VMs
+  ansible.builtin.import_playbook: playbooks/create_vms.yml
   vars:
     nodes_to_process: "{{ groups['masters'] + groups['workers'] | default([]) }}"
 
-- import_playbook: playbooks/deploy_tftp.yml
+- name: Deploy TFTP Service
+  ansible.builtin.import_playbook: playbooks/deploy_tftp.yml
 
-- import_playbook: playbooks/deploy_dns.yml
+- name: Deploy DNS/DHCP Service
+  ansible.builtin.import_playbook: playbooks/deploy_dns.yml
 
-- import_playbook: playbooks/deploy_registry.yml
+- name: Deploy Registry Service
+  ansible.builtin.import_playbook: playbooks/deploy_registry.yml
 
-- import_playbook: playbooks/deploy_assisted_installer_onprem.yml
+- name: Deploy Assisted Installer Service
+  ansible.builtin.import_playbook: playbooks/deploy_assisted_installer_onprem.yml
 
-- import_playbook: playbooks/deploy_sushy_tools.yml
+- name: Deploy Sushy Tools
+  ansible.builtin.import_playbook: playbooks/deploy_sushy_tools.yml

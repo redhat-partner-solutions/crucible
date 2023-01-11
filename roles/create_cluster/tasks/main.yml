@@ -2,7 +2,7 @@
 # tasks file for create_cluster
 
 - name: Set body for create cluster
-  set_fact:
+  ansible.builtin.set_fact:
     # - `ingress_vip` is not provided in the request body because the value
     #   can't be set for SNO with user-managed networking enabled.
     #   HA clusters will be patched with the `ingress_vip` setting during
@@ -28,55 +28,55 @@
           "https_proxy": https_proxy,
           "no_proxy": no_proxy,
           "additional_ntp_source": ntp_server,
-          "schedulable_masters": schedulable_masters, 
+          "schedulable_masters": schedulable_masters,
         } | to_json
       }}'
 
 - name: Add network_type to extras for create_body
-  set_fact:
-    create_body_extras: "{{ create_body_extras | combine({'network_type': network_type }) }}"
+  ansible.builtin.set_fact:
+    create_body_extras: "{{ create_body_extras | combine({'network_type': network_type}) }}"
   when: network_type is defined
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     msg: "{{ create_body | from_json | combine(create_body_extras) | to_nice_json }}"
     verbosity: 1
 
 - name: Create cluster
-  uri:
+  ansible.builtin.uri:
     url: "{{ URL_ASSISTED_INSTALLER_CLUSTERS }}"
     method: POST
     url_username: "{{ HTTP_AUTH_USERNAME }}"
     url_password: "{{ HTTP_AUTH_PASSWORD }}"
     body_format: json
     status_code: [201]
-    return_content: True
+    return_content: true
     body: "{{ create_body | from_json | combine(create_body_extras) | to_json }}"
-  when: create | bool == True
+  when: create | bool
   register: http_reply
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: http_reply.json
     verbosity: 1
-  when: create | bool == True
+  when: create | bool
 
-- name: "Make sure {{ fetched_dest }} exists"
-  file:
+- name: "Make sure fetched_dest exists: {{ fetched_dest }}"
+  ansible.builtin.file:
     path: "{{ fetched_dest }}"
     state: directory
-    recurse: yes
+    recurse: true
   delegate_to: localhost
-  become: no
+  become: false
 
 - name: Set the cluster ID
-  set_fact:
+  ansible.builtin.set_fact:
     cluster_id: "{{ http_reply.json.id }}"
-  when: create | bool == True
+  when: create | bool
 
 - name: "Save cluster_id"
-  copy:
+  ansible.builtin.copy:
     content: "{{ cluster_id }}"
     dest: "{{ fetched_dest }}/{{ cluster_id_filename }}"
     mode: 0644
   delegate_to: localhost
-  become: no
-  when: create | bool == True
+  become: false
+  when: create | bool

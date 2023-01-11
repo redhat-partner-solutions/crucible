@@ -1,8 +1,8 @@
 ---
 - name: Validate Inventory
   hosts: localhost
-  gather_facts: False
+  gather_facts: false
   roles:
-    - name: validate_inventory
+    - role: validate_inventory
       vars:
         validation_host: localhost

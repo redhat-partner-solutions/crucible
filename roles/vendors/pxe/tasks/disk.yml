@@ -1,23 +1,23 @@
 ---
 - name: PXE server Power off servers
-  ipmi_power:
+  community.general.ipmi_power:
     name: "{{ bmc_address }}"
     user: "{{ bmc_user }}"
     password: "{{ bmc_password }}"
-    state: off
+    state: "off"
 
 - name: Set server to boot from network
-  ipmi_boot:
+  community.general.ipmi_boot:
     name: "{{ bmc_address }}"
     user: "{{ bmc_user }}"
     password: "{{ bmc_password }}"
     bootdev: hd
-    persistent: no
-    uefiboot: yes
+    persistent: false
+    uefiboot: true
 
 - name: PXE server Power on
-  ipmi_power:
+  community.general.ipmi_power:
     name: "{{ bmc_address }}"
     user: "{{ bmc_user }}"
     password: "{{ bmc_password }}"
-    state: boot
+    state: "boot"

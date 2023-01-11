@@ -2,21 +2,21 @@
 # tasks file for manifests
 
 - name: Load manifest
-  set_fact:
-    manifest: "{{ lookup('template', '{{ item }}.j2' ) }}"
-  when: manifests | bool == True
+  ansible.builtin.set_fact:
+    manifest: "{{ lookup('template', '{{ item }}.j2') }}"
+  when: manifests | bool
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: manifest
     verbosity: 1
-  when: manifests | bool == True
+  when: manifests | bool
 
 - name: Apply manifest
-  uri:
+  ansible.builtin.uri:
     url: "{{ URL_ASSISTED_INSTALLER_CLUSTERS }}/{{ cluster_id }}/manifests"
     method: POST
     status_code: [201]
-    return_content: True
+    return_content: true
     body_format: json
     body:
       {
@@ -24,10 +24,10 @@
         "file_name": "{{ item }}",
         "content": "{{ manifest | string | b64encode }}",
       }
-  when: manifests | bool == True
+  when: manifests | bool
   register: http_reply
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: http_reply
     verbosity: 1
-  when: manifests | bool == True
+  when: manifests | bool

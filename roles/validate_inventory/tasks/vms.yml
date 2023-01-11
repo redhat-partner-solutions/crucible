@@ -1,13 +1,13 @@
 - name: Get all KVM Nodes
   vars:
     kvm_node_names: []
-  set_fact:
+  ansible.builtin.set_fact:
     kvm_node_names: "{{ kvm_node_names + [item] }}"
   when: hostvars[item]['vendor'] | lower == 'kvm'
   loop: "{{ groups['nodes'] }}"
 
 - name: Check there is no vm_host in services
-  assert:
+  ansible.builtin.assert:
     that:
       - ('vm_host' not in groups['services'])
     fail_msg: >
@@ -17,7 +17,7 @@
       to the host of the vm.
 
 - name: Check that a host is defined in the 'vm_hosts' group if needed
-  assert:
+  ansible.builtin.assert:
     that:
       - groups['vm_hosts'] is defined
       - groups['vm_hosts'] | length > 0
@@ -25,7 +25,7 @@
   when: (kvm_node_names is defined) and (kvm_node_names | length > 0)
 
 - name: Check that each node will be on a valid host
-  assert:
+  ansible.builtin.assert:
     that:
       - hostvars[item]['vm_host'] in groups['vm_hosts']
     quiet: true
@@ -38,7 +38,7 @@
     - name: Get KVM BMC username password combinations
       vars:
         kvm_user_password_combinations: {} # Structure will be {'{{vm_host}}.{{bmc_user}}': [{{bmc_password}}, ...]}
-      set_fact:
+      ansible.builtin.set_fact:
         kvm_user_password_combinations: "{{
             kvm_user_password_combinations | combine({
               (hostvars[item]['vm_host'] + '.' + hostvars[item]['bmc_user']): (
@@ -54,7 +54,7 @@
       no_log: true
 
     - name: Check there are not mutliple bmc passwords for the same bmc user and vm host.
-      assert:
+      ansible.builtin.assert:
         that:
           - (item.value | length) == 1
         fail_msg: |
@@ -69,14 +69,14 @@
     kvm_node_uuids: []
   block:
     - name: Get node UUIDs
-      set_fact:
+      ansible.builtin.set_fact:
         kvm_node_uuids: "{{ kvm_node_uuids + [hostvars[item]['uuid']] }}"
       when: "'uuid' in hostvars[item]"
       loop: "{{ kvm_node_names }}"
       no_log: true
 
     - name: Check values are unique
-      assert:
+      ansible.builtin.assert:
         that:
           - (kvm_node_uuids | length) == (kvm_node_uuids | unique | length)
         fail_msg: "KVM node UUIDs must be unique otherwise they won't build or will collide during discovery"

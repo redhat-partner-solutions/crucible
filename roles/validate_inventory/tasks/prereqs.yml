@@ -1,4 +1,4 @@
 ---
-- import_tasks: ai.yml
+- ansible.builtin.import_tasks: ai.yml # noqa: unnamed-task
 
-- import_tasks: dns.yml
+- ansible.builtin.import_tasks: dns.yml # noqa: unnamed-task

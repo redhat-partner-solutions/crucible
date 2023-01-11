@@ -18,17 +18,17 @@ supported_vendor_values:
   - pxe
   - zt
 
-allow_custom_vendor: False
+allow_custom_vendor: false
 
 ai_version: "{{ hostvars.assisted_installer.ai_version | default('v2.1.1') }}"
 ai_version_number: "{{ ai_version | regex_replace('v(\\d+\\.\\d+\\.\\d+)', '\\1') }}"
 
 supported_ocp_versions:
-- 4.6.16
-- 4.7.52
-- 4.8.43
-- 4.9.45
-- 4.10.37
-- 4.11.24
+  - 4.6.16
+  - 4.7.52
+  - 4.8.43
+  - 4.9.45
+  - 4.10.37
+  - 4.11.24
 
 single_node_openshift_enabled: "{{ is_valid_single_node_openshift_config | default(false) }}"

@@ -2,7 +2,7 @@
 # tasks file for generate_discovery_iso
 
 - name: Set discovery iso body
-  set_fact:
+  ansible.builtin.set_fact:
     request_body:
       ssh_public_key: "{{ ssh_public_key }}"
       image_type: "full-iso"
@@ -10,37 +10,37 @@
 #### patch discovery ignition on restricted network environments ###
 
 - name: Load patch for search registries
-  set_fact:
+  ansible.builtin.set_fact:
     search_registries: "{{ lookup('template', 'patch-search-registries.j2') }}"
-  when: disconnected | bool == True
+  when: disconnected | bool
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: search_registries
     verbosity: 1
-  when: disconnected | bool == True
+  when: disconnected | bool
 
 - name: Load patch for discovery ignition
-  set_fact:
+  ansible.builtin.set_fact:
     patch_discovery_ignition: "{{ lookup('template', 'patch-discovery-ignition-hostname-workground.j2') }}"
-  when: use_hostname_workaround | bool == True
+  when: use_hostname_workaround | bool
 
 - name: Load patch for discovery ignition
-  set_fact:
+  ansible.builtin.set_fact:
     patch_discovery_ignition: "{{ (patch_discovery_ignition | default({})) | combine(lookup('template', 'patch-discovery-ignition.j2')) }}"
-  when: disconnected | bool == True
+  when: disconnected | bool
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: patch_discovery_ignition
     verbosity: 1
-  when: disconnected | bool == True
+  when: disconnected | bool
 
-- name: static IP addresses
-  include_tasks: static.yml
+- name: Static IP addresses
+  ansible.builtin.include_tasks: static.yml
   when: hostvars[item].network_config is defined
-  loop: "{{ groups['nodes'] | default([])}}"
+  loop: "{{ groups['nodes'] | default([]) }}"
 
 - name: Create infra_env_body
-  set_fact:
+  ansible.builtin.set_fact:
     infra_env_body:
       name: "{{ cluster_name }}"
       openshift_version: "{{ openshift_version | string }}"
@@ -55,61 +55,61 @@
         no_proxy: "{{ no_proxy }}"
 
 - name: Create infra_env_body
-  set_fact:
+  ansible.builtin.set_fact:
     infra_env_body: "{{ infra_env_body | combine({'ignition_config_override': patch_discovery_ignition | to_json}) }}"
   when: (disconnected | bool  or use_hostname_workaround | bool)
 
 - name: IP config
-  set_fact:
+  ansible.builtin.set_fact:
     infra_env_body: "{{ infra_env_body | combine({'static_network_config': static_network_config_items}) }}"
   when: static_network_config_items | default([]) | length > 0
 
 - name: Iso body
-  debug:
+  ansible.builtin.debug:
     msg: "{{ infra_env_body | to_nice_json }}"
     verbosity: 1
 
 - name: Create Infra env
-  uri:
+  ansible.builtin.uri:
     url: "{{ ASSISTED_INSTALLER_BASE_URL }}/infra-envs"
     method: POST
     url_username: "{{ HTTP_AUTH_USERNAME }}"
     url_password: "{{ HTTP_AUTH_PASSWORD }}"
     body_format: json
     status_code: [201]
-    return_content: True
+    return_content: true
     body: "{{ infra_env_body }}"
   register: infra_env_reply
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: infra_env_reply.json
     verbosity: 1
 
 - name: Set infra-env id on all hosts
-  set_fact:
+  ansible.builtin.set_fact:
     infra_env_id: "{{ infra_env_reply.json.id }}"
   delegate_to: "{{ item }}"
   delegate_facts: true
-  loop:  "{{ groups['all'] }}"
+  loop: "{{ groups['all'] }}"
 
 - name: "Save infra_env_id"
-  copy:
+  ansible.builtin.copy:
     content: "{{ infra_env_id }}"
     dest: "{{ fetched_dest }}/infra_env_id.txt"
     mode: 0644
   delegate_to: localhost
 
 - name: Get discovery ignition file
-  uri:
+  ansible.builtin.uri:
     url: "{{ ASSISTED_INSTALLER_BASE_URL }}/infra-envs/{{ infra_env_id }}/downloads/files?file_name=discovery.ign"
     method: GET
     url_username: "{{ HTTP_AUTH_USERNAME }}"
     url_password: "{{ HTTP_AUTH_PASSWORD }}"
-    return_content: True
+    return_content: true
   register: discovery_ign_reply
 
 - name: "Save discovery.ign"
-  copy:
+  ansible.builtin.copy:
     content: "{{ discovery_ign_reply.content }}"
     dest: "{{ fetched_dest }}/discovery.ign"
     mode: 0644
@@ -119,11 +119,11 @@
   when: hashed_discovery_password is defined
   block:
     - name: Get discovery ign content
-      set_fact:
+      ansible.builtin.set_fact:
         discovery_content: "{{ discovery_ign_reply.content | from_json }}"
 
     - name: Password patch
-      set_fact:
+      ansible.builtin.set_fact:
         discovery_password_patch:
           ignition:
             version: "{{ discovery_content.ignition.version }}"
@@ -133,44 +133,45 @@
     - name: Patch Infra env
       vars:
         previous_patches: "{{ patch_discovery_ignition | default({}) }}"
-      uri:
+      ansible.builtin.uri:
         url: "{{ ASSISTED_INSTALLER_BASE_URL }}/infra-envs/{{ infra_env_id }}"
         method: PATCH
         url_username: "{{ HTTP_AUTH_USERNAME }}"
         url_password: "{{ HTTP_AUTH_PASSWORD }}"
         body_format: json
         status_code: [201]
-        return_content: True
+        return_content: true
         body:
-          ignition_config_override: "{{ (previous_patches| combine(discovery_password_patch)) | to_json }}"
+          ignition_config_override: "{{ (previous_patches | combine(discovery_password_patch)) | to_json }}"
       register: infra_env_patch_reply
 
     - name: "Save patched_discovery.ign"
-      copy:
+      ansible.builtin.copy:
         content: "{{ infra_env_patch_reply.content }}"
         dest: "{{ fetched_dest }}/patched_discovery.ign"
         mode: 0644
       delegate_to: localhost
 
 - name: Put discovery iso in http store
+  delegate_to: http_store
   block:
     - name: Create discovery directory
-      file:
-        path: "{{ DOWNLOAD_DEST_PATH + '/' + DOWNLOAD_DEST_FILE | dirname }}"
-        recurse: yes
+      ansible.builtin.file:
+        path: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE | dirname }}"
+        recurse: true
         state: directory
       become: true
 
     - name: Download discovery ISO
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ infra_env_reply.json.download_url }}"
         dest: "{{ DOWNLOAD_DEST_PATH }}/{{ DOWNLOAD_DEST_FILE }}"
-      when: download | bool == True
+        mode: 0664
+      when: download | bool
       register: http_reply
       become: true
 
-    - debug: # noqa unnamed-task
+    - ansible.builtin.debug: # noqa unnamed-task
         var: http_reply.status_code
         verbosity: 1
-      when: download | bool == True
-  delegate_to: http_store
+      when: download | bool

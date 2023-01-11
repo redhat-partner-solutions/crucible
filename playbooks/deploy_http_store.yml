@@ -1,14 +1,14 @@
 ---
 - name: Install and http_store service
   hosts: http_store
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(True) }}"
+    SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(true) }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_HTTP_STORE_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_HTTP_STORE_SERVICE | bool
   roles:
-    - name: setup_http_store
-      when: SETUP_HTTP_STORE_SERVICE == True
+    - role: setup_http_store
+      when: SETUP_HTTP_STORE_SERVICE | bool
     - validate_http_store

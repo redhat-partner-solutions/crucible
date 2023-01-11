@@ -1,17 +1,17 @@
 ---
 # tasks file for disconnected_registry
-- import_tasks: var_check.yml
+- ansible.builtin.import_tasks: var_check.yml # noqa: unnamed-task
   tags: create_registry
 
-- import_tasks: prerequisites.yml
+- ansible.builtin.import_tasks: prerequisites.yml # noqa: unnamed-task
   tags:
     - create_registry
 
-- import_tasks: set_mirror_cert.yml
+- ansible.builtin.import_tasks: set_mirror_cert.yml # noqa: unnamed-task
 
-- import_tasks: setup_registry.yml
+- ansible.builtin.import_tasks: setup_registry.yml # noqa: unnamed-task
   tags: create_registry
 
-- import_tasks: retrieve_config.yml
+- ansible.builtin.import_tasks: retrieve_config.yml # noqa: unnamed-task
   tags:
     - copy_config

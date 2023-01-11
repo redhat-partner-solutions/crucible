@@ -2,17 +2,17 @@
 # tasks file for boot_iso
 
 - name: "Fail playbook without boot_iso_url"
-  fail:
+  ansible.builtin.fail:
     msg="Missing argument: this playbook requires 'boot_iso' to be defined with the URL of the ISO to boot the systems"
   when: boot_iso_url is not defined
   delegate_to: bastion
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: boot_iso_url
     verbosity: 1
 
-- name: Boot ISO for "{{ hostvars[inventory_hostname]['vendor'] }}"
-  include_role:
+- name: "Boot ISO for {{ hostvars[inventory_hostname]['vendor'] }}"
+  ansible.builtin.include_role:
     name: "vendors/{{ hostvars[inventory_hostname]['vendor'] | lower }}"
     tasks_from: iso.yml
   vars:

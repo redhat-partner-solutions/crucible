@@ -2,6 +2,6 @@
 # file: monitor_cluster.yml
 - name: Monitoring cluster installation
   hosts: bastion
-  gather_facts: False
+  gather_facts: false
   roles:
     - monitor_cluster

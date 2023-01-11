@@ -1,5 +1,5 @@
 ---
-# file: generate_discovery_iso.yml
-- hosts: bastion
+- name: Generate discovery iso
+  hosts: bastion
   roles:
     - generate_discovery_iso

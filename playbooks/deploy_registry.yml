@@ -1,37 +1,38 @@
 ---
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(true)}}"
     destination_hosts:
       - registry_host
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_REGISTRY_SERVICE == True
-    - name: pre-compute need to get hashes
-      set_fact:
-        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
+      ansible.builtin.setup:
+      when: SETUP_REGISTRY_SERVICE | bool
+    - name: Pre-compute need to get hashes
+      ansible.builtin.set_fact:
+        run_get_hash: "{{ image_hashes | default({}) | length == 0 }}"
   roles:
     - role: get_image_hash
       when: run_get_hash
 
 - name: Play to install and setup mirror registry
   hosts: registry_host
-  gather_facts: False
+  gather_facts: false
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
-    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(true)}}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_REGISTRY_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_REGISTRY_SERVICE | bool
   roles:
     - role: setup_selfsigned_cert
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
     - role: setup_mirror_registry
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
 
-- import_playbook: populate_registry.yml
+- name: Poplulate registry
+  ansible.builtin.import_playbook: populate_registry.yml

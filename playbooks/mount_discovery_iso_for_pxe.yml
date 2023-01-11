@@ -1,6 +1,7 @@
-- hosts: http_store
+- name: Mount discovery iso for use in PXE
+  hosts: http_store
   vars:
-    MOUNT_DISCOVERY_ISO: "{{ setup_pxe_service | default(False)}}"
+    MOUNT_DISCOVERY_ISO: "{{ setup_pxe_service | default(false)}}"
   roles:
     - role: mount_discovery_iso_for_pxe
-      when: MOUNT_DISCOVERY_ISO == True
+      when: MOUNT_DISCOVERY_ISO | bool

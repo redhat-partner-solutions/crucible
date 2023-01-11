@@ -1,10 +1,10 @@
 - name: Find vm creation scripts
-  find:
+  ansible.builtin.find:
     path: "{{ vm_create_scripts_dir }}"
   register: creation_to_remove
 
-- name: Remove file in {{ vm_create_scripts_dir }} dir
-  file:
+- name: "Remove file in dir {{ vm_create_scripts_dir }}"
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop: "{{ creation_to_remove.files | map(attribute='path') | select('match', prefix_regex) | list }}"
@@ -18,6 +18,6 @@
   loop: "{{ vms_to_remove | default([]) }}"
 
 - name: Undefine VM # The 'loop' default will prevent action when none is needed.
-  shell:
+  ansible.builtin.shell:
     cmd: "virsh undefine --remove-all-storage --nvram {{ item }}" # community.libvirt.virt undefine doesn't have the ability to specify --nvram
   loop: "{{ vms_to_remove | default([]) }}"

@@ -1,9 +1,9 @@
 - name: Set test file contents
-  set_fact:
+  ansible.builtin.set_fact:
     contents: "{{ lookup('template', 'test_file.j2') }}"
 
 - name: Copy file to http_store
-  copy:
+  ansible.builtin.copy:
     content: "{{ contents }}"
     dest: "{{ http_store_dir }}/{{ test_file_name }}"
     mode: 0644
@@ -11,20 +11,20 @@
   delegate_to: http_store
 
 - name: Retrieve file from http_store
-  uri:
+  ansible.builtin.uri:
     url: "{{ http_host }}/{{ test_file_name }}"
     return_content: true
   register: response
   delegate_to: bastion
 
 - name: Check content matches
-  assert:
+  ansible.builtin.assert:
     that:
       response.content == contents
     quiet: true
 
 - name: Remove file on http_store
-  file:
+  ansible.builtin.file:
     path: "{{ http_store_dir }}/{{ test_file_name }}"
     state: absent
   become: true

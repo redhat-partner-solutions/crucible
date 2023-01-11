@@ -1,13 +1,13 @@
 - name: Setup DNS Records
   hosts: dns_host
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_DNS_SERVICE: "{{ setup_dns_service | default(True) }}"
+    SETUP_DNS_SERVICE: "{{ setup_dns_service | default(true) }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_DNS_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_DNS_SERVICE | bool
   roles:
     - role: insert_dns_records
-      when: SETUP_DNS_SERVICE == True
+      when: SETUP_DNS_SERVICE | bool
     - role: validate_dns_records

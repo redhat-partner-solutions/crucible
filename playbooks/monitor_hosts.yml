@@ -1,6 +1,6 @@
 - name: Monitoring hosts installation
   hosts: masters, workers
-  gather_facts: False
+  gather_facts: false
   strategy: free
   roles:
     - monitor_host

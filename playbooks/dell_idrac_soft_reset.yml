@@ -9,14 +9,14 @@
   vars_prompt:
     - name: reset_confirmation
       prompt: You are about to preform a SOFT RESET of a Dell Drac. ARE YOU SURE [yes|no]?
-      private: no
+      private: false
   tasks:
     - name: RESETING THE DRAC AND CMC
-      raw: racadm racreset
+      ansible.builtin.raw: racadm racreset
       when: reset_confirmation | bool
       register: result
       failed_when: "'RAC reset operation initiated successfully' not in result['stdout']"
     - name: Wait for reset
-      pause:
+      ansible.builtin.pause:
         prompt: "Pausing 3 mins to allow the iDRAC and CMC to return to a usable state."
         minutes: 3

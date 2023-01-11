@@ -6,17 +6,17 @@
     - mirror_installation_images
   block:
     - name: Create podman auth dir
-      file:
+      ansible.builtin.file:
         path: "{{ config_file_path }}/containers/"
         state: directory
         mode: 0755
 
     - name: Copy pull_secrets file.
-      copy:
+      ansible.builtin.copy:
         src: "{{ config_file_path }}/{{ pull_secret_file_name }}"
         dest: "{{ config_file_path }}/containers/auth.json"
         mode: 0644
-        remote_src: yes
+        remote_src: true
 
     - name: Podman login to remote registry
       containers.podman.podman_login_info:
@@ -25,7 +25,7 @@
         XDG_RUNTIME_DIR: "{{ config_file_path }}"
 
     - name: Mirror remote ocpmetal image registry to local
-      command:
+      ansible.builtin.command:
         cmd: >
           /usr/local/bin/oc image mirror
             -a "{{ config_file_path }}/{{ pull_secret_file_name }}"
@@ -34,16 +34,16 @@
       loop: "{{ ocpmetal_images }}"
 
     - name: Mirror release image to local (x86_64)
-      command:
+      ansible.builtin.command:
         cmd: >
-          /usr/local/bin/oc adm release mirror 
+          /usr/local/bin/oc adm release mirror
             -a "{{ config_file_path }}/{{ pull_secret_file_name }}"
             --from="{{ release_image_item.remote | quote }}"
             --to-release-image="{{ release_image_item.local | quote }}:{{ release_image_item.local_tag | quote }}"
             --to="{{ release_image_item.local | quote }}"
 
     - name: Mirror release image to local (arm64)
-      command:
+      ansible.builtin.command:
         cmd: >
           /usr/local/bin/oc adm release mirror
             -a "{{ config_file_path }}/{{ pull_secret_file_name }}"
@@ -56,13 +56,13 @@
   become: true
   tags:
     - mirror_images
-    - mirror_operators 
+    - mirror_operators
   when: populate_operator_catalog | bool
   block:
     - name: Build pruned OLM index
-      command:
+      ansible.builtin.command:
         cmd: >
-          /usr/local/bin/opm index prune 
+          /usr/local/bin/opm index prune
             --from-index "{{ olm_index_item.remote }}"
             --packages "{{ mirror_packages | join(',') }}"
             --tag "{{ olm_index_item.local }}:{{ olm_index_item.local_tag }}"
@@ -70,17 +70,17 @@
         XDG_RUNTIME_DIR: "{{ config_file_path }}"
 
     - name: Push pruned index to local registry
-      command:
+      ansible.builtin.command:
         cmd: >
-          podman push 
+          podman push
             --tls-verify=false
             {{ olm_index_item.local }}:{{ olm_index_item.local_tag }}
             --authfile "{{ config_file_path }}/{{ pull_secret_file_name }}"
 
-    - name: Mirror Catalog to local registry 
-      command:
+    - name: Mirror Catalog to local registry
+      ansible.builtin.command:
         cmd: >
-          oc adm catalog mirror 
+          oc adm catalog mirror
             {{ olm_index_item.local }}:{{ olm_index_item.local_tag }}
             {{ olm_item.local }}:{{ olm_item.local_tag }}
             --registry-config="{{ config_file_path }}/{{ pull_secret_file_name }}"

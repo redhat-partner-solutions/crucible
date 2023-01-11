@@ -1,11 +1,11 @@
 ---
 - name: "Load suite {{ test_suite_file }}"
-  include_vars:
+  ansible.builtin.include_vars:
     file: "suites/{{ test_suite_file }}"
     name: suite_data
 
 - name: Create temporary directory for rendered templates
-  tempfile:
+  ansible.builtin.tempfile:
     state: directory
   register: temp_dir
 
@@ -13,7 +13,7 @@
   block:
 
     - name: "Render test inventories for {{ test_suite_file }}"
-      template:
+      ansible.builtin.template:
         src: "{{ item.from_template | default(suite_data.template_file) }}"
         dest: "{{ temp_dir.path }}/{{ item.test_name }}.yml"
         mode: 0644
@@ -22,12 +22,12 @@
       loop: "{{ suite_data.tests }}"
 
     - name: "Run Inventory Validation tests from {{ test_suite_file }}"
-      include_tasks: run_test.yml
+      ansible.builtin.include_tasks: run_test.yml
       loop: "{{ suite_data.tests }}"
 
   rescue:
     - name: Persist the tested inventory files on failure
-      copy:
+      ansible.builtin.copy:
         src: "{{ temp_dir.path }}"
         dest: "{{ playbook_dir }}/failed/"
         mode: preserve
@@ -36,7 +36,7 @@
 
   always:
     - name: Remove the temporary directory
-      file:
+      ansible.builtin.file:
         path: "{{ temp_dir.path }}"
         state: absent
       when: temp_dir.path is defined

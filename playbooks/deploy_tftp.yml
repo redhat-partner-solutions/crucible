@@ -1,7 +1,7 @@
 - name: Setup TFTP
   hosts: tftp_host
   vars:
-    SETUP_TFTP_SERVICE: "{{ setup_pxe_service | default(False) }}"
+    SETUP_TFTP_SERVICE: "{{ setup_pxe_service | default(false) }}"
   roles:
     - role: setup_tftp
-      when: SETUP_TFTP_SERVICE == True
+      when: SETUP_TFTP_SERVICE | bool

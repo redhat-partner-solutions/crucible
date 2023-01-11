@@ -1,12 +1,12 @@
 - name: Create day 2 cluster
-  uri:
+  ansible.builtin.uri:
     url: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/import"
     method: POST
     url_username: "{{ HTTP_AUTH_USERNAME }}"
     url_password: "{{ HTTP_AUTH_PASSWORD }}"
     body_format: json
     status_code: [201]
-    return_content: True
+    return_content: true
     body: >-
       {
         "name": "{{ cluster_name + '-day2' }}",
@@ -16,33 +16,33 @@
       }
   register: http_reply
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     var: http_reply.json.id
     verbosity: 1
 
 - name: Set cluster ID info
-  set_fact:
+  ansible.builtin.set_fact:
     cluster_id: "{{ http_reply.json.id }}"
     add_host_cluster_id: "{{ http_reply.json.id }}"
 
 - name: "Save add_host_cluster_id"
-  copy:
+  ansible.builtin.copy:
     content: "{{ add_host_cluster_id }}"
     dest: "{{ fetched_dest }}/{{ day2_cluster_id_filename }}"
     mode: 0644
   delegate_to: localhost
-  become: no
+  become: false
 
-- debug: # noqa unnamed-task
+- ansible.builtin.debug: # noqa unnamed-task
     msg: "{{ pull_secret | to_json }}"
     verbosity: 1
 
 - name: Patch day 2 install config
-  uri:
+  ansible.builtin.uri:
     url: "{{ ASSISTED_INSTALLER_BASE_URL }}/clusters/{{ add_host_cluster_id }}"
     method: PATCH
     status_code: [201]
-    return_content: True
+    return_content: true
     body_format: json
     body:
       {
@@ -54,8 +54,8 @@
       }
 
 - name: Distribute add_host_cluster_id value to day2_worker hosts
-  set_fact:
+  ansible.builtin.set_fact:
     add_host_cluster_id: "{{ add_host_cluster_id }}"
   delegate_to: "{{ item }}"
-  delegate_facts: yes
+  delegate_facts: true
   loop: "{{ groups['day2_workers'] }}"

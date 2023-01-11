@@ -1,5 +1,6 @@
 ---
-- import_playbook: playbooks/create_vms.yml
+- name: Create Day 2 VMs
+  ansible.builtin.import_playbook: playbooks/create_vms.yml
   when: groups['day2_workers'] | default([]) | length > 0
   vars:
     nodes_to_process: "{{ groups['day2_workers'] | default([]) }}"
@@ -9,21 +10,26 @@
     # are trying to join
     DELETE_VM_BRIDGE: false
 
-- import_playbook: playbooks/create_day2_cluster.yml
+- name: Create day2 cluster
+  ansible.builtin.import_playbook: playbooks/create_day2_cluster.yml
 
-- import_playbook: playbooks/generate_discovery_iso.yml
+- name: Generate discovery iso
+  ansible.builtin.import_playbook: playbooks/generate_discovery_iso.yml
   when: groups['day2_workers'] | default([]) | length > 0
   vars:
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
     iso_cluster_id: "{{ add_host_cluster_id }}"
 
-- import_playbook: playbooks/boot_iso.yml
+- name: Boot iso
+  ansible.builtin.import_playbook: playbooks/boot_iso.yml
   when: groups['day2_workers'] | default([]) | length > 0
   vars:
     discovery_iso_name: "{{ day2_discovery_iso_name }}"
     boot_iso_url: "{{ discovery_iso_server }}/{{ day2_discovery_iso_name }}"
     boot_iso_hosts: day2_workers
 
-- import_playbook: playbooks/add_day2_nodes.yml
+- name: Add day2 nodes
+  ansible.builtin.import_playbook: playbooks/add_day2_nodes.yml
 
-- import_playbook: playbooks/approve_csrs.yml
+- name: Approve CSRs
+  ansible.builtin.import_playbook: playbooks/approve_csrs.yml

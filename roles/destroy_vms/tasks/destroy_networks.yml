@@ -1,13 +1,13 @@
 - name: Remove network
   become: true
-  ignore_errors: yes
+  ignore_errors: true
   block:
-    - name: destroy network
+    - name: Destroy network
       community.libvirt.virt_net:
         name: "{{ network_name }}"
         command: destroy
 
-    - name: undefine network
+    - name: Undefine network
       community.libvirt.virt_net:
         name: "{{ network_name }}"
         command: undefine
@@ -20,15 +20,15 @@
   loop:
     - "{{ vm_bridge_name }}"
     - "{{ vm_bridge_interface }}_{{ vm_bridge_name }}"
-  ignore_errors: yes
+  ignore_errors: true
   become: true
-  when: (DELETE_VM_BRIDGE | default(SETUP_VM_BRIDGE | default(true))) | bool == true
+  when: (DELETE_VM_BRIDGE | default(SETUP_VM_BRIDGE | default(true))) | bool
 
 - name: Delete existing bridges (if any)
   community.general.nmcli:
     conn_name: "{{ vm_bridge_name }}.{{ vm_vlan_tag }}"
     type: vlan
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
   become: true
-  when: (DELETE_VM_BRIDGE | default(SETUP_VM_BRIDGE | default(true))) | bool == true and vm_vlan_tag is defined
+  when: (DELETE_VM_BRIDGE | default(SETUP_VM_BRIDGE | default(true))) | bool and vm_vlan_tag is defined

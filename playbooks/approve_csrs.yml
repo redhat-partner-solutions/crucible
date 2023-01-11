@@ -1,4 +1,5 @@
-- hosts: bastion
+- name: Approve CSRs
+  hosts: bastion
   gather_facts: false
   roles:
     - role: approve_csrs

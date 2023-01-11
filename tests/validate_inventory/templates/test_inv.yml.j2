@@ -41,7 +41,7 @@ all:
     {% endif %}
     nodes:
       vars:
-        {% if not (item.template.no_bmc_address | default(false)) == true  %}
+        {% if not (item.template.no_bmc_address | default(false))  %}
         bmc_address: {{ item.template.bmc_address | default("localhost") }}
         {%endif%}
         {%if item.template.bmc_ip is defined %}

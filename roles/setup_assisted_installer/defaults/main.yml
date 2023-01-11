@@ -13,35 +13,35 @@ assisted_installer_dir: /opt/assisted-installer
 assisted_installer_data_dir: "{{ assisted_installer_dir }}/data"
 
 assisted_installer_hardware_validation:
-- version: default
-  master:
-    cpu_cores: 4
-    ram_mib: 16384
-    disk_size_gb: 120
-    installation_disk_speed_threshold_ms: 10
-    network_latency_threshold_ms: 100
-    packet_loss_percentage: 0
-  worker:
-    cpu_cores: 2
-    ram_mib: 8192
-    disk_size_gb: 120
-    installation_disk_speed_threshold_ms: 10
-    network_latency_threshold_ms: 1000
-    packet_loss_percentage: 10
-  sno:
-    cpu_cores: 8
-    ram_mib: 16384
-    disk_size_gb: 120
-    installation_disk_speed_threshold_ms: 10
+  - version: default
+    master:
+      cpu_cores: 4
+      ram_mib: 16384
+      disk_size_gb: 120
+      installation_disk_speed_threshold_ms: 10
+      network_latency_threshold_ms: 100
+      packet_loss_percentage: 0
+    worker:
+      cpu_cores: 2
+      ram_mib: 8192
+      disk_size_gb: 120
+      installation_disk_speed_threshold_ms: 10
+      network_latency_threshold_ms: 1000
+      packet_loss_percentage: 10
+    sno:
+      cpu_cores: 8
+      ram_mib: 16384
+      disk_size_gb: 120
+      installation_disk_speed_threshold_ms: 10
 
 dns_servers: "{% if dns is defined %}{{ [dns] }}{% else %}{{ [] }}{% endif %}"
 assisted_service_host: "{{ host | default('ansible_fqdn') }}" # nodes -> assisted service
 image_service_host: "{{ host | default('ansible_fqdn') }}" # bastion -> image service
 
-use_local_mirror_registry: "{{ setup_registry_service | default(False) }}"
+use_local_mirror_registry: "{{ setup_registry_service | default(false) }}"
 
 config_file_path: /tmp/wip/config
-port: 8090
+ai_port: "{{ port | default(8090) }}"
 
 # Proxy settings for the AI Pod configuration.
 http_proxy: ""

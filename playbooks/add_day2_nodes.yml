@@ -1,6 +1,7 @@
-- hosts: day2_workers
+- name: Add day2 worker nodes
+  hosts: day2_workers
   gather_facts: false
   strategy: free
   roles:
-    - name: add_day2_node
+    - role: add_day2_node
       when: groups['day2_workers'] | default([]) | length > 0

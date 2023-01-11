@@ -3,15 +3,15 @@
   become: true
   block:
     - name: Install podman
-      package:
+      ansible.builtin.package:
         name: podman
         state: present
 
     - name: Open http port, zone internal and public, for firewalld
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ http_port }}/tcp"
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled
         zone: "{{ item }}"
       loop:
@@ -19,13 +19,13 @@
         - public
 
     - name: Create directory to hold the registry files
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: "{{ file_owner }}"
         group: "{{ file_group }}"
         mode: 0775
-        recurse: yes
+        recurse: true
       loop:
         - "{{ http_dir }}"
         - "{{ http_data_dir }}"
@@ -37,7 +37,7 @@
           - "{{ http_port }}:8080"
       register: pod_info
 
-    - debug: # noqa unnamed-task
+    - ansible.builtin.debug: # noqa unnamed-task
         var: pod_info
         verbosity: 1
 
@@ -52,12 +52,12 @@
       register: container_info
 
     - name: Setting facts about container
-      set_fact:
+      ansible.builtin.set_fact:
         http_store_name: "{{ container_info.container.Name }}"
         http_store_pidfile: "{{ container_info.container.ConmonPidFile }}"
 
     - name: Copy the systemd service file
-      copy:
+      ansible.builtin.copy:
         content: |
           [Unit]
           Description=Podman http_store.service
@@ -74,18 +74,18 @@
         mode: 0644
 
     - name: Reload systemd service
-      systemd:
-        daemon_reexec: yes
+      ansible.builtin.systemd:
+        daemon_reexec: true
         scope: system
 
     - name: Enable http_store.service
-      systemd:
+      ansible.builtin.systemd:
         name: http_store
-        enabled: yes
+        enabled: true
         scope: system
 
     - name: Start http_store.service
-      systemd:
+      ansible.builtin.systemd:
         name: http_store
         state: started
         scope: system

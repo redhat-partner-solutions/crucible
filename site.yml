@@ -1,10 +1,15 @@
 ---
-- import_playbook: playbooks/display_deployment_plan.yml
+- name: Display deployment plan
+  ansible.builtin.import_playbook: playbooks/display_deployment_plan.yml
 
-- import_playbook: deploy_prerequisites.yml
+- name: Deploy prerequisites
+  ansible.builtin.import_playbook: deploy_prerequisites.yml
 
-- import_playbook: deploy_cluster.yml
+- name: Deploy cluster
+  ansible.builtin.import_playbook: deploy_cluster.yml
 
-- import_playbook: post_install.yml
+- name: Post install
+  ansible.builtin.import_playbook: post_install.yml
 
-- import_playbook: deploy_day2_workers.yml
+- name: Deploy day2 workers
+  ansible.builtin.import_playbook: deploy_day2_workers.yml
