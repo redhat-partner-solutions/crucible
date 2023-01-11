@@ -7,8 +7,12 @@
   when: boot_iso_url is not defined
   delegate_to: bastion
 
+- debug: # noqa unnamed-task
+    var: boot_iso_url
+    verbosity: 1
+
 - name: Boot ISO for "{{ hostvars[inventory_hostname]['vendor'] }}"
-  include_role: 
+  include_role:
     name: "vendors/{{ hostvars[inventory_hostname]['vendor'] | lower }}"
     tasks_from: iso.yml
   vars:
