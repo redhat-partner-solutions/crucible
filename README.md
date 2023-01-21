@@ -13,7 +13,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #############################################################################
 ```
 
-This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
+This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration, and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
 
 These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of Red Hat Enterprise Linux (RHEL) 8.6, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
 
@@ -35,7 +35,7 @@ Crucible targets versions of Python and Ansible that ship with RHEL. At the mome
 - 4.8
 - 4.9
 - 4.10
-
+- 4.11
 
 
 ## Assisted Installer versions Tested
@@ -59,11 +59,11 @@ Requires the following to be installed on the deployment host:
 - [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
 
 
-**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash
-dnf install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath
+dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath
 ```
 
 There's also some required Ansible modules that can be installed with the following command:
@@ -151,7 +151,7 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
 
 ### Privilege Escalation
 
-For simplicity we suggest that passwordless sudo is set up on all machines. If this is not desirable or possible in your environment then there are two options:
+For simplicity, we suggest that passwordless sudo is set up on all machines. If this is not desirable or possible in your environment, then there are two options:
 
 1. Use the same sudo password for all hosts, and use the `-K` flag on `ansible-playbook`. This will cause Ansible to [prompt for the sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-command-line-options). The password provided is then used for *all* hosts.
 1. Set the `ansible_become_password` variable for each host that needs a [sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-connection-variables). The passwords can be securely stored in an encrypted Ansible vault.
@@ -161,7 +161,7 @@ For simplicity we suggest that passwordless sudo is set up on all machines. If t
 
 Crucible can automatically set up the services required to deploy and run a cluster. Some are required for the Assisted Installer tool to run, and some are needed for the resulting cluster.
 
-- NTP - The NTP service helps to ensure clocks are synchronised across the resulting cluster which is a requirement for the cluster to function.
+- NTP - The NTP service helps to ensure clocks are synchronized across the resulting cluster, which is a requirement for the cluster to function.
 - Container Registry Local Mirror - Provides a local container registry within the target environment. The Crucible playbooks automatically populates the registry with required images for cluster installation. The registry will continue to be used by the resulting cluster.
 - HTTP Store - Used to serve the Assisted Installer discovery ISO and allow it to be used as Virtual Media for nodes to boot from.
 - DNS - Optionally set up DNS records for the required cluster endpoints, and nodes. If not automatically set up then the existing configuration will be validated.
@@ -178,10 +178,10 @@ Note that the exact changes made depend on which playbooks or roles are run, and
 
 ### Cluster
 
-The obvious output from these playbooks is a clean OCP cluster with minimal extra configuration. Each node that has been added to the resulting cluster will have:
+The obvious output from these playbooks is a clean OpenShift Container Platform cluster with minimal extra configuration. Each node that has been added to the resulting cluster will have:
 
-- CoreOS installed and configured
-- The configured SSH public key as an authorised key for `root` to allow debugging
+- Red Hat Enterprise Linux CoreOS installed and configured
+- The configured SSH public key as an authorized key for `root` to allow debugging
 
 
 ### Prerequisite Services
