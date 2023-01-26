@@ -207,7 +207,8 @@
     body: {}
   when: install | bool == True
   register: cluster
-  until: cluster.json.status in cluster_installation_states
+  until:
+    - ("json" in cluster)
+    - cluster.json.status in cluster_installation_states
   retries: 5
   delay: 60
-  
