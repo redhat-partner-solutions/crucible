@@ -1,30 +1,34 @@
 ---
 - name: "Remove temporary ssh_keys folder {{ key_pair_dir }}"
+  become: true
   file:
     path: "{{ key_pair_dir }}"
     state: absent
 
 - name: "Make sure {{ fetched_dest }} exists"
+  become: false
   file:
     path: "{{ fetched_dest }}"
     state: directory
     recurse: yes
   delegate_to: localhost
-  become: no
 
 - name: Make key dir
+  become: true
   file:
     path: "{{ key_pair_dir }}"
     mode: 0775
     state: directory
 
 - name: Generate an OpenSSH rsa keypair
+  become: true
   community.crypto.openssh_keypair:
     path: "{{ key_pair_dir }}/{{ private_key_name }}"
     mode: 0600
   args: "{{ openssh_keypair_args | default({}) }}"
 
 - name: Fetch SSH Key
+  become: true
   fetch:
     src: "{{ item }}"
     dest: "{{ fetched_dest }}/ssh_keys/"
@@ -36,6 +40,7 @@
 - name: Copy SSH Key to bastion
   block:
     - name: Make SSH Key folder
+      become: true
       file:
         path: "{{ ssh_key_dest_dir }}"
         mode: 0775
@@ -49,7 +54,6 @@
       loop:
         - "{{ private_key_name }}"
         - "{{ public_key_name }}"
-
   delegate_to: bastion
 
 - name: Distribute public key to all hosts
