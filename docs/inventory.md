@@ -639,7 +639,8 @@ You must have these services when using PXE deployment
               bmc_address: 192.168.10.20
               mac: "DE:AD:BE:EF:C0:2F"
               vendor: pxe
-              bmc_address: "nfvpe-21.oot.lab.eng.bos.redhat.com:8082"
+              bmc_address: "nfvpe-21.oot.lab.eng.bos.redhat.com"
+              bmc_port: 8082
    
 ```
 > **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
