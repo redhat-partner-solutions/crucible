@@ -73,9 +73,9 @@
     force_basic_auth: no
     validate_certs: no
     return_content: yes
-    timeout: 120
+    timeout: 180
   register: redfish_reply
-  until: "redfish_reply.status == 204"
+  until: redfish_reply  is successful
   retries: 20
   delay: 30
 
