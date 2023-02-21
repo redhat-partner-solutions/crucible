@@ -18,14 +18,14 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('**/requirements.???') }}
 
       - name: Install required dependencies
         run: |
           pip install ansible
           pip install -r requirements.txt
+          ansible-galaxy collection install -r requirements.yml
 
       - name: Run all tests using Ansible
         run: ansible-playbook run_tests.yml
         working-directory: ./tests
-
