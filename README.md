@@ -23,9 +23,11 @@ See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and 
 ## Software Versions Supported
 Crucible targets versions of Python and Ansible that ship with RHEL. At the moment the supported versions are:
 
-- RHEL 8.6
-- Python 3.6.8
-- Ansible 2.9.27
+|         | rhel 8.6 | rhel 8.7 | rhel 9 |
+|---------|----------|----------|--------|
+| Python  | 3.6.8    | 3.6.8    | 3.9.14 |
+| Ansible | 2.9.27   | 2.9.27   | 2.13.3 |
+|         |          |          |        |
 
 
 ## OpenShift Versions Tested
@@ -36,14 +38,15 @@ Crucible targets versions of Python and Ansible that ship with RHEL. At the mome
 - 4.9
 - 4.10
 - 4.11
-
+- 4.12
 
 ## Assisted Installer versions Tested
 
 - v2.1.0
 - v2.1.1
 - v2.1.2
-
+- 2.5.0
+- 2.6.
 
 ### Dependencies
 
