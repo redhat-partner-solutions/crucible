@@ -68,11 +68,8 @@
 __Note__: Time for the above procedure is about 1.5hr, on Bare Metal Servers.
 
 
-#### COMING SOON:
+#### COMING SOON(inprogress):
 
-Apply a workload configuration manifests:
+Integration with gitops based on kustomize images for post Install configuration.
 
-Persistent Storage
-
-Consuming Agent-based Installer(BILLI) as additional Installer to use.  
-
+Consuming Agent-based Installer(BILLI) as additional instalation method.
