@@ -69,7 +69,10 @@ __Note__: Time for the above procedure is about 1.5hr, on Bare Metal Servers.
 
 
 #### COMING SOON:
+
 Apply a workload configuration manifests:
+
 Persistent Storage
+
 Consuming Agent-based Installer(BILLI) as additional Installer to use.  
 
