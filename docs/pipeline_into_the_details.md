@@ -65,16 +65,11 @@
     - Retrieve kubeconfig and save it to jumphost
 
 
-
-
 __Note__: Time for the above procedure is about 1.5hr, on Bare Metal Servers.
-
-
 
 
 #### COMING SOON:
 Apply a workload configuration manifests:
 Persistent Storage
-Advanced Cluster Manager
-Creation of the ACM Pods on the Management Cluster(Workers).
-Using the ACM in order to deploy OpenShift on the DU & CU servers.
+Consuming Agent-based Installer(BILLI) as additional Installer to use.  
+
