@@ -1,0 +1,21 @@
+- name: Get ISO Download Link
+  kubernetes.core.k8s_info:
+    name: "{{ day2_add_worker_namespace }}-infraenv"
+    api: agent-install.openshift.io/v1beta1
+    kind: infraenv
+    namespace: "{{ day2_add_worker_namespace }}"
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: iso_url
+
+- set_fact:
+      iso_url_str: "{{ iso_url.resources[0].status.isoDownloadURL | replace ('minimal' , 'full') }}"
+
+- name: Download ISO
+  vars:
+    DOWNLOAD_DEST_FILE: "{{ day2_discovery_iso_name }}"
+    DOWNLOAD_DEST_PATH: "{{ iso_download_dest_path | default('/opt/http_store/data/') }}"
+  get_url:
+    url: "{{iso_url_str}}"
+    validate_certs: false
+    dest: "{{ DOWNLOAD_DEST_PATH }}{{ DOWNLOAD_DEST_FILE }}"
+  delegate_to: bastion

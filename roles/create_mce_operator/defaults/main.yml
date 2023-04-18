@@ -1,0 +1,2 @@
+arch: x86_64
+storage_class_name: "{{ sc_name }}"

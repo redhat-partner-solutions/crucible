@@ -12,6 +12,7 @@ get_all_release_versions: false
 images_to_get_hash_for: "{{ assisted_installer_images | combine(processed_release_images | default({})) }}"
 
 destination_hosts:
+  - bastion
   - registry_host
   - assisted_installer
 

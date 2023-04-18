@@ -1,0 +1,204 @@
+- name: Check Storage Classes
+  kubernetes.core.k8s_info:
+    kind: StorageClass
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    api: storage.k8s.io/v1
+  register: storage_class_list
+
+- name: Fail if Storage Class is not existing
+  fail:
+    msg: Storage Class is not existing
+  when: storage_class_list.resources | map(attribute='metadata') | selectattr('name', 'in', '{{storage_class_name}}' ) | list | length == 0
+
+- name: Create MCE Operator
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: multicluster-engine
+
+- name: Create MCE Operator
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+        name: multicluster-engine-cggrq
+        namespace: multicluster-engine
+      spec:
+        targetNamespaces:
+        - multicluster-engine
+
+- name: Create MCE Operator
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: multicluster-engine
+        namespace: multicluster-engine
+      spec:
+        channel: "{{ mce_operator_channel | default('stable-2.1') }}"
+        installPlanApproval: Automatic
+        name: multicluster-engine
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Wait until MCE Pods are running
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: multicluster-engine
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: pod_list
+  until: pod_list.resources | map(attribute='status') | map(attribute='phase') | unique | list == ["Running"]
+  retries: 10
+  delay: 10
+
+- name: Get MCE Pods list
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: multicluster-engine
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: pod_list
+
+- ansible.builtin.set_fact:
+    old_pod_names: "{{ pod_list.resources | json_query('[].metadata.name')}}"
+
+- ansible.builtin.debug:
+    msg: "{{ old_pod_names }}"
+    verbosity: 1
+
+- name: Deploy MCE Plugins
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: multicluster.openshift.io/v1
+      kind: MultiClusterEngine
+      metadata:
+        name: multiclusterengine-sample
+      spec:
+        availabilityConfig: High
+        overrides:
+          components:
+            - enabled: true
+              name: assisted-service
+            - enabled: true
+              name: cluster-lifecycle
+            - enabled: true
+              name: cluster-manager
+            - enabled: true
+              name: discovery
+            - enabled: true
+              name: hive
+            - enabled: true
+              name: server-foundation
+            - enabled: true
+              name: cluster-proxy-addon
+            - enabled: false
+              name: managedserviceaccount-preview
+            - enabled: false
+              name: hypershift-preview
+            - enabled: true
+              name: console-mce
+        targetNamespace: multicluster-engine
+
+- name: Wait until MCE Pods are running
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: multicluster-engine
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: pod_list_2
+  vars:
+    filter_str: '[].{"name": metadata.name, "status": status.phase}'
+  until: pod_list_2.resources | json_query(filter_str) | rejectattr('name', 'in', old_pod_names) | map(attribute='status') | unique | list == ["Running"]
+  retries: 20
+  delay: 10
+
+- name: Patch the provisioning-configuration to enable CIM service
+  kubernetes.core.k8s:
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    state: present
+    api_version: metal3.io/v1alpha1
+    kind: provisioning
+    name: provisioning-configuration
+    definition:
+      spec:
+        watchAllNamespaces: true
+
+- name: Get MCE Pods list
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: multicluster-engine
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: pod_list
+
+- ansible.builtin.set_fact:
+    old_pod_names: "{{ pod_list.resources | json_query('[].metadata.name')}}"
+
+- ansible.builtin.debug:
+    msg: "{{ old_pod_names }}"
+    verbosity: 1
+
+- set_fact:
+    os_image: "{{ assisted_installer_os_images | json_query(os_filter) }}"
+  vars:
+    os_filter: "[?(openshift_version == '{{ openshift_version }}' && cpu_architecture == '{{ arch }}' )] | [0]"
+
+- name:  Create the AgentServiceConfig
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+    definition:
+      apiVersion: agent-install.openshift.io/v1beta1
+      kind: AgentServiceConfig
+      metadata:
+       name: agent
+      spec:
+        databaseStorage:
+          storageClassName: "{{ storage_class_name }}"
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+        filesystemStorage:
+          storageClassName: "{{ storage_class_name }}"
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+        imageStorage:
+          storageClassName: "{{ storage_class_name }}"
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+        osImages:
+          - openshiftVersion: "{{ os_image.openshift_version }}"
+            version: "{{ os_image.version }}"
+            url: "{{ os_image.url }}"
+            rootFSUrl: "{{ os_image.rootfs_url }}"
+            cpuArchitecture: "{{ os_image.cpu_architecture }}"
+
+
+- name: Wait until CIM is configured correctly
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: multicluster-engine
+    kubeconfig: "{{kubeconfig_dest_dir}}{{kubeconfig_dest_filename}}"
+  register: pod_list_2
+  vars:
+    filter_str: '[].{"name": metadata.name, "status": status.phase}'
+  until: pod_list_2.resources | json_query(filter_str) | rejectattr('name', 'in', old_pod_names) | map(attribute='status') | unique | list == ["Running"]
+  retries: 20
+  delay: 10
