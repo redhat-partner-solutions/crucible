@@ -191,10 +191,11 @@ network_config:
         slaves:
           - ens7f0
           - ens7f1
+    # To avoid an interface to up, specify its status as down
     - name: ens1f0
       type: ethernet
       mac: "40:A6:B7:3D:B3:70"
-      state: down
+      state: down 
     - name: ens1f1
       type: ethernet
       mac: "40:A6:B7:3D:B3:71"
@@ -307,6 +308,7 @@ all:
                     ipv6:
                       - ip: "{{ ipv6_address }}"
                         prefix: "64"
+              # Only one DNS server ip per protocol
               dns_server_ips:
                 - "fd00:6:6:11::52"
                 - "10.40.0.100"
