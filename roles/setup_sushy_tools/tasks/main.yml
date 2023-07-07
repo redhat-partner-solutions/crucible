@@ -52,6 +52,14 @@
 # DO NOT MERGE
 #          no_log: true
 
+        - name: Debugging user_password_combinations
+          debug:
+            var: user_password_combinations
+
+        - name: Debugging dict2items
+          debug:
+            msg: "{{ user_password_combinations | dict2items(key_name='user', value_name='password') }}"
+
         - name: Generate htpasswd entry
           command: htpasswd -bBn {{ item.user }} {{ item.password }}
           register: htpass_entries
