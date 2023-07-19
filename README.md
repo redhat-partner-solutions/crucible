@@ -62,13 +62,14 @@ Requires the following to be installed on the deployment host:
 - [kubectl + oc](https://docs.openshift.com/container-platform/4.10/cli_reference/openshift_cli/getting-started-cli.html)
 - [pyghmi](https://pypi.org/project/pyghmi/) #For PXE deployment
 - [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
+- [nmstate](https://github.com/nmstate) # For baremetal deployment
 
 
 **Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash
-dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath
+dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
 
 There's also some required Ansible modules that can be installed with the following command:
