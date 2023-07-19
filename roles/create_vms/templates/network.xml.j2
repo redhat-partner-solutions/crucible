@@ -1,6 +1,12 @@
 <network>
   <name>{{ network_name }}</name>
   <uuid>{{ net_uuid | default(99999999 | random | to_uuid) }}</uuid>
+{% if use_bridged_network | bool %}
   <forward mode='bridge'/>
   <bridge name='{{ vm_bridge_name }}'/>
+{% elif use_natted_network | bool %}
+  <forward mode='nat'/>
+  <bridge name='{{ vm_bridge_name }}' stp='on' delay='0'/>
+  <ip address="{{ vm_bridge_ip }}" />
+{% endif %}
 </network>

@@ -16,3 +16,7 @@ virt_packages:
 images_dir: /var/lib/libvirt/images/
 
 is_on_rhel9: "{{ (ansible_distribution_major_version == '9' and ansible_distribution == 'RedHat') | bool }}"
+# By default, a bridged network is created, but you can also deploy a NATted network if required,
+# just activate the proper variable to create one network or another.
+use_bridged_network: true
+use_natted_network: false

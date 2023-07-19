@@ -380,6 +380,9 @@ If you need VMs with static UUIDs to allow them to be reused then the UUID for a
               uuid: d36ebda0-25bf-55ef-9c69-66ad5ef0d39d
 ```
 
+#### Bridged network vs. NATted network
+
+By default, this repository deploys a bridged network to interconnect all virtual machines created between them, but it is possible to use a NATted network instead. You just need to set `use_natted_network` to `true` (default `false`) and `use_bridged_network` to `false`(default `true`).
 
 ### SSH Key Gen
 
