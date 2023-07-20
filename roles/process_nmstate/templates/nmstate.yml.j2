@@ -11,7 +11,7 @@ interfaces:
 {% for interface in network_config.interfaces %}
   - name: {{ interface.name }}
     {% if interface.mac is defined %}
-    mac: {{ interface.mac }}
+    mac-address: {{ interface.mac }}
     {% endif %}
     state: {{ interface.state | default('up') }}
     type: {{ interface.type | default('ethernet') }}
