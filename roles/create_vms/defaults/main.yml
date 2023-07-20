@@ -20,3 +20,5 @@ is_on_rhel9: "{{ (ansible_distribution_major_version == '9' and ansible_distribu
 # just activate the proper variable to create one network or another.
 use_bridged_network: true
 use_natted_network: false
+# allowed modes: 'bridge', 'nat', using 'bridge' as default
+vm_network_mode: bridge
