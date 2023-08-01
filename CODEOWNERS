@@ -6,4 +6,5 @@
 # These owners will be the default owners for everything in the repository.
 # Unless a later match takes precedence, they will be requested for review
 # when someone opens a Pull Request.
-*   @redhat-partner-solutions/red-hat-crucible
+*   @redhat-partner-solutions/crucible-owners
+*   @redhat-partner-solutions/crucible-reviewers
