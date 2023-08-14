@@ -271,7 +271,10 @@ To enable assisted installer to communicate via IPv6 you must first have the hos
 
 #### Dual Stack
 
-Openshift currently only allows the ingress and API VIPs to be single stack so you must choose IPv4 or IPv6. Then crucible offers 3 variables for the extra network configuration (`extra_machine_networks`, `extra_service_networks` and `extra_cluster_networks`):
+Crucible offers 3 variables for the extra network configuration (`extra_machine_networks`, `extra_service_networks` and `extra_cluster_networks`), and for the VIPs there are two main configurations:
+
+- Openshift 4.11 and below only allow the ingress and API VIPs to be single stack so you must choose IPv4 or IPv6.
+- Openshift 4.12 and above allow an IPv4 and IPv6 address, hence you can use 2 extra variables to define them: `extra_api_vip` and `extra_ingress_vip`.
 
 ```yaml
 all:
@@ -292,6 +295,11 @@ all:
     extra_cluster_networks:
       - cidr: fd01::/48
         host_prefix: 64
+
+    # Next two variables only supported on OCP >= 4.12
+    extra_api_vip: fd00:6:6:2051::96
+    extra_ingress_vip: fd00:6:6:2051::97
+
 ...
       children:
         masters:
