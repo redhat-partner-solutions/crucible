@@ -39,6 +39,7 @@
         { ('release_' + item.version + '_' + item.cpu_architecture) : {
             'url': item.url,
             'hash': item.hash | default(''),
+            'version': item.version | default(item.url.split(':')[-1]),
           }
         })
       }}"
@@ -53,7 +54,7 @@
     apply:
       tags:
         - install
-  when: item.key not in image_hashes
+  when: item.key not in image_hashes or item.value.version != ((image_hashes[item.key] | default({})).version | default(''))
   loop: "{{ images_to_get_hash_for | dict2items }}"
 
 - name: Create image cache file
@@ -76,7 +77,10 @@
 
     - name: Update released items (image:tag format)
       set_fact:
-        updated_release_images: "{{ updated_release_images | default([]) + [item | combine({'url': item.url.rsplit(':', 1)[0] + '@' + image_hashes['release_' + item.version + '_' + item.cpu_architecture]  })] }}"
+        updated_release_images: "{{
+          updated_release_images | default([]) +
+            [item | combine({'url': (item.url.rsplit(':', 1)[0] + '@' + image_hashes['release_' + item.version + '_' + item.cpu_architecture].hash)})]
+          }}"
       when:
         - ('@' not in item.url)
         - (':' in item.url)

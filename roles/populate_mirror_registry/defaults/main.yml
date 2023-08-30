@@ -31,31 +31,31 @@ local_registry: "{{ registry_fqdn }}:{{ registry_port }}"
 registry_port: 5000
 
 installer_agent_image:
-  remote: "quay.io/edge-infrastructure/assisted-installer-agent@{{ image_hashes.installer_agent }}"
+  remote: "quay.io/edge-infrastructure/assisted-installer-agent@{{ image_hashes.installer_agent.hash }}"
   local: "{{ local_registry }}/ocpmetal/assisted-installer-agent"
   local_tag: "latest"
 
 installer_image:
-  remote: "quay.io/edge-infrastructure/assisted-installer@{{ image_hashes.installer }}"
+  remote: "quay.io/edge-infrastructure/assisted-installer@{{ image_hashes.installer.hash }}"
   local: "{{ local_registry }}/ocpmetal/assisted-installer"
   local_tag: "latest"
 
 installer_controller_image:
-  remote: "quay.io/edge-infrastructure/assisted-installer-controller@{{ image_hashes.controller }}"
+  remote: "quay.io/edge-infrastructure/assisted-installer-controller@{{ image_hashes.controller.hash }}"
   local: "{{ local_registry }}/ocpmetal/assisted-installer-controller"
   local_tag: "latest"
 
 release_image_remote: "quay.io/openshift-release-dev/ocp-release"
 
 release_image_item:
-  remote: "{{ release_image_remote }}@{{ image_hashes['release_' + (openshift_full_version | string) + '_x86_64'] }}"
+  remote: "{{ release_image_remote }}@{{ image_hashes['release_' + (openshift_full_version | string) + '_x86_64'].hash }}"
   local: "{{ local_registry }}/ocp4/openshift4"
   local_tag: "{{ openshift_full_version }}-x86_64"
 
 arm_release_image_key: "release_{{ openshift_full_version | string }}_arm64"
 
 release_image_item_arm:
-  remote: "{{ release_image_remote }}@{{ image_hashes[arm_release_image_key] }}"
+  remote: "{{ release_image_remote }}@{{ image_hashes[arm_release_image_key].hash }}"
   local: "{{ local_registry }}/ocp4/openshift4"
   local_tag: "{{ openshift_full_version }}-aarch64"
 
