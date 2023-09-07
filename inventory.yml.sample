@@ -164,6 +164,8 @@ all:
           ansible_host: registry.example.lab
           registry_port: 5000
           registry_fqdn: registry.example.lab # use in case of different FQDN for the cert
+          registry_namespace: ocp4 # This is the default, use only in case the registry namespace name is different
+          registry_image: openshift4 # This is the default, use only in case the registry image name is different
           cert_common_name: "{{ registry_fqdn }}"
           cert_country: US
           cert_locality: Raleigh
