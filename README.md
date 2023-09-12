@@ -25,10 +25,11 @@ Crucible targets versions of Python and Ansible that ship with Red Hat Enterpris
 
 | RHEL 8 Based Bastion  | RHEL 9 Based Bastion |
 | --------------------- | -------------------- |
-| RHEL 8.6              | RHEL 9.1             |
+| RHEL 8.7              | RHEL 9.1             |
 | Python 3.6            | Python 3.9           |
 | Ansible 2.9           | Ansible 2.13         |
 
+For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Red Hat Enterprise Linux 8 is the only QEMU-KVM host supported at this time.  Deficiencies exist in the sushy-tools library that need to be addressed before support can be validated.
 
 ## OpenShift Versions Tested
 
@@ -39,6 +40,7 @@ Crucible targets versions of Python and Ansible that ship with Red Hat Enterpris
 - 4.10
 - 4.11
 - 4.12
+- 4.13
 
 
 ## Assisted Installer versions Tested
