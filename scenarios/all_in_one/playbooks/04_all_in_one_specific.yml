@@ -1,0 +1,17 @@
+---
+- name: Prepare the system for the all_in_one_scenario
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Update firewall policies
+      firewalld:
+        permanent: yes
+        masquerade: yes
+        zone: public
+        state: enabled
+
+    - name: Restart firewalld service
+      service:
+        name: firewalld
+        state: restarted
