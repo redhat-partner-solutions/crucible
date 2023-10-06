@@ -3,3 +3,4 @@
   hosts: bastion
   roles:
     - post_install
+    - post_install_config

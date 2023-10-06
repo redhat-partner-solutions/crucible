@@ -1,0 +1,7 @@
+kube_filename: "{{ kubeconfig_dest_filename | default(cluster_name + '-kubeconfig') }}"
+dest_dir: "{{ kubeconfig_dest_dir | default(ansible_env.HOME) }}"
+kubeconfig_path: "{{ dest_dir }}/{{ kube_filename }}"
+
+deploy_gitops: false
+gitops_deployment_kustomize_target: github.com/nocturnalastro/vse-carslab-hub/bootstrap/overlays/default?ref=crucible_post_install
+gitops_target_sync_repo: github.com/nocturnalastro/vse-carslab-hub/post_install_config?ref=crucible_post_install
