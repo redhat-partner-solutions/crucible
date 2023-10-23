@@ -1,11 +1,9 @@
 required_domains:
   "api": "api.{{ domain }}"
-  "api-int": "api-int.{{ domain }}"
   "apps": "*.apps.{{ domain }}"
 
 expected_answers:
   "api": "{{ api_vip }}"
-  "api-int": "{{ api_vip }}"
   "apps": "{{ ingress_vip }}"
 
 required_binary: dig
