@@ -1,2 +1,2 @@
-#dependencies:
-#  - role: validate_inventory
+dependencies:
+  - role: validate_inventory
