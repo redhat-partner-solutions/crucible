@@ -28,6 +28,9 @@ all:
     # The IP address pool to use for service IP addresses
     service_network_cidr: 172.30.0.0/16
 
+    # Check network connection when vm_host and bastion are the same 
+    vm_network_test_ip: 8.8.8.8 # This should be an IP external to the bastion and vm_host
+
     # Cluster network settings. You are unlikely to need to change these
     cluster_network_cidr: 10.128.0.0/14 # The subnet, internal to the cluster, on which pods will be assigned IPs
     cluster_network_host_prefix: 23 # The subnet prefix length to assign to each individual node.
