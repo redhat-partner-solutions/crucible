@@ -52,7 +52,7 @@
               }}"
           when: hostvars[item]['vendor'] | lower == 'kvm'
           loop: "{{ groups['nodes'] }}"
-          no_log: true
+          #no_log: true
 
         - name: Generate htpasswd entry
           command: htpasswd -bBn {{ item.user }} {{ item.password }}
