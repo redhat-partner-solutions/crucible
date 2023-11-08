@@ -1,7 +1,7 @@
 # Playbooks
 
 Most playbooks here are called by the higher level playbooks (`deploy_cluster.yml`, `deploy_day2_workers.yml` and `deploy_prerequisites.yml`)
-and are nominally put in the order of usage with some exceptions. This may be useful for debugging or stepping through the process however you should not where variables are overridden in the higher level playbooks for achieve the same results (e,g when using `generate_discovery_iso.yml` for a day2 cluster.
+and are nominally put in the order of usage with some exceptions. This may be useful for debugging or stepping through the process however you should not know where variables are overridden in the higher level playbooks to achieve the same results (e,g when using `generate_discovery_iso.yml` for a day2 cluster.
 
 | Playbook name                          | Discription                                                                      | Required arguments    |
 | -------------------------------------- | -------------------------------------------------------------------------------- | --------------------- |
