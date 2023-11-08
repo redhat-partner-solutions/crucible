@@ -137,7 +137,7 @@ See the sample inventory file (`inventory.yml.sample`) and the sample inventory 
 ### Network configuration
 
 The `network_config` entry on a node is a simplified version of the `nmstate`([nmstate.io](http://nmstate.io/)) required by the [assisted installer api](https://github.com/openshift/assisted-service/blob/3bcaca8abef5173b0e2175b5d0b722e851e39cee/docs/user-guide/restful-api-guide.md).
-If you wish to use your own template, you can set `network_config.template` with a path to your desired template (the default can be found [here](../roles/generate_discovery_iso/templates/nmstate.yml.j2)). If you wish to write the `nmstate` by hand you can use the `network_config.raw`.
+If you wish to use your own template, you can set `network_config.template` with a path to your desired template (the default can be found [here](../roles/process_nmstate/templates/nmstate.yml.j2)). If you wish to write the `nmstate` by hand you can use the `network_config.raw`.
 
 #### Static IPs
 
