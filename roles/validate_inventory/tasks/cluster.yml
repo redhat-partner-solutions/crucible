@@ -45,6 +45,7 @@
     quiet: true
     fail_msg: "Node {{ item }} must have either bmc_ip"
   loop: "{{ groups['nodes'] }}"
+  when: hostvars[item]['vendor'] | lower != 'pxe'
 
 - name: Assert bmc_ip is correct type
   assert:
