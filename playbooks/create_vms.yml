@@ -3,7 +3,7 @@
 - name: Process KVM nodes
   hosts: bastion
   roles:
-    - role: process_kvm_nodes
+    - role: redhatci.ocp.process_kvm_nodes
       when: (setup_vms | default(true))
 
 - name: Provision VMS
@@ -16,15 +16,15 @@
       setup:
       when: SETUP_VMS == True
   roles:
-    - role: destroy_vms
+    - role: redhatci.ocp.destroy_vms
       when: SETUP_VMS | bool
       tags:
         - destroy_vms
 
-    - role: setup_vm_host_network
+    - role: redhatci.ocp.setup_vm_host_network
       when: (SETUP_VM_BRIDGE | default(SETUP_VMS)) | bool
 
-    - role: create_vms
+    - role: redhatci.ocp.create_vms
       when: SETUP_VMS | bool
       tags:
         - setup_vms

@@ -2,4 +2,4 @@
   hosts: bastion
   gather_facts: False
   roles:
-    - monitor_agent_based_installer
+    - redhatci.ocp.monitor_agent_based_installer

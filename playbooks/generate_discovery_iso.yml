@@ -2,4 +2,4 @@
 # file: generate_discovery_iso.yml
 - hosts: bastion
   roles:
-    - generate_discovery_iso
+    - redhatci.ocp.generate_discovery_iso

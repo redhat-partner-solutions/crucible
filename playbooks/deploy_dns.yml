@@ -8,6 +8,6 @@
       setup:
       when: SETUP_DNS_SERVICE == True
   roles:
-    - role: insert_dns_records
+    - role: redhatci.ocp.insert_dns_records
       when: SETUP_DNS_SERVICE == True
-    - role: validate_dns_records
+    - role: redhatci.ocp.validate_dns_records

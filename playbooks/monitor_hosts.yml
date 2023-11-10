@@ -3,4 +3,4 @@
   gather_facts: False
   strategy: free
   roles:
-    - monitor_host
+    - redhatci.ocp.monitor_host

@@ -9,6 +9,6 @@
       setup:
       when: SETUP_HTTP_STORE_SERVICE == True
   roles:
-    - name: setup_http_store
+    - name: redhatci.ocp.setup_http_store
       when: SETUP_HTTP_STORE_SERVICE == True
-    - validate_http_store
+    - redhatci.ocp.validate_http_store

@@ -10,7 +10,7 @@
       set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
-    - role: get_image_hash
+    - role: redhatci.ocp.get_image_hash
       when: run_get_hash
 
 
@@ -21,5 +21,5 @@
     config_file_path: /tmp/wip/config
     SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
   roles:
-    - role: populate_mirror_registry
+    - role: redhatci.ocp.populate_mirror_registry
       when: SETUP_REGISTRY_SERVICE == True

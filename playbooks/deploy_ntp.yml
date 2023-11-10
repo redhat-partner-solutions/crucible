@@ -8,5 +8,5 @@
       setup:
       when: SETUP_NTP_SERVICE == True
   roles:
-    - role: setup_ntp
+    - role: redhatci.ocp.setup_ntp
       when: SETUP_NTP_SERVICE == True

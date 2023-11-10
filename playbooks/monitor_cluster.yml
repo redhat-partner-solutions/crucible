@@ -4,4 +4,4 @@
   hosts: bastion
   gather_facts: False
   roles:
-    - monitor_cluster
+    - redhatci.ocp.monitor_cluster

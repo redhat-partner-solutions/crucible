@@ -8,5 +8,5 @@
       setup:
       when: SETUP_SUSHY_TOOLS == True
   roles:
-    - name: setup_sushy_tools
+    - name: redhatci.ocp.setup_sushy_tools
       when: SETUP_SUSHY_TOOLS == True

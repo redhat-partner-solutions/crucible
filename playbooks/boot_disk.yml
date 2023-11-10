@@ -5,4 +5,4 @@
   hosts: bastion
   gather_facts: False
   roles:
-    - boot_disk
+    - redhatci.ocp.boot_disk
