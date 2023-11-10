@@ -4,4 +4,4 @@
   hosts: bastion
   gather_facts: False
   roles:
-    - install_cluster
+    - redhatci.ocp.install_cluster

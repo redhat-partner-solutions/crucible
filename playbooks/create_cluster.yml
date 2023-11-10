@@ -2,5 +2,5 @@
   hosts: bastion
   gather_facts: False
   roles:
-    - create_cluster
-    - patch_cluster
+    - redhatci.ocp.create_cluster
+    - redhatci.ocp.patch_cluster

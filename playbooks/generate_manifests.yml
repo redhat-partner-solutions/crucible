@@ -9,6 +9,6 @@
       ansible.builtin.set_fact:
         run_get_hash: "{{ assisted_installer_release_images | default({}) | length == 0 }}"
   roles:
-    - role: get_image_hash
+    - role: redhatci.ocp.get_image_hash
       when: run_get_hash
-    - generate_manifests
+    - redhatci.ocp.generate_manifests

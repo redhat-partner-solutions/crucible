@@ -2,9 +2,9 @@
 - name: Process KVM nodes
   hosts: bastion
   roles:
-    - process_kvm_nodes
+    - redhatci.ocp.process_kvm_nodes
 
 - name: Destroy VMs
   hosts: vm_hosts
   roles:
-    - destroy_vms
+    - redhatci.ocp.destroy_vms

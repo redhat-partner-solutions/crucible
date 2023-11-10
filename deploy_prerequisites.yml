@@ -4,7 +4,7 @@
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
   roles:
-    - get_image_hash
+    - redhatci.ocp.get_image_hash
 
 - import_playbook: playbooks/deploy_ntp.yml
 

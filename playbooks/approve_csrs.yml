@@ -1,5 +1,5 @@
 - hosts: bastion
   gather_facts: false
   roles:
-    - role: approve_csrs
+    - role: redhatci.ocp.approve_csrs
       when: groups['day2_workers'] | default([]) | length > 0

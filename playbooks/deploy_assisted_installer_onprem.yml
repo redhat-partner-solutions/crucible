@@ -9,13 +9,13 @@
       set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
-    - role: get_image_hash
+    - role: redhatci.ocp.get_image_hash
       when: run_get_hash
 
 - name: Deploy OpenShift Assisted Installer On Prem
   hosts: assisted_installer
   roles:
-    - role: setup_assisted_installer
+    - role: redhatci.ocp.setup_assisted_installer
       when: SETUP_ASSISTED_INSTALLER == True
   vars:
     SETUP_ASSISTED_INSTALLER: "{{ setup_assisted_installer | default(True) }}"

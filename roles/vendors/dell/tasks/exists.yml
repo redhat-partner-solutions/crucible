@@ -1,3 +1,0 @@
-- ansible.builtin.debug: # noqa unnamed-task
-    msg: "Dell vendor role exists"
-    verbosity: 1

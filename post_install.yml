@@ -2,4 +2,4 @@
 - name: Get kubeconfig
   hosts: bastion
   roles:
-    - post_install
+    - redhatci.ocp.post_install

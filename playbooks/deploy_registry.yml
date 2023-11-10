@@ -14,7 +14,7 @@
       set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
-    - role: get_image_hash
+    - role: redhatci.ocp.get_image_hash
       when: run_get_hash
 
 - name: Play to install and setup mirror registry
@@ -29,9 +29,9 @@
       setup:
       when: SETUP_REGISTRY_SERVICE == True
   roles:
-    - role: setup_selfsigned_cert
+    - role: redhatci.ocp.setup_selfsigned_cert
       when: SETUP_REGISTRY_SERVICE == True
-    - role: setup_mirror_registry
+    - role: redhatci.ocp.setup_mirror_registry
       when: SETUP_REGISTRY_SERVICE == True
 
 - import_playbook: populate_registry.yml
