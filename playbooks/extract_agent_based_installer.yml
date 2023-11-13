@@ -6,9 +6,9 @@
     destination_hosts:
       - bastion
   pre_tasks:
-    - name: pre-compute need to get hashes
-      set_fact:
-        run_get_hash: "{{ assisted_installer_release_images | default({}) | length == 0  }}"
+    - name: Pre-compute need to get hashes
+      ansible.builtin.set_fact:
+        run_get_hash: "{{ assisted_installer_release_images | default({}) | length == 0 }}"
   roles:
     - role: redhatci.ocp.get_image_hash
       when: run_get_hash | bool

@@ -10,26 +10,26 @@
     state: "present"
     shell: "/bin/bash"
     homedir:
-    createhome: yes
+    createhome: true
     uid:
-    generate_ssh_keypair: yes
+    generate_ssh_keypair: true
   tasks:
-  - name: "Adding user {{ username }}"
-    ansible.builtin.user:
-      name: "{{ username }}"
-      comment: "{{ fullname | default(omit) }}"
-      uid: "{{ uid | int | default(omit, true) }}"
-      createhome: "{{ createhome | default('yes') }}"
-      home: "{{ homedir | default('/home/' + username, true) }}"
-      shell: "{{ shell | default('/bin/bash') }}"
-  - name: "Adding user {{ username }} to secondary groups"
-    ansible.builtin.user:
-      group: "{{ group | default(omit) }}"
-      name: "{{ username }}"
-      groups: "{{ my_groups | default(omit) }}"
-  - name: "Adding sshkey to user {{ username }}"
-    ansible.builtin.user:
-      name: "{{ username }}"
-      generate_ssh_key: "{{ generate_ssh_keypair | default('yes') }}"
-      ssh_key_bits: 2048
-      ssh_key_file: .ssh/id_rsa
+    - name: "Adding user {{ username }}"
+      ansible.builtin.user:
+        name: "{{ username }}"
+        comment: "{{ fullname | default(omit) }}"
+        uid: "{{ uid | int | default(omit, true) }}"
+        createhome: "{{ createhome | default('yes') }}"
+        home: "{{ homedir | default('/home/' + username, true) }}"
+        shell: "{{ shell | default('/bin/bash') }}"
+    - name: "Adding user {{ username }} to secondary groups" # noqa: name[template]
+      ansible.builtin.user:
+        group: "{{ group | default(omit) }}"
+        name: "{{ username }}"
+        groups: "{{ my_groups | default(omit) }}"
+    - name: "Adding sshkey to user {{ username }}"
+      ansible.builtin.user:
+        name: "{{ username }}"
+        generate_ssh_key: "{{ generate_ssh_keypair | default('yes') }}"
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa

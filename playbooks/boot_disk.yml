@@ -3,6 +3,6 @@
 
 - name: Unmounting Assisted Installer Discovery ISO
   hosts: bastion
-  gather_facts: False
+  gather_facts: false
   roles:
     - redhatci.ocp.boot_disk

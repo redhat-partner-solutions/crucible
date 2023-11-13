@@ -1,14 +1,14 @@
 ---
 - name: Install and http_store service
   hosts: http_store
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_HTTP_STORE_SERVICE: "{{ setup_http_store_service | default(True) }}"
+    SETUP_HTTP_STORE_SERVICE: "{{ (setup_http_store_service | default(true)) | bool }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_HTTP_STORE_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_HTTP_STORE_SERVICE | bool
   roles:
-    - name: redhatci.ocp.setup_http_store
-      when: SETUP_HTTP_STORE_SERVICE == True
+    - role: redhatci.ocp.setup_http_store
+      when: SETUP_HTTP_STORE_SERVICE | bool
     - redhatci.ocp.validate_http_store

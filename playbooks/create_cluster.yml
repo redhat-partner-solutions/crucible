@@ -1,6 +1,7 @@
+---
 - name: Create cluster and generate Assisted Installer Discovery ISO
   hosts: bastion
-  gather_facts: False
+  gather_facts: false
   roles:
     - redhatci.ocp.create_cluster
     - redhatci.ocp.patch_cluster

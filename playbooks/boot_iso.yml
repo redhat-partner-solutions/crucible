@@ -1,8 +1,8 @@
 ---
 - name: Mounting, Booting the Assisted Installer Discovery ISO
   hosts: "{{ boot_iso_hosts | default('nodes') }}"
-  gather_facts: False
-  strategy: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary('free', omit) }}"
-  serial: "{{ use_boot_iso_strategy_free | default(True) | bool | ternary(omit, 1) }}"
+  gather_facts: false
+  strategy: "{{ use_boot_iso_strategy_free | default(true) | bool | ternary('free', omit) }}"
+  serial: "{{ use_boot_iso_strategy_free | default(true) | bool | ternary(omit, 1) }}"
   roles:
     - redhatci.ocp.boot_iso

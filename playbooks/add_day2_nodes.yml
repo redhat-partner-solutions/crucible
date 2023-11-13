@@ -1,6 +1,7 @@
-- hosts: day2_workers
+- name: Add day2 workers
+  hosts: day2_workers
   gather_facts: false
-  strategy: free
+  strategy: ansible.builtin.free
   roles:
-    - name: redhatci.ocp.add_day2_node
+    - role: redhatci.ocp.add_day2_node
       when: groups['day2_workers'] | default([]) | length > 0

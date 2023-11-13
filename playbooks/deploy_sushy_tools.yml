@@ -1,12 +1,12 @@
 - name: Deploy sushy tools
   hosts: vm_hosts
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(True)) }}"
+    SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(true)) }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_SUSHY_TOOLS == True
+      ansible.builtin.set_fact:
+      when: SETUP_SUSHY_TOOLS | bool
   roles:
-    - name: redhatci.ocp.setup_sushy_tools
-      when: SETUP_SUSHY_TOOLS == True
+    - role: redhatci.ocp.setup_sushy_tools
+      when: SETUP_SUSHY_TOOLS | bool

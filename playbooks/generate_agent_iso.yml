@@ -1,5 +1,5 @@
 ---
-- name:  Generate agent iso using agent_based_installer
+- name: Generate agent iso using agent_based_installer
   hosts: bastion
   roles:
     - redhatci.ocp.generate_agent_iso

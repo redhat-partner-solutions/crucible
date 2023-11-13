@@ -1,14 +1,14 @@
 ---
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
+  gather_facts: (setup_registry_service | default(true)) | bool
   vars:
     destination_hosts:
       - registry_host
   pre_tasks:
-    - name: pre-compute need to get hashes
-      set_fact:
-        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
+    - name: Pre-compute need to get hashes
+      ansible.builtin.set_fact:
+        run_get_hash: "{{ image_hashes | default({}) | length == 0 }}"
   roles:
     - role: redhatci.ocp.get_image_hash
       when: run_get_hash
@@ -16,10 +16,10 @@
 
 - name: Play populate mirror registry
   hosts: registry_host
-  gather_facts: "{{ (setup_registry_service | default(True)) | bool }}"
+  gather_facts: "{{ (setup_registry_service | default(true)) | bool }}"
   vars:
     config_file_path: /tmp/wip/config
-    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(true)}}"
   roles:
     - role: redhatci.ocp.populate_mirror_registry
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
