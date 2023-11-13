@@ -2,6 +2,6 @@
 # file: install_cluster.yml
 - name: Installing the cluster
   hosts: bastion
-  gather_facts: False
+  gather_facts: false
   roles:
     - redhatci.ocp.install_cluster

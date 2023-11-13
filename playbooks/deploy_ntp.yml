@@ -1,12 +1,12 @@
 - name: Setup NTP
   hosts: ntp_host
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_NTP_SERVICE: "{{setup_ntp_service | default(True)}}"
+    SETUP_NTP_SERVICE: "{{setup_ntp_service | default(true)}}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_NTP_SERVICE == True
+      ansible.builtin.set_fact:
+      when: SETUP_NTP_SERVICE | bool
   roles:
     - role: redhatci.ocp.setup_ntp
-      when: SETUP_NTP_SERVICE == True
+      when: SETUP_NTP_SERVICE | bool

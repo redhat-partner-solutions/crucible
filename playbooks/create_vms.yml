@@ -8,13 +8,13 @@
 
 - name: Provision VMS
   hosts: vm_hosts
-  gather_facts: False
+  gather_facts: false
   vars:
     SETUP_VMS: "{{ setup_vms | default((kvm_nodes | default([])) | length | int >= 1) }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_VMS == True
+      ansible.builtin.setup:
+      when: SETUP_VMS | bool
   roles:
     - role: redhatci.ocp.destroy_vms
       when: SETUP_VMS | bool

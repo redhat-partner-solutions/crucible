@@ -1,15 +1,21 @@
 ---
-- import_playbook: extract_agent_based_installer.yml
+- name: Extract Agent based installer
+  ansible.builtin.import_playbook: extract_agent_based_installer.yml
   when: agent_based_installer_path is not defined
 
-- import_playbook: generate_ssh_key_pair.yml
-  when: generate_ssh_keys | default(True) == True
+- name: Generate SSH Key for node access
+  ansible.builtin.import_playbook: generate_ssh_key_pair.yml
+  when: (generate_ssh_keys | default(true)) | bool
 
-- import_playbook: generate_manifests.yml
-- import_playbook: generate_agent_iso.yml
+- name: Generate ABI input manfiests
+  ansible.builtin.import_playbook: generate_manifests.yml
+- name: Generate boot iso using ABI
+  ansible.builtin.import_playbook: generate_agent_iso.yml
 
-- import_playbook: boot_iso.yml
+- name: Boot ISO
+  ansible.builtin.import_playbook: boot_iso.yml
   vars:
     boot_iso_hosts: masters,workers
 
-- import_playbook: monitor_agent_based_installer.yml
+- name: Monitior installation
+  ansible.builtin.import_playbook: monitor_agent_based_installer.yml

@@ -1,17 +1,17 @@
 ---
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: False
+  gather_facts: false
   vars:
-    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+    SETUP_REGISTRY_SERVICE: "{{ (setup_registry_service | default(true)) | bool }}"
     destination_hosts:
       - registry_host
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_REGISTRY_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_REGISTRY_SERVICE | bool
     - name: pre-compute need to get hashes
-      set_fact:
+      ansible.builtin.set_fact:
         run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
   roles:
     - role: redhatci.ocp.get_image_hash
@@ -23,15 +23,16 @@
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
-    SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(True)}}"
+    SETUP_REGISTRY_SERVICE: "{{ (setup_registry_service | default(true)) | bool }}"
   pre_tasks:
     - name: Setup facts
-      setup:
-      when: SETUP_REGISTRY_SERVICE == True
+      ansible.builtin.setup:
+      when: SETUP_REGISTRY_SERVICE | bool
   roles:
     - role: redhatci.ocp.setup_selfsigned_cert
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
     - role: redhatci.ocp.setup_mirror_registry
-      when: SETUP_REGISTRY_SERVICE == True
+      when: SETUP_REGISTRY_SERVICE | bool
 
-- import_playbook: populate_registry.yml
+- name: Populate Registry
+  ansible.builtin.import_playbook: populate_registry.yml

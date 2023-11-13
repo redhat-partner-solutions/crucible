@@ -1,4 +1,5 @@
-- hosts: bastion
+- name: Approve CSRs on cluster
+  hosts: bastion
   gather_facts: false
   roles:
     - role: redhatci.ocp.approve_csrs

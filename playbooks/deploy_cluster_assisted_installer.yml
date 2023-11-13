@@ -1,19 +1,27 @@
 ---
-- import_playbook: generate_ssh_key_pair.yml
-  when: generate_ssh_keys | default(True) == True
+- name: Generate SSH Keys for node access
+  ansible.builtin.import_playbook: generate_ssh_key_pair.yml
+  when: (generate_ssh_keys | default(true)) | bool
 
-- import_playbook: create_cluster.yml
+- name: Create cluster definition is assisted installer
+  ansible.builtin.import_playbook: create_cluster.yml
 
-- import_playbook: generate_discovery_iso.yml
+- name: Generate and download discovery iso
+  ansible.builtin.import_playbook: generate_discovery_iso.yml
 
-- import_playbook: mount_discovery_iso_for_pxe.yml
+- name: Mount discovery iso to extract PXE artifacts
+  ansible.builtin.import_playbook: mount_discovery_iso_for_pxe.yml
 
-- import_playbook: boot_iso.yml
+- name: Boot discovery iso
+  ansible.builtin.import_playbook: boot_iso.yml
   vars:
     boot_iso_hosts: masters,workers
 
-- import_playbook: install_cluster.yml
+- name: Trigger cluster install
+  ansible.builtin.import_playbook: install_cluster.yml
 
-- import_playbook: monitor_hosts.yml
+- name: Monitor during installation
+  ansible.builtin.import_playbook: monitor_hosts.yml
 
-- import_playbook: monitor_cluster.yml
+- name: Monitior cluster has installed
+  ansible.builtin.import_playbook: monitor_cluster.yml

@@ -1,6 +1,6 @@
 - name: Monitoring hosts installation
   hosts: masters, workers
-  gather_facts: False
-  strategy: free
+  gather_facts: false
+  strategy: ansible.builtin.free
   roles:
     - redhatci.ocp.monitor_host

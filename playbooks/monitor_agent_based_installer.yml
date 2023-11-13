@@ -1,5 +1,5 @@
 - name: Monitor install process of agent_based_installer
   hosts: bastion
-  gather_facts: False
+  gather_facts: false
   roles:
     - redhatci.ocp.monitor_agent_based_installer
