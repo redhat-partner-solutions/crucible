@@ -21,6 +21,7 @@
     - name: Install sushy-tools via pip in a virtual environment
       pip:
         name: "{{ sushy_pip_packages }}"
+        virtualenv_command: python3 -m venv
         virtualenv: "{{ sushy_dir }}"
 
     - name: Install httpd-tools for htpasswd

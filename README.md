@@ -25,9 +25,9 @@ Crucible targets versions of Python and Ansible that ship with Red Hat Enterpris
 
 | RHEL 8 Based Bastion  | RHEL 9 Based Bastion |
 | --------------------- | -------------------- |
-| RHEL 8.7              | RHEL 9.1             |
+| RHEL 8.7              | RHEL 9.2             |
 | Python 3.6            | Python 3.9           |
-| Ansible 2.9           | Ansible 2.13         |
+| Ansible 2.9           | Ansible [core] 2.14  |
 
 For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Red Hat Enterprise Linux 8 is the only QEMU-KVM host supported at this time.  Deficiencies exist in the sushy-tools library that need to be addressed before support can be validated.
 
@@ -52,6 +52,7 @@ For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Re
 - v2.5.0
 - v2.12.1
 - v2.15.0
+- v2.26.0
 
 ### Dependencies
 
@@ -68,14 +69,54 @@ Requires the following to be installed on the deployment host:
 - [nmstate](https://github.com/nmstate) # For baremetal deployment
 
 
-**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+### TESTING NOTES DO NOT PUBLISH
+> [crucible@jumphost crucible]# sudo dnf history userinstalled
+> Updating Subscription Management repositories.
+> Packages installed by user
+> ansible-core-1:2.14.9-1.el9.x86_64
+> efibootmgr-16-12.el9.x86_64
+> gcc-11.4.1-2.1.el9.x86_64
+> git-2.39.3-1.el9_2.x86_64
+> grub2-efi-x64-1:2.06-70.el9_3.1.x86_64
+> httpd-2.4.57-5.el9.x86_64
+> httpd-tools-2.4.57-5.el9.x86_64
+> ipmitool-1.8.18-27.el9.x86_64
+> libvirt-9.5.0-7.el9_3.x86_64
+> libvirt-devel-9.5.0-7.el9_3.x86_64
+> nmstate-2.2.15-2.el9_2.x86_64
+> openshift-clients-4.14.0-202311031050.p0.g9b1e0d2.assembly.stream.el9.x86_64
+> python3-devel-3.9.18-1.el9_3.x86_64
+> python3-jmespath-0.9.4-11.el9.noarch
+> python3-libvirt-9.3.0-1.el9.x86_64
+> python3-netaddr-0.8.0-5.el9.noarch
+> python3-pip-21.2.3-7.el9.noarch
+> python3-pyghmi-1.5.34-2.el9.noarch
+> qemu-kvm-17:8.0.0-16.el9_3.1.x86_64
+> skopeo-2:1.13.3-1.el9.x86_64
+> sshpass-1.09-4.el9.x86_64
+> tmux-3.2a-5.el9.x86_64
+> virt-install-4.1.0-4.el9.noarch
+> virt-manager-4.1.0-4.el9.noarch
+
+
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
 
 ```bash
 dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
 
-There's also some required Ansible modules that can be installed with the following command:
+There's also some required Ansible Galaxy Collections that are required.
+
+- ansible.posix
+- ansible.utils
+- containers.podman
+- community.crypto
+- name: community.general
+  version: '<5.0.0'
+- community.libvirt
+
+These colelctions can be installed with the following command:
 
 ```bash
 ansible-galaxy collection install -r requirements.yml

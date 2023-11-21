@@ -6,6 +6,8 @@
   roles:
     - get_image_hash
 
+- import_playbook: playbooks/deploy_dns.yml
+
 - import_playbook: playbooks/deploy_ntp.yml
 
 - import_playbook: playbooks/deploy_http_store.yml
@@ -15,8 +17,6 @@
     nodes_to_process: "{{ groups['masters'] + groups['workers'] | default([]) }}"
 
 - import_playbook: playbooks/deploy_tftp.yml
-
-- import_playbook: playbooks/deploy_dns.yml
 
 - import_playbook: playbooks/deploy_registry.yml
 
