@@ -19,6 +19,9 @@ virt-install \
     --graphics vnc \
     --noautoconsole \
     --wait=-1 \
+    {% if not is_on_rhel9 %}
+    --boot uefi \
+    {% endif %}
     --events on_reboot=restart \
     --autostart \
     --print-xml > /tmp/{{item.name}}.xml
@@ -26,4 +29,3 @@ virt-install \
 virsh define --file /tmp/{{item.name}}.xml
 
 virsh detach-device {{ item.name }} /tmp/{{ cluster_name }}_rng_device.xml --config
-

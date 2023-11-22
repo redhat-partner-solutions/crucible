@@ -69,7 +69,7 @@ Requires the following to be installed on the deployment host:
 - [nmstate](https://github.com/nmstate) # For baremetal deployment
 
 
-### TESTING NOTES DO NOT PUBLISH
+<!-- ### TESTING NOTES DO NOT PUBLISH
 > [crucible@jumphost crucible]# sudo dnf history userinstalled
 > Updating Subscription Management repositories.
 > Packages installed by user
@@ -96,7 +96,7 @@ Requires the following to be installed on the deployment host:
 > sshpass-1.09-4.el9.x86_64
 > tmux-3.2a-5.el9.x86_64
 > virt-install-4.1.0-4.el9.noarch
-> virt-manager-4.1.0-4.el9.noarch
+> virt-manager-4.1.0-4.el9.noarch -->
 
 
 **Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
@@ -106,17 +106,22 @@ Requires the following to be installed on the deployment host:
 dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
 
+If you are using RHEL 9 then you will need to enable the codeready builders repo.
+```bash
+subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+```
+
 There's also some required Ansible Galaxy Collections that are required.
 
-- ansible.posix
+<!-- - ansible.posix
 - ansible.utils
 - containers.podman
 - community.crypto
 - name: community.general
   version: '<5.0.0'
-- community.libvirt
+- community.libvirt -->
 
-These colelctions can be installed with the following command:
+These collections can be installed with the following command:
 
 ```bash
 ansible-galaxy collection install -r requirements.yml
