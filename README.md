@@ -52,6 +52,7 @@ For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Re
 - v2.5.0
 - v2.12.1
 - v2.15.0
+- v2.26.0
 
 ### Dependencies
 
