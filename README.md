@@ -25,9 +25,9 @@ Crucible targets versions of Python and Ansible that ship with Red Hat Enterpris
 
 | RHEL 8 Based Bastion  | RHEL 9 Based Bastion |
 | --------------------- | -------------------- |
-| RHEL 8.7              | RHEL 9.1             |
+| RHEL 8.7              | RHEL 9.2             |
 | Python 3.6            | Python 3.9           |
-| Ansible 2.9           | Ansible 2.13         |
+| Ansible 2.9           | Ansible [core] 2.14  |
 
 For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Red Hat Enterprise Linux 8 is the only QEMU-KVM host supported at this time.  Deficiencies exist in the sushy-tools library that need to be addressed before support can be validated.
 
@@ -69,14 +69,37 @@ Requires the following to be installed on the deployment host:
 - [nmstate](https://github.com/nmstate) # For baremetal deployment
 
 
-**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.12/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
+#### RHE8
 
+For RHEL 8.8+ `ansible` is not longer avialable in the standard repos so you will need to enable the repo for ansibe engine 2.
+
+```bash
+subscription-manager repos --enable ansible-2-for-rhel-8-x86_64-rpms
+```
+To install the required packages for RHEL8:
 ```bash
 dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
 
-There's also some required Ansible modules that can be installed with the following command:
+#### RHEL9
+
+To install the required packages for RHEL9:
+```bash
+dnf -y install ansible-core python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
+```
+
+You will need to enable the codeready builders repo on all VM hosts.
+
+```bash
+subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+```
+
+#### Collections
+
+There's also some required Ansible Galaxy Collections.
+These collections can be installed with the following command:
 
 ```bash
 ansible-galaxy collection install -r requirements.yml
