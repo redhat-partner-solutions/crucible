@@ -1,11 +1,12 @@
 ---
 # Node `ansible_host`s are not pinged. They are not required to be running at this stage.
 # KVM node BMCs are not checked, the vm_host will be pinged later.
+# PXE node BMCs are not checked because it is not required
 - name: Ensure baremetal node BMCs are reachable
   shell: # noqa 305
-    cmd: "ping -c 1 -W 2 {{ hostvars[item]['bmc_ip'] | default(hostvars[item]['bmc_address']) }}"
+    cmd: "nc -vz -u {{ hostvars[item]['bmc_ip'] | default(hostvars[item]['bmc_address']) }}"
   changed_when: False
-  when: hostvars[item]['vendor'] | lower != 'kvm'
+  when: (hostvars[item]['vendor'] | lower != 'kvm') and (hostvars[item]['vendor'] | lower != 'pxe')
   loop: "{{ groups['nodes'] }}"
 
 - name: Ensure service hosts are reachable
@@ -16,6 +17,6 @@
 
 - name: Ensure NTP server is available if not being set up
   shell: # noqa 305
-    cmd: "ping -c 1 -W 2 {{ ntp_server }}"
+    cmd: "nc -vz -u {{ ntp_server }}"
   changed_when: False
   when: (setup_ntp_service | default(True)) != True
