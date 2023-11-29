@@ -12,8 +12,8 @@ all:
     cluster_name: clustername
     base_dns_domain: example.lab
 
-    # OpenShift version (4.6.16, 4.7.52, 4.8.43, 4.9.45, 4.10.37, 4.11.24, 4.12.31, or 4.13.10)
-    openshift_full_version: 4.10.37
+    # OpenShift version (4.6.16, 4.7.52, 4.8.43, 4.9.59, 4.10.67, 4.11.53, 4.12.44, 4.13.22, 4.14.2)
+    openshift_full_version: 4.10.67
 
     # Virtual IP addresses used to access the resulting OpenShift cluster
     api_vip: 10.60.0.96 # the IP address to be used for api.clustername.example.lab and api-int.clustername.example.lab
@@ -28,7 +28,7 @@ all:
     # The IP address pool to use for service IP addresses
     service_network_cidr: 172.30.0.0/16
 
-    # Check network connection when vm_host and bastion are the same 
+    # Check network connection when vm_host and bastion are the same
     vm_network_test_ip: 8.8.8.8 # This should be an IP external to the bastion and vm_host
 
     # Cluster network settings. You are unlikely to need to change these
