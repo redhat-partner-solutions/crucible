@@ -71,17 +71,32 @@ Requires the following to be installed on the deployment host:
 
 **Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
 
+#### RHE8
 
+For RHEL 8.8+ `ansible` is not longer avialable in the standard repos so you will need to enable the repo for ansibe engine 2.
+
+```bash
+subscription-manager repos --enable ansible-2-for-rhel-8-x86_64-rpms
+```
+To install the required packages for RHEL8:
 ```bash
 dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
 
-If you are using RHEL 9 or some later version of RHEL8 you may need to subsitute `ansible` with `ansible-core`
+#### RHEL9
 
-If you are using RHEL 9 then you will need to enable the codeready builders repo.
+To install the required packages for RHEL9:
+```bash
+dnf -y install ansible-core python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
+```
+
+If you using VM based nodes on RHEL9 you will need to enable the codeready builders repo.
+
 ```bash
 subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 ```
+
+#### Collections
 
 There's also some required Ansible Galaxy Collections.
 These collections can be installed with the following command:
