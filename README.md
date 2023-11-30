@@ -73,7 +73,7 @@ Requires the following to be installed on the deployment host:
 
 #### RHE8
 
-For RHEL 8.8+ `ansible` is not longer avialable in the standard repos so you will need to enable the repo for ansibe engine 2.
+For RHEL 8.8 and greater: `ansible` is no longer available in the standard subscription repositories, so you will need to enable the repo for ansible engine 2.
 
 ```bash
 subscription-manager repos --enable ansible-2-for-rhel-8-x86_64-rpms
