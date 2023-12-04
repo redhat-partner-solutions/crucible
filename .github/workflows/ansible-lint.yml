@@ -16,7 +16,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.7
+          python-version: 3.9
 
       - uses: actions/cache@v3
         with:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Install required dependencies
         run: |
-          pip install ansible-lint ansible==2.9
+          pip install ansible-lint ansible
           pip install -r requirements.txt
 
       - name: Run ansible Lint
