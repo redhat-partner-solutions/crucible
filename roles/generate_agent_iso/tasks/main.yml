@@ -1,4 +1,5 @@
 - name: Create podman auth dir
+  become: true
   ansible.builtin.file:
     path: "{{ config_file_path }}/containers/"
     state: directory
