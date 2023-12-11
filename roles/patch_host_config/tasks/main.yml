@@ -90,9 +90,10 @@
   register: http_reply
 
 - name: Load patch for worker partition
-  when: hostvars[inv_hostname]['disks'] is defined
+  when: hostvars[inv_hostname]['disks'] is defined || hostvars[inv_hostname]['filesytems'] is defined
   vars:
     disks: "{{ hostvars[inv_hostname]['disks'] }}"
+    filesytems : "{{ hostvars[inv_hostname]['filesytems'] }}"
   block:
     - name: Template patch partition
       set_fact:
