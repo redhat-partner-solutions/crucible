@@ -188,7 +188,7 @@ network_config:
         mode: active-backup
         options:
           miimon: "1500"
-        slaves:
+        port:
           - ens7f0
           - ens7f1
     # To avoid an interface to up, specify its status as down
