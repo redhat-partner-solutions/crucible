@@ -1,5 +1,12 @@
 # Crucible: OpenShift 4 Management Cluster Seed Playbooks
 
+
+❗ NOTICE OF UPCOMING DEPRECATION - EFFECTIVE APRIL 5th
+❗ Crucible's roles have been migrated to [_Red Hat CI OCP Ansible collection_](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).  
+❗ All of Crucible's playbooks will remain in this repo but the roles will be removed.  
+  
+  
+
 > ❗ _Red Hat does not provide commercial support for the content of this repo.
 Any assistance is purely on a best-effort basis, as resource permits._
 
@@ -101,10 +108,10 @@ subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 There's also some required Ansible Galaxy Collections.
 These collections can be installed with the following command:
 
+Using the requirements file
 ```bash
 ansible-galaxy collection install -r requirements.yml
 ```
-
 
 ## Before Running The Playbook
 
