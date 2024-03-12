@@ -1,5 +1,8 @@
 ---
 # file: generate_discovery_iso.yml
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
+
 - name: Generate discovery iso
   hosts: bastion
   roles:

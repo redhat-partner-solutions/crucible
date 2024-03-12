@@ -1,3 +1,7 @@
+---
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
+
 - name: Setup DNS Records
   hosts: dns_host
   gather_facts: false

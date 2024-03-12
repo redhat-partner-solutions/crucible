@@ -1,4 +1,6 @@
 ---
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
 
 - name: Process KVM nodes
   hosts: bastion

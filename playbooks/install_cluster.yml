@@ -1,5 +1,8 @@
 ---
 # file: install_cluster.yml
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
+
 - name: Installing the cluster
   hosts: bastion
   gather_facts: false

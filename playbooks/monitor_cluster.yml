@@ -1,5 +1,8 @@
 ---
 # file: monitor_cluster.yml
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
+
 - name: Monitoring cluster installation
   hosts: bastion
   gather_facts: false
