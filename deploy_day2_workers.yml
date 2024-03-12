@@ -1,4 +1,6 @@
 ---
+- import_playbook: playbooks/validate_inventory.yml
+
 - import_playbook: playbooks/create_vms.yml
   when: groups['day2_workers'] | default([]) | length > 0
   vars:

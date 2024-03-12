@@ -3,4 +3,4 @@
   hosts: localhost
   gather_facts: false
   roles:
-    - redhatci.ocp.display_deployment_plan
+    - display_deployment_plan

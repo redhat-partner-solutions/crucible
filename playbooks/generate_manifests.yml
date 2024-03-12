@@ -1,4 +1,7 @@
 ---
+- name: Validate Inventory
+  ansible.builtin.import_playbook: validate_inventory.yml
+
 - name: Generate manfiests for agent_based_installer
   hosts: bastion
   vars:
