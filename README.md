@@ -1,14 +1,6 @@
-# Crucible: OpenShift 4 Management Cluster Seed Playbooks
-
-
-❗ NOTICE OF UPCOMING DEPRECATION - EFFECTIVE APRIL 5th
-❗ Crucible's roles have been migrated to [_Red Hat CI OCP Ansible collection_](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).  
-❗ All of Crucible's playbooks will remain in this repo but the roles will be removed.  
-  
-  
-
-> ❗ _Red Hat does not provide commercial support for the content of this repo.
-Any assistance is purely on a best-effort basis, as resource permits._
+# Crucible: OpenShift 4 Management Cluster Seed Playbooks  
+## ❗ PROJECT SUNSET EFFECTIVE APRIL 5th ❗  
+##### ❗ _Red Hat does not provide commercial support for the content of this repo.  
 
 ```bash
 #############################################################################
@@ -19,6 +11,17 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #############################################################################
 ```
+---
+Upcomming changes:
+- Crucible's roles have been migrated to the [Red Hat CI OCP Ansible Collection](https://github.com/redhatci/ansible-collection-redhatci-ocp) available for download at [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).  
+- Crucible's playbooks will continue to work but as always, you are encouraged to fork crucible and maintain your own playbooks.
+- On <ins>Monday April 18th</ins> Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.  
+- Next major change before sunset will be to change the default installer from Assisted Installer to the **offical** [Red Hat OCP Agent-based Installer](https://docs.openshift.com/container-platform/4.14/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html)
+  
+---
+
+##### Project Stewardship
+If you are interested in stewarding Crucible please contact <alhernan@redhat.com>
 
 This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration, and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
 
