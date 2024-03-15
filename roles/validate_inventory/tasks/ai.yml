@@ -1,18 +1,18 @@
 ---
 - name: Assert ai_version is valid
-  assert:
+  ansible.builtin.assert:
     that:
       - ai_version_number is version('2.1.0', '>=')
     fail_msg: "ai_version  must be >= v2.1.0 and must be of the form 'v\\d+.\\d+.\\d+'"
 
 - name: Assert that Openshift version is supported
-  assert:
+  ansible.builtin.assert:
     that:
       - openshift_full_version is version('4.6', '>=')
     fail_msg: "openshift_full_version  must be >= 4.6."
 
 - name: Assert VIPs are within the machine network
-  assert:
+  ansible.builtin.assert:
     that:
       - hostvars['assisted_installer'][item] | ansible.utils.ipaddr(hostvars['assisted_installer']['machine_network_cidr']) | ansible.utils.ipaddr('bool')
     fail_msg: "{{ item }} is not within the machine network!"
@@ -22,7 +22,7 @@
     - ingress_vip
 
 - name: Assert nodes are within the machine network
-  assert:
+  ansible.builtin.assert:
     that:
       - hostvars[item]['ansible_host'] | ansible.utils.ipaddr(hostvars['assisted_installer']['machine_network_cidr']) | ansible.utils.ipaddr('bool')
     fail_msg: "{{ item }} is not within the machine network!"
@@ -37,20 +37,20 @@
     - extra_ingress_vip | length > 0
   block:
     - name: Assert that Openshift version is supported for dualstack VIPs
-      assert:
+      ansible.builtin.assert:
         that:
           - openshift_full_version is version('4.12', '>=')
         fail_msg: "openshift_full_version  must be >= 4.12. to support dualstack VIPs"
 
     - name: Assert that extra_machine_networks variable is defined and not empty
-      assert:
+      ansible.builtin.assert:
         that:
           - (extra_machine_networks | length) > 0
         fail_msg: "extra_machine_networks must be defined and have at least one cidr value in a list to support dualstack VIPs"
 
     - name: Check if extra api VIP is within the extra machine networks
       vars:
-        extra_api_vip: "{{ hostvars['assisted_installer']['extra_api_vip'] | default ([]) }}"
+        extra_api_vip: "{{ hostvars['assisted_installer']['extra_api_vip'] | default([]) }}"
         extra_api_vip_tests: []
       ansible.builtin.set_fact:
         extra_api_vip_tests: "{{ extra_api_vip_tests + [extra_api_vip | ansible.utils.ipaddr(item.cidr)] }}"
@@ -69,7 +69,7 @@
 
     - name: Check if extra ingress VIP is within the extra machine networks
       vars:
-        extra_ingress_vip: "{{ hostvars['assisted_installer']['extra_ingress_vip'] | default ([]) }}"
+        extra_ingress_vip: "{{ hostvars['assisted_installer']['extra_ingress_vip'] | default([]) }}"
         extra_ingress_vip_tests: []
       ansible.builtin.set_fact:
         extra_ingress_vip_tests: "{{ extra_ingress_vip_tests + [extra_ingress_vip | ansible.utils.ipaddr(item.cidr)] }}"
@@ -85,3 +85,25 @@
         fail_msg: "{{ extra_ingress_vip }} is not within any of the extra machine networks!"
       when:
         - extra_ingress_vip_tests is defined
+
+
+- name: Check OS and release image vars
+  vars:
+    ocp_ver_query: "[?openshift_version=='{{ openshift_version }}']"
+    ver_query: "[?version=='{{ openshift_full_version }}']"
+  block:
+    - name: Assert os_images exists
+      vars:
+      ansible.builtin.assert:
+        that:
+          - os_images is defined
+          - os_images | json_query(ocp_ver_query) | length > 0
+        fail_msg: "os_images is not defined or does not contain the required version"
+
+    - name: Assert release_images exists
+      ansible.builtin.assert:
+        that:
+          - release_images is defined
+          - release_images | json_query(ver_query) | length > 0
+          - release_images | json_query(ocp_ver_query) | length > 0
+        fail_msg: "release_images is not defined or does not contain the required versions"
