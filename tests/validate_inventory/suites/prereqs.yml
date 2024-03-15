@@ -3,6 +3,40 @@ tags: validate_prereqs
 template_file: test_inv.yml.j2
 
 tests:
+  - test_name: valid_prereqs
+    expected: 0
+
+  - test_name: invalid_missing_os_images
+    expected: 2
+    template:
+      dont_define_os_images: true
+
+  - test_name: invalid_missing_release_images
+    expected: 2
+    template:
+      dont_define_release_images: true
+
+  - test_name: invalid_os_images_wrong_version
+    expected: 2
+    template:
+      os_images:
+        - cpu_architecture: x86_64
+          openshift_version: '4.11'
+          rootfs_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.11/4.11.9/rhcos-live-rootfs.x86_64.img
+          url: https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.11/4.11.9/rhcos-4.11.9-x86_64-live.x86_64.iso
+          version: 411.86.202210072320-0
+
+  - test_name: invalid_release_images_wrong_version
+    expected: 2
+    template:
+      release_images:
+        - cpu_architecture: x86_64
+          cpu_architectures:
+            - x86_64
+          openshift_version: '4.11'
+          url: quay.io/openshift-release-dev/ocp-release:4.11.12-x86_64
+          version: 4.11.12
+
   - test_name: invalid_dhcp_first_last_missing
     expected: 2
     template:

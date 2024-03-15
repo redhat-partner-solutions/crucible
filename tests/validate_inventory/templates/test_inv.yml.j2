@@ -1,9 +1,40 @@
 all:
   vars:
+    openshift_full_version: {{ item.template.openshift_full_version | default('4.10.67') }}
+    repo_root_path: {{ playbook_dir + "/.." }}
+
+    api_vip: 10.60.0.96
+    ingress_vip: 10.60.0.97
+    machine_network_cidr: 10.60.0.0/24
+
+    vip_dhcp_allocation: {{ item.template.vip_dhcp_allocation | default(false) }}
+    {% if item.template.os_images is defined %}
+    os_images: {{ item.template.os_images | to_json}}
+    {% elif (item.template.dont_define_os_images | default(false)) %}
+    {% else %}
+    os_images:
+      - cpu_architecture: x86_64
+        openshift_version: '4.10'
+        rootfs_url: https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.10/4.10.37/rhcos-live-rootfs.x86_64.img
+        url: https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.10/4.10.37/rhcos-4.10.37-x86_64-live.x86_64.iso
+        version: 410.84.202210061459-0
+    {% endif %}
+
+    {% if item.template.release_images is defined %}
+    release_images: {{ item.template.release_images | to_json}}
+    {% elif (item.template.dont_define_release_images | default(false)) %}
+    {% else %}
+    release_images:
+      - cpu_architecture: x86_64
+        cpu_architectures:
+          - x86_64
+        openshift_version: '4.10'
+        url: quay.io/openshift-release-dev/ocp-release:4.10.67-x86_64
+        version: 4.10.67
+    {% endif %}
     {% if item.template.day2_discovery_iso_name is defined %}
     day2_discovery_iso_name: {{ item.template.day2_discovery_iso_name }}
     {% endif %}
-    openshift_full_version: {{ item.template.openshift_full_version | default('4.10.67') }}
     setup_dns_service: {{ item.template.setup_dns_service | default(False)}}
     {% if item.template.allow_custom_vendor is defined %}
     allow_custom_vendor: {{ item.template.allow_custom_vendor }}
@@ -11,6 +42,35 @@ all:
     {% if item.template.no_proxy is defined %}
     no_proxy: {{ item.template.no_proxy }}
     {% endif %}
+
+    ############################
+    #    LOGIC: DO NOT TOUCH   #
+    # vvvvvvvvvvvvvvvvvvvvvvvv #
+    ############################
+    {% raw %}
+    # pull secret logic, no need to change. Configure above
+    local_pull_secret_path: "{{ lookup('first_found', pull_secret_lookup_paths) }}"
+    pull_secret: "{{ lookup('file', local_pull_secret_path) }}"
+
+    # ssh key logic, no need to change. Configure above
+    local_ssh_public_key_path: "{{ lookup('first_found', ssh_public_key_lookup_paths) }}"
+    ssh_public_key: "{{ lookup('file', local_ssh_public_key_path) }}"
+
+    # provided mirror certificate logic, no need to change.
+    local_mirror_certificate_path: "{{ (setup_registry_service == true) | ternary(
+        fetched_dest + '/' + (hostvars['registry_host']['cert_file_prefix'] | default('registry')) + '.crt',
+        repo_root_path + '/mirror_certificate.txt')
+      }}"
+    mirror_certificate: "{{ lookup('file', local_mirror_certificate_path) }}"
+
+    openshift_version: "{{ openshift_full_version.split('.')[:2] | join('.') }}"
+
+    is_valid_single_node_openshift_config: "{{ (groups['nodes'] | length == 1) and (groups['masters'] | length == 1) }}"
+    {% endraw %}
+    ############################
+    # ^^^^^^^^^^^^^^^^^^^^^^^^ #
+    #    LOGIC: DO NOT TOUCH   #
+    ############################
   children:
     bastions:
       hosts:
@@ -60,6 +120,7 @@ all:
           hosts:
           {% for n in range(item.template.num_masters | default(3)) %}
             master{{ n }}:
+              ansible_host: 10.60.0.{{n}}
           {% endfor %}
         workers:
           vars:
@@ -67,6 +128,7 @@ all:
           hosts:
           {% for n in range(item.template.num_workers | default(2)) %}
             worker{{ n }}:
+              ansible_host: 10.60.0.{{n+50}}
           {% endfor %}
         {% if item.template.num_day2_workers is defined %}
         day2_workers:
@@ -75,5 +137,6 @@ all:
           hosts:
             {% for n in range(item.template.num_day2_workers) %}
               day2_worker{{ n }}:
+                ansible_host: 10.60.0.{{n+100}}
             {% endfor %}
         {% endif %}
