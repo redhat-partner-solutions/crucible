@@ -2,7 +2,7 @@
 - import_playbook: playbooks/validate_inventory.yml
 
 - import_playbook: playbooks/deploy_cluster_agent_based_installer.yml
-  when: (use_agent_based_installer | default(false)) | bool
+  when: (use_agent_based_installer | default(true)) | bool
 
 - import_playbook: playbooks/deploy_cluster_assisted_installer.yml
-  when: not ((use_agent_based_installer | default(false)) | bool)
+  when: not ((use_agent_based_installer | default(true)) | bool)
