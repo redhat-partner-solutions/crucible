@@ -79,7 +79,7 @@
         apply:
           tags: validate_agent_based_installer
       when:
-        - (use_agent_based_installer | default(false) | bool)
+        - (use_agent_based_installer | default(true) | bool)
         - not ((ignore_agent_based_installer_feature_gates | default(false)) | bool)
       tags: validate_agent_based_installer
 
@@ -88,7 +88,7 @@
         apply:
           tags: validate_agent_based_installer
       when:
-        - (use_agent_based_installer | default(false) | bool)
+        - (use_agent_based_installer | default(true) | bool)
       tags: validate_agent_based_installer
 
   when: not (inventory_validated | default(False) | bool)

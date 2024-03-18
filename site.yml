@@ -10,4 +10,4 @@
 - import_playbook: post_install.yml
 
 - import_playbook: deploy_day2_workers.yml
-  when: not ((use_agent_based_installer | default(false)) | bool)
+  when: not ((use_agent_based_installer | default(true)) | bool)
