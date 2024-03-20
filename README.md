@@ -1,6 +1,8 @@
-# Crucible: OpenShift 4 Management Cluster Seed Playbooks  
-## ❗ PROJECT SUNSET EFFECTIVE APRIL 5th ❗  
-##### ❗ _Red Hat does not provide commercial support for the content of this repo.  
+# Crucible: OpenShift 4 Management Cluster Seed Playbooks
+
+## ❗ PROJECT SUNSET EFFECTIVE APRIL 5th ❗
+
+### ❗ _Red Hat does not provide commercial support for the content of this repo
 
 ```bash
 #############################################################################
@@ -11,18 +13,23 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 #############################################################################
 ```
+
 ---
-Upcomming changes:
-- Crucible's roles have been migrated to the [Red Hat CI OCP Ansible Collection](https://github.com/redhatci/ansible-collection-redhatci-ocp) available for download at [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).  
+#### Upcomming changes:
+- Crucible's roles have been migrated to the [Red Hat CI OCP Ansible Collection](https://github.com/redhatci/ansible-collection-redhatci-ocp) available for download at [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).
 - Crucible's playbooks will continue to work but as always, you are encouraged to fork crucible and maintain your own playbooks.
-- Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.  
+- Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.
 - Next major change before sunset will be to change the default installer from Assisted Installer to the **offical** [Red Hat OCP Agent-based Installer](https://docs.openshift.com/container-platform/4.14/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html)
-  
+
 ---
 
-##### Project Stewardship
-If you are interested in stewarding Crucible please contact <alhernan@redhat.com>
+##### Call For Stewards
+If you are interested in stewarding Crucible please contact:
 
+- Arnaldo Hernandez <alhernan@redhat.com>
+- Micky Costa <micosta@redhat.com>
+
+---
 This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration, and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
 
 These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of Red Hat Enterprise Linux (RHEL) 8.6, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
@@ -66,9 +73,10 @@ For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Re
 
 ### Dependencies
 
-Requires the following to be installed on the deployment host:
+Crucible requires the following to be installed on the deployment host:
 
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-specific-operating-systems)
+- [Red Hat CI OCP ansible collection](https://github.com/redhatci/ansible-collection-redhatci-ocp)
 - [netaddr](https://github.com/netaddr/netaddr)
 - [jmespath](https://github.com/jmespath)
 - [skopeo](https://github.com/containers/skopeo)
@@ -108,13 +116,19 @@ subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 
 #### Collections
 
-There's also some required Ansible Galaxy Collections.
-These collections can be installed with the following command:
+The [ansible-galaxy collection redhatci.ocp](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/) is **REQUIRED AND MANDATORY**
+The collection can be installed with the following command:
 
-Using the requirements file
+```bash
+ansible-galaxy collection install redhatci.ocp
+```
+
+Or using the requirements file
 ```bash
 ansible-galaxy collection install -r requirements.yml
 ```
+[Red Hat CI OCP Git Hub Repo](https://github.com/redhatci/ansible-collection-redhatci-ocp)
+
 
 ## Before Running The Playbook
 
@@ -165,7 +179,6 @@ ansible-playbook -i inventory.yml prereq_facts_check.yml -e "@inventory.vault.ym
 ansible-playbook -i inventory.yml playbooks/validate_inventory.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
-****
 ## Running The Playbooks
 
 There are a few main playbooks provided in this repository:
