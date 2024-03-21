@@ -15,7 +15,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 Upcomming changes:
 - Crucible's roles have been migrated to the [Red Hat CI OCP Ansible Collection](https://github.com/redhatci/ansible-collection-redhatci-ocp) available for download at [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).  
 - Crucible's playbooks will continue to work but as always, you are encouraged to fork crucible and maintain your own playbooks.
-- On <ins>Monday April 18th</ins> Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.  
+- Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.  
 - Next major change before sunset will be to change the default installer from Assisted Installer to the **offical** [Red Hat OCP Agent-based Installer](https://docs.openshift.com/container-platform/4.14/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html)
   
 ---
@@ -165,7 +165,7 @@ ansible-playbook -i inventory.yml prereq_facts_check.yml -e "@inventory.vault.ym
 ansible-playbook -i inventory.yml playbooks/validate_inventory.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
-
+****
 ## Running The Playbooks
 
 There are a few main playbooks provided in this repository:
