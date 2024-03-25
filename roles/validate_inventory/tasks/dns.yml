@@ -1,6 +1,6 @@
 ---
 - name: Assert 'dhcp_range_first' and 'dhcp_range_last' are defined if needed
-  assert:
+  ansible.builtin.assert:
     that:
       - hostvars['dns_host'][item] is defined
       - hostvars['dns_host'][item] | ansible.utils.ipaddr('bool') == True
@@ -10,8 +10,8 @@
     - dhcp_range_first
     - dhcp_range_last
 
-- name: if DNS DHCP setup is enabled, ntp_server MUST be an IP for DNS config
-  assert:
+- name: If DNS DHCP setup is enabled, ntp_server MUST be an IP for DNS config
+  ansible.builtin.assert:
     that:
       - hostvars['dns_host']['ntp_server'] is defined
       - hostvars['dns_host']['ntp_server'] | ansible.utils.ipaddr('bool') == True

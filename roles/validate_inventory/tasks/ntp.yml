@@ -1,5 +1,5 @@
 - name: Check ntp_server is valid
-  assert:
+  ansible.builtin.assert:
     that:
       - hostvars['ntp_host']['ntp_server'] is defined
       - hostvars['ntp_host']['ntp_server'] | ansible.utils.ipaddr('bool') == True

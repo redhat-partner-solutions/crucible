@@ -1,4 +1,4 @@
-
+---
 - name: Assert that all values of 'vendor' are supported
   ansible.builtin.assert:
     that:

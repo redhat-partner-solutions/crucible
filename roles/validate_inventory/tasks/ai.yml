@@ -93,7 +93,6 @@
     ver_query: "[?version=='{{ openshift_full_version }}']"
   block:
     - name: Assert os_images exists
-      vars:
       ansible.builtin.assert:
         that:
           - os_images is defined

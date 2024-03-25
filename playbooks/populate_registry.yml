@@ -4,7 +4,7 @@
 
 - name: Play to populate image_hashes for relevant images
   hosts: localhost
-  gather_facts: (setup_registry_service | default(true)) | bool
+  gather_facts: false
   vars:
     destination_hosts:
       - registry_host
@@ -19,10 +19,14 @@
 
 - name: Play populate mirror registry
   hosts: registry_host
-  gather_facts: "{{ (setup_registry_service | default(true)) | bool }}"
+  gather_facts: false
   vars:
     config_file_path: /tmp/wip/config
     SETUP_REGISTRY_SERVICE: "{{ setup_registry_service | default(true)}}"
+  pre_tasks:
+    - name: Setup facts
+      ansible.builtin.setup:
+      when: SETUP_REGISTRY_SERVICE | bool
   roles:
     - role: redhatci.ocp.populate_mirror_registry
       when: SETUP_REGISTRY_SERVICE | bool

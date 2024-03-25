@@ -1,4 +1,6 @@
 ---
-- import_tasks: ai.yml
+- name: Check installer vars
+  ansible.builtin.import_tasks: ai.yml
 
-- import_tasks: dns.yml
+- name: Check DNS vars
+  ansible.builtin.import_tasks: dns.yml

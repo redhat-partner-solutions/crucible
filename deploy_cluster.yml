@@ -1,8 +1,11 @@
 ---
-- import_playbook: playbooks/validate_inventory.yml
+- name: Validate Inventory
+  ansible.builtin.import_playbook: playbooks/validate_inventory.yml
 
-- import_playbook: playbooks/deploy_cluster_agent_based_installer.yml
+- name: Deploy cluster using agent based installer
+  ansible.builtin.import_playbook: playbooks/deploy_cluster_agent_based_installer.yml
   when: (use_agent_based_installer | default(true)) | bool
 
-- import_playbook: playbooks/deploy_cluster_assisted_installer.yml
+- name: Deploy cluster using agent based installer
+  ansible.builtin.import_playbook: playbooks/deploy_cluster_assisted_installer.yml
   when: not ((use_agent_based_installer | default(true)) | bool)

@@ -13,16 +13,16 @@
     - name: Setup facts
       ansible.builtin.setup:
       when: SETUP_REGISTRY_SERVICE | bool
-    - name: pre-compute need to get hashes
+    - name: Pre-compute need to get hashes
       ansible.builtin.set_fact:
-        run_get_hash: "{{ image_hashes | default({}) | length == 0  }}"
+        run_get_hash: "{{ image_hashes | default({}) | length == 0 }}"
   roles:
     - role: redhatci.ocp.get_image_hash
       when: run_get_hash
 
 - name: Play to install and setup mirror registry
   hosts: registry_host
-  gather_facts: False
+  gather_facts: false
   vars:
     downloads_path: /tmp/wip
     config_file_path: /tmp/wip/config
