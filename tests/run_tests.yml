@@ -1,2 +1,3 @@
 ---
-- import_playbook: validate_inventory/tests.yml
+- name: Test validate inventory
+  ansible.builtin.import_playbook: validate_inventory/tests.yml
