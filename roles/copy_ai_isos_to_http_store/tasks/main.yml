@@ -1,0 +1,47 @@
+- name: Copying isos down
+  become: true
+  block:
+    - name: Make assisted_installer_http_store_file_dir
+      file:
+        path: "{{ http_store_dir }}/{{ assisted_installer_http_store_file_dir }}/"
+        state: directory
+        mode: 0644
+
+    - name: Get base iso
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ http_store_dir }}/{{ assisted_installer_http_store_file_dir }}/{{ item.url.split('/')[-1] }}"
+      loop: "{{ assisted_installer_os_images }}"
+
+    - name: Get base rootfs_url
+      ansible.builtin.get_url:
+        url: "{{ item.rootfs_url }}"
+        dest: "{{ http_store_dir }}/{{ assisted_installer_http_store_file_dir }}/{{ item.rootfs_url.split('/')[-1] }}"
+      loop: "{{ assisted_installer_os_images }}"
+
+- name: Redirect urls for os_images
+  vars:
+    rewritten_os_images: []
+  ansible.builtin.set_fact:
+    rewritten_os_images: "{{ rewritten_os_images + [
+          item | combine({
+            'url': redirect_base_url + item.url.split('/')[-1],
+            'rootfs_url': redirect_base_url + item.rootfs_url.split('/')[-1],
+          })
+        ]
+      }}"
+  loop: "{{ assisted_installer_os_images }}"
+
+- name: Replace assisted_installer_os_images
+  ansible.builtin.set_fact:
+    os_images: "{{ rewritten_os_images }}"
+
+- name: Replace assisted_installer_os_images
+  ansible.builtin.set_fact:
+    assisted_installer_os_images: "{{ rewritten_os_images }}"
+  delegate_to: assisted_installer
+  delegate_facts: True
+
+- name: Print out os_images override
+  debug:
+    var: os_images

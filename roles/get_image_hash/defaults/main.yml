@@ -16,6 +16,7 @@ destination_hosts:
   - localhost
   - registry_host
   - assisted_installer
+  - http_store
 
 image_hashes_path: "{{ repo_root_path }}/image_hashes.yml"
 ignore_cached_image_hashes: false
