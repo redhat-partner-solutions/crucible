@@ -627,17 +627,6 @@ The basic network configuration of the inventory for the fully bare metal deploy
           bmc_address: 172.30.10.7
           # ...
 ```
-## Additional Partition Deployment
-
-For OCP 4.8+ deployments you can set partitions if required on the nodes. You do this by adding the snippet below to the node definition. Please ensure you provide the correct label and size(MiB) for the additional partitions you want to create. The device can either be the drive in which RHCOS image needs to be installed or it can be any additional drive on the node that requires partitioning. In the case that the device is equal to the host's `installation_disk_path` then a partition will be added defined by `disks_rhcos_root`. All additional partitions must be added under `extra_partitions` key as per the example below.
-
-```yaml
-disks:
-  - device: "{{ installation_disk_path }}"
-    extra_partitions:
-      partition_1: 1024
-      partition_2: 1024
- ```
 
 ## PXE Deployment
 You must have these services when using PXE deployment
@@ -685,7 +674,7 @@ You must have these services when using PXE deployment
               bmc_port: 8082
 
 ```
-> **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs
+> **Note**: that the BMCs of the nodes in the cluster must be routable from the bastion host and the HTTP Store must be routable from the BMCs.
 
 These two examples are not the only type of clusters that can be deployed using Crucible. A hybrid cluster can be created by mixing virtual and bare metal nodes.
 
@@ -775,7 +764,8 @@ It is possible to install a few operators as part of the cluster installtion. Th
 
 ## Day 2 nodes
 
-Day 2 nodes are added to an existing cluster. The reason why the installation of day 2 nodes is built into the main path of our automation, is that for assisted installer day 2 nodes can be on a different L2 network which the main flow does not allow.
+Day 2 nodes are added to an existing cluster.
+The reason why the installation of day 2 nodes is built into the main path of our automation, is that for assisted installer day 2 nodes can be on a different L2 network which the main flow does not allow.
 
 Add a second ISO name parameter to the inventory to avoid conflict with the original:
 
@@ -797,3 +787,20 @@ day2_workers:
       bmc_address: 172.28.11.26
       mac: 3C:FD:FE:78:AB:05
 ```
+
+## Additional Partition Deployment
+
+For OCP 4.8+ deployments you can set partitions if required on the nodes.
+You do this by adding the snippet below to the node definition.
+Please ensure you provide the correct label and size(MiB) for the additional partitions you want to create.
+The device can either be the drive in which RHCOS image needs to be installed or it can be any additional drive on the node that requires partitioning.
+In the case that the device is equal to the host's `installation_disk_path` then a partition will be added defined by `disks_rhcos_root`.
+All additional partitions must be added under `extra_partitions` key as per the example below.
+
+```yaml
+disks:
+  - device: "{{ installation_disk_path }}"
+    extra_partitions:
+      partition_1: 1024
+      partition_2: 1024
+ ```
