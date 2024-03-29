@@ -1,7 +1,42 @@
 # Crucible: OpenShift 4 Management Cluster Seed Playbooks
 
-## ❗ PROJECT SUNSET EFFECTIVE APRIL 5th ❗
+## ❗ PROJECT SUNSET EFFECTIVE MARCH 29TH ❗
 
+Recently our team was re-org'd and both of us landed onto different teams with different roles.
+Because of this we regret to inform you that we no longer have the bandwidth to maintain Crucible.
+  
+As our last effort we pushed to complete some changes that have been a long time coming.
+We believe these changes will extend Crucible's compatibility in the coming future.
+  
+These changes are:  
+  
+- Roles have been migrated to an Ansible Galaxy Collection [redhatci.ocp](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).
+  Needless to say the redhatci.ocp collection is now a requirement for the playbooks to remain functional.
+- A BIG thanks goes out to the members of Red Hat's DCI teams.
+  In addition to continuously improving Crucible's roles they also did most of the work required to migrate Crucible's roles seamlessly.
+  They created the `redhatci.ocp` Ansible Collection to collect the various roles that work with Red Hat OpenShift.
+    - Please goto [https://github.com/redhatci/ansible-collection-redhatci-ocp](https://github.com/redhatci/ansible-collection-redhatci-ocp) for more info and contributions.
+- Crucible's *default* installer has been upgraded from an On-Prem Assisted Installer to the new lightweight [OpenShift Agent-based Installer](https://docs.openshift.com/container-platform/4.12/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html).
+  For those few who wish to continue using the legacy On-Prem Assisted Installer we've got you covered.
+  In this case just add `use_agent_based_installer: false` in the `vars` section of your inventory file.
+    - [Click here](https://github.com/redhat-partner-solutions/crucible/blob/main/docs/crucible_installer_features_comparison.md) for a feature comparison between the On-Prem Assisted Installer, and the Agent-based Installer.
+    - **Special Note:** The Agent-based Installer requires a  `network_config`  for each of the nodes in the inventory.
+- *Default* values for `os_images` and `release_images` have been removed. Many users were overriding them to install specific versions.
+  Managing the list of version combinations needs regular maintenance in order to keep up with release schedules or fall out of date.
+  In it's place we have created a python script that will generate the values for you.
+  [Click here](https://github.com/redhat-partner-solutions/crucible/blob/main/hack/)
+---
+
+## Lastly we would like to thank Red Hat and the Crucible Community for supporting us, each other, and overall AWESOMENESS!
+---
+
+# ❗ Call For Stewards
+If you are interested in stewarding Crucible please contact:
+
+- Arnaldo (arjuhe) Hernandez <alhernan@redhat.com>
+- Micky (nocturnalastro) Costa <micosta@redhat.com>
+
+---
 ### ❗ _Red Hat does not provide commercial support for the content of this repo
 
 ```bash
@@ -15,27 +50,16 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 ```
 
 ---
-#### Upcomming changes:
-- Crucible's roles have been migrated to the [Red Hat CI OCP Ansible Collection](https://github.com/redhatci/ansible-collection-redhatci-ocp) available for download at [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/).
-- Crucible's playbooks will continue to work but as always, you are encouraged to fork crucible and maintain your own playbooks.
-- Crucible will crossover and default to using the *redhatci.ocp collection*. At this point only 2 roles will remain: `validate_inventory`, and `display_deployment_plan`.
-- Next major change before sunset will be to change the default installer from Assisted Installer to the **offical** [Red Hat OCP Agent-based Installer](https://docs.openshift.com/container-platform/4.14/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html)
 
----
-
-##### Call For Stewards
-If you are interested in stewarding Crucible please contact:
-
-- Arnaldo Hernandez <alhernan@redhat.com>
-- Micky Costa <micosta@redhat.com>
-
----
-This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer. The playbooks require only minimal infrastructure configuration, and do not require any pre-existing cluster. Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.
-
-These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com). They are intended to be run from a `bastion` host, running a subscribed installation of Red Hat Enterprise Linux (RHEL) 8.6, inside the target environment. Pre-requisites can be installed manually or automatically, as appropriate.
+This repository contains playbooks for automating the creation of an OpenShift Container Platform cluster on premise using the Developer Preview version of the OpenShift Assisted Installer.
+The playbooks require only minimal infrastructure configuration, and do not require any pre-existing cluster.
+Virtual and Bare Metal deployments have been tested in restricted network environments where nodes do not have direct access to the Internet.  
+  
+These playbooks assume a prior working knowledge of [Ansible](http://www.ansible.com).
+They are intended to be run from a `bastion` host, running a subscribed installation of Red Hat Enterprise Linux (RHEL), inside the target environment.
+Pre-requisites can be installed manually or automatically, as appropriate.
 
 See [how the playbooks are intended to be run](docs/connecting_to_hosts.md) and understand [what steps the playbooks take](docs/pipeline_into_the_details.md).
-
 
 ## Software Versions Supported
 Crucible targets versions of Python and Ansible that ship with Red Hat Enterprise Linux. At the moment the supported versions are:
@@ -46,9 +70,10 @@ Crucible targets versions of Python and Ansible that ship with Red Hat Enterpris
 | Python 3.6            | Python 3.9           |
 | Ansible 2.9           | Ansible [core] 2.14  |
 
-For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Red Hat Enterprise Linux 8 is the only QEMU-KVM host supported at this time.  Deficiencies exist in the sushy-tools library that need to be addressed before support can be validated.
+For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Red Hat Enterprise Linux 8 is the only QEMU-KVM host supported at this time.
+Deficiencies exist in the sushy-tools library that need to be addressed before support can be validated.  
 
-## OpenShift Versions Tested
+### OpenShift Versions Tested
 
 - 4.6
 - 4.7
@@ -60,8 +85,7 @@ For `bastion` machines hosting Virtual Machine (VM) based OpenShift clusters, Re
 - 4.13
 - 4.14 (agent based)
 
-
-## Assisted Installer versions Tested
+### Assisted Installer versions Tested
 
 - v2.1.0
 - v2.1.1
@@ -86,17 +110,22 @@ Crucible requires the following to be installed on the deployment host:
 - [ipmitool](https://github.com/ipmitool/ipmitool) #For PXE deployment
 - [nmstate](https://github.com/nmstate) # For baremetal deployment
 
-
-**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/). The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation. It is used for the post-installation cluster validation steps.
+**Important Note** The `openshift-clients` package is part of the [Red Hat OpenShift Container Platform Subscription](https://access.redhat.com/downloads/content/290/).
+The repo [must be activated on the bastion host](https://docs.openshift.com/container-platform/4.14/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli-rpm_cli-developer-commands) before the dependency installation.
+It is used for the post-installation cluster validation steps.
 
 #### RHE8
 
-For RHEL 8.8+ `ansible` is not longer avialable in the standard repos so you will need to enable the repo for ansibe engine 2.
+For RHEL 8.8+ `ansible` is no longer available in the baseos repository.
+In order to install `ansible` the 'Red Hat Ansible Engine' repository will need to be enabled.
+
 
 ```bash
 subscription-manager repos --enable ansible-2-for-rhel-8-x86_64-rpms
 ```
+
 To install the required packages for RHEL8:
+
 ```bash
 dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
@@ -104,6 +133,7 @@ dnf -y install ansible python3-netaddr skopeo podman openshift-clients ipmitool 
 #### RHEL9
 
 To install the required packages for RHEL9:
+
 ```bash
 dnf -y install ansible-core python3-netaddr skopeo podman openshift-clients ipmitool python3-pyghmi python3-jmespath nmstate
 ```
@@ -114,27 +144,38 @@ You will need to enable the codeready builders repo on all VM hosts.
 subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
 ```
 
-#### Collections
-
+#### Installing the collection
 The [ansible-galaxy collection redhatci.ocp](https://galaxy.ansible.com/ui/repo/published/redhatci/ocp/) is **REQUIRED AND MANDATORY**
-The collection can be installed with the following command:
+The collection can be installed using the following methods:
 
-```bash
+### Ansible Galaxy
+In addition to the `ansible-galaxy` command provided below.
+We've also provided a `requirements.yml` file.
+
+```Shell
 ansible-galaxy collection install redhatci.ocp
 ```
 
-Or using the requirements file
-```bash
-ansible-galaxy collection install -r requirements.yml
-```
-[Red Hat CI OCP Git Hub Repo](https://github.com/redhatci/ansible-collection-redhatci-ocp)
+### RPM package
 
+```Shell
+dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+dnf -y install https://packages.distributed-ci.io/dci-release.el8.noarch.rpm
+dnf -y install ansible-collection-redhatci-ocp
+```
+
+**NOTE:** Please goto [Red Hat CI OCP Git Hub Repo](https://github.com/redhatci/ansible-collection-redhatci-ocp) for more details.
 
 ## Before Running The Playbook
 
-- Configure NTP time sync on the BMCs and confirm the system clock among the master nodes is synchronized within a second. The installation fails when system time does not match among nodes because etcd database will not be able to converge.
-- Modify the provided inventory file `inventory.yml.sample`. Fill in the appropriate values that suit your environment and deployment requirements. See the sample file and [docs/inventory.md](docs/inventory.md) for more details.
-- Modify the provided inventory vault file `inventory.vault.yml.sample`. Fill in the corresponding secret values according to the configuration of the inventory file. See the sample file and [docs/inventory.md#required-secrets](docs/inventory.md#required-secrets) for more details.
+- Configure NTP time sync on the BMCs and confirm the system clock among the master nodes is synchronized within a second.
+  The installation fails when system time does not match among nodes because etcd database will not be able to converge.
+- Modify the provided inventory file `inventory.yml.sample`.
+  Fill in the appropriate values that suit your environment and deployment requirements.
+  See the sample file and [docs/inventory.md](docs/inventory.md) for more details.
+- Modify the provided inventory vault file `inventory.vault.yml.sample`.
+  Fill in the corresponding secret values according to the configuration of the inventory file.
+  See the sample file and [docs/inventory.md#required-secrets](docs/inventory.md#required-secrets) for more details.
 - Place the following prerequisites in this directory:
   - OpenShift pull secret stored as `pull-secret.txt` (can be downloaded from [here](https://console.redhat.com/openshift/install/metal/installer-provisioned))
   - SSH Public Key stored as `ssh_public_key.pub`
@@ -154,7 +195,8 @@ ansible-vault encrypt inventory.vault.yml
 An encrypted vault file can be referenced when executing the playbooks with the `ansible-playbook` command.
 To that end, provide the option `-e "@{PATH_TO_THE_VAULT_FILE}"`.
 
-To allow Ansible to read values from an encrypted vault file, a password for decrypting the vault must be provided. Provide the `--ask-vault-pass` flag to force Ansible to ask for a password to the vault before the selected playbook is executed.
+To allow Ansible to read values from an encrypted vault file, a password for decrypting the vault must be provided.
+Provide the `--ask-vault-pass` flag to force Ansible to ask for a password to the vault before the selected playbook is executed.
 
 A complete command to execute a playbook that takes advantage of both options can look like this:
 ```bash
@@ -194,7 +236,9 @@ Each of the playbooks requires an inventory and an inventory vault file, and can
 ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault-pass
 ```
 
-When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details. Please review the deployment plan carefully to ensure that the right inventory file has been provided. To confirm the plan and proceed with the deployment, type `yes` when prompted.
+When performing a full deployment, Crucible may first present you with a deployment plan containing all the key configuration details.
+Please review the deployment plan carefully to ensure that the right inventory file has been provided.
+To confirm the plan and proceed with the deployment, type `yes` when prompted.
 
 In order to skip interactive prompts in environments where user input cannot be given, extend the command with the `-e skip_interactive_prompts=true` option.
 If this option is enabled, the generation of a deployment plan is omitted, and the deployment process starts immediately after the command is run.
@@ -209,64 +253,62 @@ ansible-playbook -i inventory.yml site.yml -e "@inventory.vault.yml" --ask-vault
 
 For simplicity, we suggest that passwordless sudo is set up on all machines. If this is not desirable or possible in your environment, then there are two options:
 
-1. Use the same sudo password for all hosts, and use the `-K` flag on `ansible-playbook`. This will cause Ansible to [prompt for the sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-command-line-options). The password provided is then used for *all* hosts.
-1. Set the `ansible_become_password` variable for each host that needs a [sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-connection-variables). The passwords can be securely stored in an encrypted Ansible vault.
-
+1. Use the same sudo password for all hosts, and use the `-K` flag on `ansible-playbook`.
+   This will cause Ansible to [prompt for the sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-command-line-options).
+   The password provided is then used for *all* hosts.
+2. Set the `ansible_become_password` variable for each host that needs a [sudo password](https://docs.ansible.com/ansible/2.9/user_guide/become.html#become-connection-variables).
+   The passwords can be securely stored in an encrypted Ansible vault.
 
 ## Prerequisite Services
 
-Crucible can automatically set up the services required to deploy and run a cluster. Some are required for the Assisted Installer tool to run, and some are needed for the resulting cluster.
+Crucible can automatically set up the services required to deploy and run a cluster.
+Some are required for the Assisted Installer tool to run, and some are needed for the resulting cluster.
 
-- NTP - The NTP service helps to ensure clocks are synchronized across the resulting cluster, which is a requirement for the cluster to function.
-- Container Registry Local Mirror - Provides a local container registry within the target environment. The Crucible playbooks automatically populates the registry with required images for cluster installation. The registry will continue to be used by the resulting cluster.
-- HTTP Store - Used to serve the Assisted Installer discovery ISO and allow it to be used as Virtual Media for nodes to boot from.
-- DNS - Optionally set up DNS records for the required cluster endpoints, and nodes. If not automatically set up then the existing configuration will be validated.
-- Assisted Installer - A pod running the Assisted Installer service, database store and UI. It will be configured for the target environment and is used by the cluster deployment playbook to coordinate the cluster deployment.
-- TFTP Host - A server that stores all the file mounted from the discovery image (required only for PXE deployments).
+- `NTP` — The NTP service helps to ensure clocks are synchronized across the resulting cluster, which is a requirement for the cluster to function.
+- `Container Registry Local Mirror` — Provides a local container registry within the target environment.
+  The Crucible playbooks automatically populates the registry with required images for cluster installation.
+  The registry will continue to be used by the resulting cluster.
+- `HTTP Store` — Used to serve the Assisted Installer discovery ISO and allow it to be used as Virtual Media for nodes to boot from.
+- `DNS` — Optionally set up DNS records for the required cluster endpoints, and nodes.
+  If not automatically set up then the existing configuration will be validated.
+- `Assisted Installer` — A pod running the Assisted Installer service, database store and UI.
+  It will be configured for the target environment and is used by the cluster deployment playbook to coordinate the cluster deployment.
+- `TFTP Host` — A server that stores all the file mounted from the discovery image (required only for PXE deployments).
 
 While setup of each of these can be disabled if you wish to manually configure them, but it's highly recommended to use the automatic setup of all prerequisites.
-
 
 ## Outputs
 
 Note that the exact changes made depend on which playbooks or roles are run, and the specific configuration.
 
-
 ### Cluster
 
-The obvious output from these playbooks is a clean OpenShift Container Platform cluster with minimal extra configuration. Each node that has been added to the resulting cluster will have:
+The obvious output from these playbooks is a clean OpenShift Container Platform cluster with minimal extra configuration.
+Each node that has been added to the resulting cluster will have:
 
 - Red Hat Enterprise Linux CoreOS installed and configured
 - The configured SSH public key as an authorized key for `root` to allow debugging
 
-
 ### Prerequisite Services
 
-Various setup is done on the prerequisite services. These are informational and are not needed unless you encounter issues with deployment.
+Various setup is done on the prerequisite services.
+These are informational and are not needed unless you encounter issues with deployment.
 The following are defaults for a full setup:
 
-- Registry Host
-
+- Registry Host:
   - `opt/registry` contains the files for the registry, including the certificates.
   - `tmp/wip` is used during the playbook execution as a temporary file store.
-
-- DNS Host
-
+- DNS Host:
   - Using dnsmasq: `/etc/dnsmasq.d/dnsmasq.<clustername>.conf`
   - using Network Manager: `/etc/NetworkManager/dnsmasq.d/dnsmasq.<clustername>.conf` and `/etc/NetworkManager/conf.d/dnsmasq.conf`
-
-- Assisted Installer
-
+- Assisted Installer:
   - A running pod containing the Assisted Installer service.
   - `/opt/assisted-installer` contains all the files used by the Assisted Installer container
-
-- HTTP Store
+- HTTP Store:
   - A running pod containing the `httpd` service
   - The discovery image from Assisted Installer will be placed in and served from `/opt/http_store/data`
-
-- TFTP Host
+- TFTP Host:
   - The discovery image will be mounted to this server and do the PXE boot with TFTP
-
 
 ### Bastion
 
@@ -279,7 +321,6 @@ As well as deploying prerequisites and a cluster, the playbooks create or update
 
 When doing multiple runs ensure you retain any authentication artefacts you need between deploys.
 
-
 ## Testing
 
 Existing tests can be run from `tests` directory using
@@ -288,16 +329,13 @@ Existing tests can be run from `tests` directory using
 ansible-playbook run_tests.yml
 ```
 
-
 ## Related Documentation
-
 
 ### General
 
 - [How the playbooks are intended to be run](docs/connecting_to_hosts.md)
 - [How to configure the inventory file](docs/inventory.md)
 - [Steps the playbooks take when executed](docs/pipeline_into_the_details.md)
-
 
 ### Troubleshooting
 
