@@ -9,7 +9,7 @@
     SETUP_NTP_SERVICE: "{{setup_ntp_service | default(true)}}"
   pre_tasks:
     - name: Setup facts
-      ansible.builtin.set_fact:
+      ansible.builtin.setup:
       when: SETUP_NTP_SERVICE | bool
   roles:
     - role: redhatci.ocp.setup_ntp
