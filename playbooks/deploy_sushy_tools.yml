@@ -9,7 +9,7 @@
     SETUP_SUSHY_TOOLS: "{{ setup_sushy_tools | default(setup_vms | default(true)) }}"
   pre_tasks:
     - name: Setup facts
-      ansible.builtin.set_fact:
+      ansible.builtin.setup:
       when: SETUP_SUSHY_TOOLS | bool
   roles:
     - role: redhatci.ocp.setup_sushy_tools
