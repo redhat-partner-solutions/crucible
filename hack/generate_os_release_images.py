@@ -10,7 +10,7 @@ except ImportError:
     from semver import VersionInfo
 
 import yaml
-
+from urllib.parse import urljoin
 import requests
 import re
 import argparse
@@ -18,9 +18,11 @@ import argparse
 DEBUG = False
 
 def generate_image_values(ocp_version, arch):
-    rhcos = requests.get(
-        f"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{ocp_version.major}.{ocp_version.minor}"
-    )
+    if ocp_version.prerelease:
+        url = f"https://mirror.openshift.com/pub/openshift-v4/{arch}/dependencies/rhcos/pre-release/"
+    else:
+        url = f"https://mirror.openshift.com/pub/openshift-v4/{arch}/dependencies/rhcos/{ocp_version.major}.{ocp_version.minor}/"
+    rhcos = requests.get(url)
     if not rhcos.ok:
         raise ValueError(
             f"Failed to find rhcos dependencies  for version: {ocp_version.major}.{ocp_version.minor}"
@@ -31,11 +33,14 @@ def generate_image_values(ocp_version, arch):
 
     os_version = None
     for v in versions:
-        ver = VersionInfo.parse(v)
-        if ver.compare(ocp_version) < 1 and (
-            os_version is None or os_version.compare(ver) == -1
-        ):
-            os_version = ver
+        try:
+            ver = VersionInfo.parse(v)
+            if ver.compare(ocp_version) < 1 and (
+                os_version is None or os_version.compare(ver) == -1
+            ):
+                os_version = ver
+        except ValueError:
+            continue
 
     if os_version is None:
         raise ValueError(
@@ -61,13 +66,16 @@ def generate_image_values(ocp_version, arch):
         print(os_version)
         print(rhcos_version)
 
+
+
+
     result = {
         "os_images": {
             str(os_version): {
                 "openshift_version": f"{os_version.major}.{os_version.minor}",
                 "cpu_architecture": f"{arch}",
-                "url": f"https://mirror.openshift.com/pub/openshift-v4/{arch}/dependencies/rhcos/{os_version.major}.{os_version.minor}/{os_version}/rhcos-{os_version}-{arch}-live.{arch}.iso",
-                "rootfs_url": f"https://mirror.openshift.com/pub/openshift-v4/{arch}/dependencies/rhcos/{os_version.major}.{os_version.minor}/{os_version}/rhcos-live-rootfs.{arch}.img",
+                "url":  urljoin(url, f"{os_version}/rhcos-{os_version}-{arch}-live.{arch}.iso"),
+                "rootfs_url":  urljoin(url, f"{os_version}/rhcos-live-rootfs.{arch}.img"),
                 "version": f"{rhcos_version}",
             },
         },
