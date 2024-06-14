@@ -1,0 +1,7 @@
+lxml
+requests
+bs4
+semver
+beautifulsoup4
+pyyaml
+
